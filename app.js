@@ -4,7 +4,6 @@ const STORAGE = {
   token: 'pc_token',
   folder: 'pc_root_folder_id',
   style: 'pc_selected_style',
-  stage: 'pc_stage_mode',
   favorites: 'pc_favorites_v1',
   playlists: 'pc_playlists_v1',
   activePlaylist: 'pc_active_playlist',
@@ -50,7 +49,7 @@ function init(){
 }
 
 function bindEls(){
-  ['googleBtn','logoutBtn','loginStatus','folderIdInput','pickFolderBtn','refreshBtn','clearFolderBtn','styleSelect','searchInput','songList','songTitle','songMeta','pdfFrame','pdfScroll','emptyState','audio','prevBtn','nextBtn','playBtn','rewindBtn','forwardBtn','repeatBtn','playlistOpenBtn','seekBar','currentTimeLabel','durationLabel','stageBtn','fullscreenBtn','sidebar','toggleSidebar','showSidebar','toast','favoriteBtn','playlistSelect','newPlaylistBtn','addPlaylistBtn','deletePlaylistBtn','zoomOutBtn','zoomLabel','zoomInBtn','autoScrollBtn','speedDownBtn','speedUpBtn','speedLabel','movePlaylistUpBtn','movePlaylistDownBtn','historyList','clearHistoryBtn','navSongsBtn','navCategoriesBtn','navFavoritesBtn','navSetlistsBtn','navSettingsBtn'].forEach(id=>els[id]=document.getElementById(id));
+  ['googleBtn','logoutBtn','loginStatus','folderIdInput','pickFolderBtn','refreshBtn','clearFolderBtn','styleSelect','searchInput','songList','songTitle','songMeta','pdfFrame','pdfScroll','emptyState','audio','prevBtn','nextBtn','playBtn','rewindBtn','forwardBtn','repeatBtn','playlistOpenBtn','seekBar','currentTimeLabel','durationLabel','sidebar','toggleSidebar','showSidebar','toast','favoriteBtn','playlistSelect','newPlaylistBtn','addPlaylistBtn','deletePlaylistBtn','zoomOutBtn','zoomLabel','zoomInBtn','autoScrollBtn','speedDownBtn','speedUpBtn','speedLabel','movePlaylistUpBtn','movePlaylistDownBtn','historyList','clearHistoryBtn','navSongsBtn','navCategoriesBtn','navFavoritesBtn','navSetlistsBtn','navSettingsBtn'].forEach(id=>els[id]=document.getElementById(id));
 }
 
 function bindEvents(){
@@ -69,8 +68,6 @@ function bindEvents(){
   if(els.repeatBtn) els.repeatBtn.addEventListener('click',toggleRepeat);
   if(els.playlistOpenBtn) els.playlistOpenBtn.addEventListener('click',()=>els.sidebar.classList.add('open'));
   if(els.seekBar) els.seekBar.addEventListener('input', seekFromBar);
-  els.stageBtn.addEventListener('click', toggleStage);
-  els.fullscreenBtn.addEventListener('click', fullscreen);
   els.favoriteBtn.addEventListener('click', toggleFavorite);
   els.playlistSelect.addEventListener('change',()=>{localStorage.setItem(STORAGE.activePlaylist, els.playlistSelect.value); applyFilters();});
   els.newPlaylistBtn.addEventListener('click', createPlaylist);
@@ -104,8 +101,6 @@ function restoreUi(){
   updateLoginUi(localStorage.getItem(STORAGE.connected)==='1');
   const savedFolder = localStorage.getItem(STORAGE.folder) || window.APP_CONFIG?.ROOT_FOLDER_ID || '';
   els.folderIdInput.value = savedFolder;
-  if(localStorage.getItem(STORAGE.stage)==='1') document.body.classList.add('stage');
-  updateStageBtn();
   loadCachedLibrary();
   renderPlaylists();
   renderHistory();
@@ -622,14 +617,6 @@ function formatTime(totalSeconds){
   return `${m}:${String(s).padStart(2,'0')}`;
 }
 
-function toggleStage(){
-  document.body.classList.toggle('stage');
-  localStorage.setItem(STORAGE.stage, document.body.classList.contains('stage')?'1':'0');
-  updateStageBtn();
-}
-function updateStageBtn(){ els.stageBtn.textContent = document.body.classList.contains('stage') ? 'Sair do palco' : 'Modo palco'; }
-function fullscreen(){ const el=document.documentElement; if(!document.fullscreenElement) el.requestFullscreen?.(); else document.exitFullscreen?.(); }
-
 function clearFolder(){
   localStorage.removeItem(STORAGE.folder);
   localStorage.removeItem(STORAGE.library);
@@ -668,7 +655,6 @@ function keyboard(e){
   if(e.key==='ArrowRight') nextSong();
   if(e.key==='ArrowLeft') prevSong();
   if(e.key===' ') { e.preventDefault(); togglePlay(); }
-  if(e.key.toLowerCase()==='m') toggleStage();
   if(e.key.toLowerCase()==='f') toggleFavorite();
   if(e.key.toLowerCase()==='s') toggleAutoScroll();
 }
