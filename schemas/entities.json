@@ -1,0 +1,13 @@
+{
+  "users": { "id": "string", "name": "string", "email": "string", "planId": "string", "createdAt": "datetime" },
+  "plans": { "id": "string", "name": "string", "features": "array", "limits": "object" },
+  "subscriptions": { "id": "string", "userId": "string", "planId": "string", "status": "string", "provider": "string" },
+  "credits": { "userId": "string", "balance": "number", "updatedAt": "datetime" },
+  "transactions": { "id": "string", "userId": "string", "type": "string", "amount": "number", "createdAt": "datetime" },
+  "songs": { "id": "string", "title": "string", "artist": "string", "album": "string", "key": "string", "bpm": "number", "category": "string", "notes": "string", "tags": "array", "favorite": "boolean", "addedAt": "datetime", "cover": "string|null" },
+  "song_files": { "id": "string", "songId": "string", "type": "originalAudio|playback|cifra|pdf|stem", "fileId": "string", "source": "google-drive|local|itunes-export" },
+  "setlists": { "id": "string", "name": "string", "songs": "array", "createdAt": "datetime" },
+  "favorites": { "userId": "string", "songId": "string", "createdAt": "datetime" },
+  "categories": { "id": "string", "name": "string", "color": "string" },
+  "ai_jobs": { "id": "string", "songId": "string", "type": "string", "status": "queued|processing|done|error", "credits": "number", "createdAt": "datetime" }
+}
