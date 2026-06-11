@@ -2,9 +2,9 @@
 
 ## Versão Atual
 
-**Versão:** `v1.3`
+**Versão:** `v1.4`
 
-**Nome:** Playback Cifras IA v1.3 — Limpeza de Módulos Adiados
+**Nome:** Playback Cifras IA v1.4 — Limpeza de Módulos Adiados
 
 **Branch:**
 
@@ -19,7 +19,7 @@ feature/v1-3-clean-deferred-modules
 - `v1`: fundação da nova linha de desenvolvimento.
 - `v1.1`: remoção dos botões Modo Palco e Tela Cheia.
 - `v1.2`: inclusão de footer discreto com versão atual.
-- `v1.3`: limpeza de módulos e telas adiadas para reduzir complexidade da base.
+- `v1.4`: limpeza de módulos e telas adiadas para reduzir complexidade da base.
 
 ---
 

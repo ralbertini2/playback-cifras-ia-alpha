@@ -7,6 +7,22 @@ O projeto segue versionamento incremental simples.
 ---
 
 
+
+## [v1.4] - 2026-06-11
+
+### Fixed
+
+- Corrigido comportamento do menu lateral em tablet/iPad vertical e mobile.
+- Corrigida rolagem do menu quando os painéis ocupam mais altura que a tela.
+- Corrigido acesso à lista de músicas dentro do menu em telas menores.
+- Corrigido overflow horizontal dos controles superiores em telas estreitas.
+
+### Changed
+
+- Menu lateral passa a ter rolagem total em telas até 900px.
+- Cabeçalho do menu permanece fixo durante a rolagem em tablet/mobile.
+- Lista de músicas deixa de criar uma segunda rolagem interna em telas menores.
+
 ## [v1.3] - 2026-06-11
 
 ### Removed
