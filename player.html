@@ -3,28 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Playback Cifras+ — App</title>
+  <title>Playback Cifras IA Alpha — App</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="sidebar-v18-2c.css" />
+  <link rel="stylesheet" href="styles-v19-ia-alpha.css" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#05080d" />
+  <meta name="theme-color" content="#050816" />
   <link rel="apple-touch-icon" href="assets/icon-192.png" />
 </head>
-<body>
-  <div id="app" class="app">
-    <aside id="sidebar" class="sidebar">
-      <header class="brand">
+<body class="v19-ia-alpha">
+  <div id="app" class="app v19-shell">
+    <aside id="sidebar" class="sidebar v19-sidebar">
+      <header class="brand v19-brand">
         <img src="logo-playback-cifras.jpg" alt="Playback Cifras" class="brand-logo" />
-        <button id="toggleSidebar" class="icon-btn hide-desktop" title="Ocultar menu">☰</button>
+        <button id="toggleSidebar" class="icon-btn hide-desktop" title="Ocultar menu" aria-label="Ocultar menu">☰</button>
       </header>
 
-      <section class="panel">
-        <button id="googleBtn" class="primary-btn">Entrar com Google</button>
-        <button id="logoutBtn" class="ghost-btn" type="button">Sair do Google</button>
-        <div id="loginStatus" class="status">Desconectado</div>
+      <section class="panel v19-drive-card">
+        <div class="v19-drive-title">
+          <strong>Google Drive</strong>
+          <span id="loginStatus" class="status">Desconectado</span>
+        </div>
+        <div class="v19-auth-actions">
+          <button id="googleBtn" class="primary-btn">Entrar com Google</button>
+          <button id="logoutBtn" class="ghost-btn" type="button">Sair do Google</button>
+        </div>
       </section>
 
-      <section class="panel drive-panel">
+      <section class="panel drive-panel v19-compact-panel">
         <label>Google Drive</label>
         <div class="row gap hidden-drive-id" aria-hidden="true">
           <input id="folderIdInput" type="text" placeholder="ID da pasta principal" autocomplete="off" tabindex="-1" />
@@ -37,74 +42,168 @@
         <p class="hint">Selecione uma pasta principal com subpastas por estilo ou uma pasta direta de músicas. PDF e MP3 devem ter o mesmo nome.</p>
       </section>
 
-      <section class="panel">
-        <label>Estilo</label>
-        <select id="styleSelect"></select>
-        <label>Playlist / Evento</label>
-        <select id="playlistSelect"></select>
-        <div class="button-grid">
+      <section class="panel v19-filter-panel">
+        <div class="v19-searchbox">
+          <span>⌕</span>
+          <input id="searchInput" type="search" placeholder="Buscar música" autocomplete="off" />
+        </div>
+        <div class="v19-tabs" aria-label="Filtros rápidos">
+          <button type="button" class="v19-tab active">Todos</button>
+          <button type="button" class="v19-tab">Favoritos</button>
+          <button type="button" class="v19-tab">Recentes</button>
+          <button type="button" class="v19-tab">Setlist</button>
+        </div>
+        <div class="v19-select-grid">
+          <label>Estilo</label>
+          <select id="styleSelect"></select>
+          <label>Playlist / Evento</label>
+          <select id="playlistSelect"></select>
+        </div>
+        <div class="button-grid v19-playlist-actions">
           <button id="newPlaylistBtn" class="ghost-btn">Nova</button>
           <button id="addPlaylistBtn" class="ghost-btn">Adicionar</button>
           <button id="deletePlaylistBtn" class="ghost-btn">Excluir</button>
         </div>
-        <input id="searchInput" type="hidden" value="" />
       </section>
 
-      <section id="songList" class="song-list"></section>
-
+      <section id="songList" class="song-list v19-song-list" aria-label="Lista de músicas"></section>
     </aside>
 
-    <main class="main">
-      <header class="topbar">
+    <main class="main v19-main">
+      <header class="topbar v19-topbar">
         <button id="showSidebar" class="icon-btn">☰</button>
-        <div class="now">
+        <div class="now v19-now">
           <strong id="songTitle">Nenhuma música carregada</strong>
           <span id="songMeta"></span>
         </div>
-        <div class="top-actions">
-          
+
+        <div class="top-actions v19-top-actions">
           <a class="secondary-btn small app-link" href="v15-dashboard.html" title="Dashboard comercial IA">Dashboard IA</a>
           <a class="secondary-btn small app-link" href="v15-library.html" title="Biblioteca Premium">Biblioteca</a>
           <a class="secondary-btn small app-link" href="v15-plans.html" title="Planos e créditos">Planos</a>
+
           <button id="favoriteBtn" class="secondary-btn small" title="Favoritar">☆</button>
           <button id="zoomOutBtn" class="secondary-btn small" title="Diminuir zoom do PDF">A−</button>
           <span id="zoomLabel" class="speed-label">100%</span>
           <button id="zoomInBtn" class="secondary-btn small" title="Aumentar zoom do PDF">A+</button>
-          <button id="autoScrollBtn" class="secondary-btn small">▶ Rolagem</button>
+          <button id="autoScrollBtn" class="secondary-btn small">Auto Scroll</button>
           <button id="speedDownBtn" class="secondary-btn small" title="Diminuir rolagem">−</button>
           <span id="speedLabel" class="speed-label">1x</span>
           <button id="speedUpBtn" class="secondary-btn small" title="Aumentar rolagem">+</button>
-          <button id="stageBtn" class="secondary-btn small">Modo palco</button>
-          <button id="fullscreenBtn" class="secondary-btn small">Tela cheia</button>
+          <button id="stageBtn" class="secondary-btn small">Modo Palco</button>
+          <button id="fullscreenBtn" class="secondary-btn small">Tela Limpa</button>
         </div>
       </header>
 
-      <section id="viewer" class="viewer">
-        <iframe id="pdfFrame" title="Cifra PDF"></iframe>
-        <div id="pdfScroll" class="pdf-scroll" aria-label="Cifra PDF em modo rolagem"></div>
-        <div id="emptyState" class="empty-state">
-          <h2>Nenhuma música carregada</h2>
-          <p>Entre com Google e selecione a pasta principal do repertório. O app lembra a pasta neste dispositivo e atualiza automaticamente ao abrir.</p>
-        </div>
-      </section>
+      <div class="v19-workspace">
+        <section class="v19-center">
+          <div class="v19-song-header">
+            <div>
+              <h1 id="v19VisualTitle">Playback Cifras IA Alpha</h1>
+              <p>Tom: <strong id="v19VisualKey">—</strong> • BPM: <strong id="v19VisualBpm">—</strong></p>
+            </div>
+            <div class="v19-badges">
+              <span>PDF</span>
+              <span>Cifra</span>
+              <span>IA Alpha</span>
+            </div>
+          </div>
 
-      <footer class="playerbar playerbar-v12">
+          <section id="viewer" class="viewer v19-viewer">
+            <iframe id="pdfFrame" title="Cifra PDF"></iframe>
+            <div id="pdfScroll" class="pdf-scroll" aria-label="Cifra PDF em modo rolagem"></div>
+            <div id="emptyState" class="empty-state">
+              <h2>Nenhuma música carregada</h2>
+              <p>Entre com Google e selecione a pasta principal do repertório. O app lembra a pasta neste dispositivo e atualiza automaticamente ao abrir.</p>
+            </div>
+          </section>
+        </section>
+
+        <aside class="v19-ai-panel" aria-label="Assistente Playback IA">
+          <section class="v19-card">
+            <div class="v19-card-title">
+              <span class="v19-spark">✦</span>
+              <strong>Assistente Playback IA</strong>
+              <em>BETA</em>
+            </div>
+            <p>O que você deseja fazer?</p>
+            <div class="v19-ai-actions">
+              <button type="button">Mudar tom</button>
+              <button type="button">Gerar playback</button>
+              <button type="button">Remover bateria</button>
+              <button type="button">Remover baixo</button>
+              <button type="button">Criar introdução</button>
+              <button type="button">Gerar click</button>
+            </div>
+          </section>
+
+          <section class="v19-card">
+            <h3>Gerar playback com IA</h3>
+            <p>Escolha o tom, BPM e os instrumentos.</p>
+            <div class="v19-form-grid">
+              <label>Tom<select><option>D (Original)</option><option>C</option><option>G</option><option>E</option></select></label>
+              <label>BPM<select><option>72</option><option>80</option><option>90</option><option>120</option></select></label>
+            </div>
+            <div class="v19-check-grid">
+              <label><input type="checkbox" checked /> Bateria</label>
+              <label><input type="checkbox" checked /> Baixo</label>
+              <label><input type="checkbox" checked /> Teclado / Piano</label>
+              <label><input type="checkbox" checked /> Pads / Cordas</label>
+              <label><input type="checkbox" checked /> Guitarra</label>
+              <label><input type="checkbox" /> Voz guia</label>
+            </div>
+            <button type="button" class="v19-gradient-btn">Gerar Playback</button>
+          </section>
+
+          <div class="v19-side-grid">
+            <section class="v19-card">
+              <h3>Estrutura da Música</h3>
+              <ul class="v19-structure">
+                <li><span></span>Intro <small>4 compassos</small></li>
+                <li><span></span>Verso 1 <small>8 compassos</small></li>
+                <li><span></span>Pré-Refrão <small>4 compassos</small></li>
+                <li><span></span>Refrão <small>8 compassos</small></li>
+                <li><span></span>Ponte <small>4 compassos</small></li>
+                <li><span></span>Final <small>4 compassos</small></li>
+              </ul>
+            </section>
+            <section class="v19-card">
+              <h3>Anotações</h3>
+              <textarea placeholder="Minhas anotações"></textarea>
+              <small>Salvo localmente em versão futura.</small>
+            </section>
+          </div>
+        </aside>
+      </div>
+
+      <footer class="playerbar playerbar-v12 v19-playerbar">
         <audio id="audio" preload="metadata"></audio>
-        <div class="timeline">
-          <span id="currentTimeLabel">0:00</span>
-          <input id="seekBar" class="seekbar" type="range" min="0" max="1000" value="0" step="1" aria-label="Progresso da música" />
-          <span id="durationLabel">0:00</span>
+        <div class="v19-track-meta">
+          <div class="v19-cover"></div>
+          <div>
+            <strong id="v19PlayerTitle">Nenhuma música</strong>
+            <span id="v19PlayerMeta">Selecione uma música</span>
+          </div>
         </div>
-        <div class="big-controls compact-controls">
-          <button id="prevBtn" class="control-tile" type="button" aria-label="Voltar música"><span class="control-icon prev-flat"></span><span>Voltar</span></button>
-          <button id="playBtn" class="control-tile play-tile" type="button" aria-label="Tocar ou pausar"><span class="control-icon play-flat"></span><span>Tocar</span></button>
-          <button id="nextBtn" class="control-tile" type="button" aria-label="Próxima música"><span class="control-icon next-flat"></span><span>Próxima</span></button>
+        <div class="v19-player-main">
+          <div class="big-controls compact-controls">
+            <button id="prevBtn" class="control-tile" type="button" aria-label="Voltar música"><span class="control-icon prev-flat"></span><span>Voltar</span></button>
+            <button id="playBtn" class="control-tile play-tile" type="button" aria-label="Tocar ou pausar"><span class="control-icon play-flat"></span><span>Tocar</span></button>
+            <button id="nextBtn" class="control-tile" type="button" aria-label="Próxima música"><span class="control-icon next-flat"></span><span>Próxima</span></button>
+          </div>
+          <div class="timeline">
+            <span id="currentTimeLabel">0:00</span>
+            <input id="seekBar" class="seekbar" type="range" min="0" max="1000" value="0" step="1" aria-label="Progresso da música" />
+            <span id="durationLabel">0:00</span>
+          </div>
+        </div>
+        <div class="v19-player-extra">
+          <button type="button">MIX</button>
+          <label>Volume <input type="range" min="0" max="100" value="80" /></label>
         </div>
       </footer>
     </main>
   </div>
-
-
 
   <div id="toast" class="toast"></div>
 
