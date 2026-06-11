@@ -1,4 +1,4 @@
-const CACHE_NAME = 'playback-cifras-plus-business-beta-v1';
+const CACHE_NAME = 'playback-cifras-ia-v1-3';
 const ASSETS = [
   './', './index.html', './player.html', './landing.css', './styles.css', './app.js', './manifest.webmanifest',
   './about.html', './help.html', './privacy.html', './terms.html', './capture.html',
