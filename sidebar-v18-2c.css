@@ -1,0 +1,280 @@
+/* Playback Cifras v18.2c — Correções Visuais Seguras da Sidebar
+   Ajustes exclusivamente visuais. Não altera lógica, IDs, eventos ou integração Google Drive. */
+
+/* Botões superiores sempre brancos, inclusive após clique */
+.top-actions a,
+.top-actions a:link,
+.top-actions a:visited,
+.top-actions a:hover,
+.top-actions a:active,
+.top-actions a:focus,
+.top-actions .app-link,
+.top-actions .app-link:link,
+.top-actions .app-link:visited,
+.top-actions .app-link:hover,
+.top-actions .app-link:active,
+.top-actions .app-link:focus,
+a.secondary-btn,
+a.secondary-btn:link,
+a.secondary-btn:visited,
+a.secondary-btn:hover,
+a.secondary-btn:active,
+a.secondary-btn:focus {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Oculta visualmente Modo Palco e Tela Cheia sem remover IDs nem funções JS */
+#stageBtn,
+#fullscreenBtn {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Sidebar: mantém estrutura existente, mas favorece a lista de músicas */
+.sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  min-height: 0 !important;
+}
+
+.sidebar .brand {
+  flex: 0 0 auto !important;
+}
+
+.sidebar .panel {
+  flex: 0 0 auto !important;
+}
+
+/* Reduz áreas secundárias sem remover controles */
+.sidebar .panel,
+.sidebar .drive-panel {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  margin-bottom: 6px !important;
+}
+
+.sidebar label {
+  font-size: 11px !important;
+  line-height: 1.15 !important;
+  margin-bottom: 4px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.sidebar select,
+.sidebar input,
+.sidebar button {
+  min-height: 34px !important;
+  line-height: 1.15 !important;
+}
+
+.sidebar select {
+  height: 34px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.sidebar .hint {
+  font-size: 10px !important;
+  line-height: 1.25 !important;
+  max-height: 28px !important;
+  overflow: hidden !important;
+  margin-top: 6px !important;
+  margin-bottom: 0 !important;
+}
+
+.sidebar .button-grid {
+  gap: 6px !important;
+}
+
+.sidebar .ghost-btn,
+.sidebar .primary-btn,
+.sidebar .secondary-btn {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Lista de músicas com rolagem própria e prioridade visual */
+#songList,
+.song-list {
+  flex: 1 1 auto !important;
+  min-height: 180px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 6px !important;
+  margin-top: 4px !important;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Compactação robusta para diferentes estruturas possíveis geradas pelo app.js */
+#songList > *,
+.song-list > *,
+.song-item,
+.song-row,
+.music-item,
+.track-item,
+.song-card,
+.song-list button,
+.song-list .song,
+.song-list [role="button"] {
+  box-sizing: border-box !important;
+  min-height: 44px !important;
+  max-height: 48px !important;
+  height: 46px !important;
+  padding: 5px 8px !important;
+  margin: 0 0 5px 0 !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+}
+
+/* Textos internos compactos e sem esmagamento */
+#songList > * *,
+.song-list > * *,
+.song-item *,
+.song-row *,
+.music-item *,
+.track-item *,
+.song-card * {
+  min-width: 0 !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Título da música */
+#songList strong,
+#songList b,
+.song-list strong,
+.song-list b,
+.song-title,
+.track-title,
+.music-title {
+  font-size: 13px !important;
+  line-height: 1.15 !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Categoria/estilo/metadados */
+#songList small,
+#songList span,
+.song-list small,
+.song-list span,
+.song-meta,
+.track-meta,
+.music-meta,
+.song-category {
+  font-size: 10px !important;
+  line-height: 1.1 !important;
+  opacity: .78 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Música ativa continua destacada */
+#songList .active,
+.song-list .active,
+.song-item.active,
+.song-row.active,
+.music-item.active,
+.track-item.active,
+.song-card.active,
+.song-list [aria-current="true"] {
+  background: linear-gradient(135deg, rgba(50, 214, 120, .95), rgba(22, 163, 74, .92)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(22, 163, 74, .22) !important;
+}
+
+#songList .active *,
+.song-list .active *,
+.song-item.active *,
+.song-row.active *,
+.music-item.active *,
+.track-item.active *,
+.song-card.active * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Evita textos esmagados no topo */
+.now,
+.now strong,
+.now span,
+.topbar,
+.top-actions {
+  min-width: 0 !important;
+}
+
+.now strong,
+.now span {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.top-actions {
+  gap: 6px !important;
+}
+
+.top-actions .small {
+  min-height: 32px !important;
+  padding: 6px 10px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+/* iPad/tablet: maximiza lista sem quebrar layout */
+@media (min-width: 768px) and (max-width: 1180px) {
+  .sidebar {
+    max-height: 100dvh !important;
+  }
+
+  .sidebar .panel {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  #songList,
+  .song-list {
+    min-height: 320px !important;
+  }
+}
+
+/* Mobile: mantém toque confortável e evita sobreposição */
+@media (max-width: 767px) {
+  #songList > *,
+  .song-list > *,
+  .song-item,
+  .song-row,
+  .music-item,
+  .track-item,
+  .song-card,
+  .song-list button,
+  .song-list .song,
+  .song-list [role="button"] {
+    min-height: 44px !important;
+    max-height: 48px !important;
+    height: 46px !important;
+  }
+
+  .top-actions .small {
+    padding: 6px 8px !important;
+  }
+}
