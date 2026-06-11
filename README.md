@@ -1,4 +1,4 @@
-# Playback Cifras v13 Alpha — Biblioteca Inteligente + Arquitetura IA
+# Playback Cifras IA Alpha — Biblioteca Inteligente + Arquitetura IA
 
 Base: Playback Cifras+ Focus Stage v2.
 
