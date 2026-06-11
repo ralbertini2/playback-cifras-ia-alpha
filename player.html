@@ -5,41 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Playback Cifras+ — App</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="sidebar-v18-2.css" />
+  <link rel="stylesheet" href="sidebar-hotfix.css" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#05080d" />
   <link rel="apple-touch-icon" href="assets/icon-192.png" />
 </head>
 <body>
-  <div id="app" class="app">
-    <aside id="sidebar" class="sidebar sidebar-v18-2">
+  <div id="app" class="app app-sidebar-hotfix">
+    <aside id="sidebar" class="sidebar sidebar-music-first">
       <header class="brand">
         <img src="logo-playback-cifras.jpg" alt="Playback Cifras" class="brand-logo" />
         <button id="toggleSidebar" class="icon-btn hide-desktop" title="Ocultar menu">☰</button>
       </header>
 
-      <section class="panel login-panel sidebar-compact-panel">
+      <section class="panel auth-panel compact-auth-panel">
         <button id="googleBtn" class="primary-btn">Entrar com Google</button>
         <button id="logoutBtn" class="ghost-btn" type="button">Sair do Google</button>
         <div id="loginStatus" class="status">Desconectado</div>
       </section>
 
-      <section class="panel drive-panel sidebar-compact-panel">
-        <label>Google Drive</label>
-        <div class="row gap hidden-drive-id" aria-hidden="true">
-          <input id="folderIdInput" type="text" placeholder="ID da pasta principal" autocomplete="off" tabindex="-1" />
+      <details id="driveSettingsPanel" class="panel drive-panel drive-panel-collapsible" open>
+        <summary class="drive-summary">
+          <span class="drive-status-dot" aria-hidden="true"></span>
+          <span class="drive-summary-text">Google Drive</span>
+          <span id="driveCompactStatus" class="drive-compact-status">Configurar</span>
+        </summary>
+        <div class="drive-panel-content">
+          <label>Google Drive</label>
+          <div class="row gap hidden-drive-id" aria-hidden="true">
+            <input id="folderIdInput" type="text" placeholder="ID da pasta principal" autocomplete="off" tabindex="-1" />
+          </div>
+          <div class="drive-actions" aria-label="Ações do Google Drive">
+            <button id="pickFolderBtn" class="drive-icon-btn" type="button" title="Selecionar pasta no Drive" aria-label="Selecionar pasta no Drive">📁</button>
+            <button id="refreshBtn" class="drive-icon-btn" type="button" title="Atualizar biblioteca" aria-label="Atualizar biblioteca">↻</button>
+          </div>
+          <button id="clearFolderBtn" class="ghost-btn hidden-action" type="button" aria-hidden="true" tabindex="-1">Esquecer pasta salva</button>
+          <p class="hint">Selecione uma pasta principal com subpastas por estilo ou uma pasta direta de músicas. PDF e MP3 devem ter o mesmo nome.</p>
         </div>
-        <div class="drive-actions" aria-label="Ações do Google Drive">
-          <button id="pickFolderBtn" class="drive-icon-btn" type="button" title="Selecionar pasta no Drive" aria-label="Selecionar pasta no Drive">📁</button>
-          <button id="refreshBtn" class="drive-icon-btn" type="button" title="Atualizar biblioteca" aria-label="Atualizar biblioteca">↻</button>
-        </div>
-        <button id="clearFolderBtn" class="ghost-btn hidden-action" type="button" aria-hidden="true" tabindex="-1">Esquecer pasta salva</button>
-        <p class="hint">Selecione uma pasta principal com subpastas por estilo ou uma pasta direta de músicas. PDF e MP3 devem ter o mesmo nome.</p>
-      </section>
+      </details>
 
-      <section class="panel filters-panel sidebar-compact-panel is-collapsed">
-        <button id="filtersToggleBtn" class="filters-toggle" type="button" aria-expanded="false">Filtros</button>
-        <div class="filters-content">
+      <details id="libraryFiltersPanel" class="panel filters-panel filters-collapsible" open>
+        <summary class="filters-summary">Filtros e Playlist</summary>
+        <div class="filters-panel-content">
           <label>Estilo</label>
           <select id="styleSelect"></select>
           <label>Playlist / Evento</label>
@@ -49,12 +56,17 @@
             <button id="addPlaylistBtn" class="ghost-btn">Adicionar</button>
             <button id="deletePlaylistBtn" class="ghost-btn">Excluir</button>
           </div>
+          <input id="searchInput" type="hidden" value="" />
         </div>
-        <input id="searchInput" type="hidden" value="" />
+      </details>
+
+      <section class="songs-panel">
+        <div class="songs-header">
+          <strong>Músicas</strong>
+          <span id="songCountLabel" class="songs-count">Biblioteca</span>
+        </div>
+        <section id="songList" class="song-list song-list-priority"></section>
       </section>
-
-      <section id="songList" class="song-list song-list-v18-2"></section>
-
     </aside>
 
     <main class="main">
@@ -104,6 +116,10 @@
     </main>
   </div>
 
+  <!-- Compatibilidade: mantidos fora da interface para evitar erro em app.js caso existam listeners antigos. -->
+  <button id="stageBtn" class="compat-hidden" type="button" aria-hidden="true" tabindex="-1">Modo palco</button>
+  <button id="fullscreenBtn" class="compat-hidden" type="button" aria-hidden="true" tabindex="-1">Tela cheia</button>
+
   <div id="toast" class="toast"></div>
 
   <script src="config.js"></script>
@@ -111,6 +127,6 @@
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="app.js"></script>
-  <script src="sidebar-v18-2.js"></script>
+  <script src="sidebar-hotfix.js"></script>
 </body>
 </html>
