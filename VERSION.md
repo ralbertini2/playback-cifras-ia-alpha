@@ -1,32 +1,58 @@
-# Playback Cifras IA — Versionamento
+# Playback Cifras IA
 
 ## Versão Atual
 
-**Playback Cifras IA v1.2**
+**Versão:** `v1.3`
 
-Data: 11/06/2026
+**Nome:** Playback Cifras IA v1.3 — Limpeza de Módulos Adiados
 
-Branch:
-
-```text
-feature/v1-2-version-footer
-```
-
-## Observação obrigatória
-
-A partir da versão `v1.2`, todas as versões do Playback Cifras IA devem exibir um footer discreto com a versão atual do sistema.
-
-## Política de Versionamento
+**Branch:**
 
 ```text
-v1
-v1.1
-v1.1.1
-v1.1.1.1
+feature/v1-3-clean-deferred-modules
 ```
+
+---
+
+## Histórico Rápido
+
+- `v1`: fundação da nova linha de desenvolvimento.
+- `v1.1`: remoção dos botões Modo Palco e Tela Cheia.
+- `v1.2`: inclusão de footer discreto com versão atual.
+- `v1.3`: limpeza de módulos e telas adiadas para reduzir complexidade da base.
+
+---
 
 ## Prioridade de Plataforma
 
-1. Tablet/iPad vertical
+1. Tablet / iPad Vertical
 2. Desktop
 3. Mobile
+
+---
+
+## Áreas Fora da v1
+
+As áreas abaixo permanecem fora do escopo da v1 e serão reconstruídas futuramente:
+
+- Dashboard
+- Planos / Assinatura
+- Biblioteca própria Playback Cifras
+- IA Lab
+- Editor de cifras
+- Fluxo Adicionar Música
+
+---
+
+## Base Funcional Mantida
+
+A v1 mantém foco em:
+
+- Google Drive
+- Listagem de músicas
+- Abertura de PDFs
+- Reprodução de playbacks
+- Favoritos
+- Playlists / Eventos
+- Experiência Tablet First
+- Footer discreto com versão atual

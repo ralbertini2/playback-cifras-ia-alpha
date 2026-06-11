@@ -388,7 +388,7 @@ body{background:radial-gradient(circle at 80% 0%,#1d2533 0%,#080b0f 42%,#05070a 
   .song-list{padding-bottom:76px !important;}
 }
 
-/* Playback Cifras IA v1.2 — footer discreto de versão */
+/* Playback Cifras IA v1.3 — footer discreto de versão */
 .version-footer{
   position:fixed;
   right:max(10px,env(safe-area-inset-right));

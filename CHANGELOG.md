@@ -6,6 +6,32 @@ O projeto segue versionamento incremental simples.
 
 ---
 
+
+## [v1.3] - 2026-06-11
+
+### Removed
+
+- Tela `add-music.html`.
+- Tela `subscription.html`.
+- Tela `editor.html`.
+- Tela `ai-lab.html`.
+- Serviços mockados de IA.
+- Serviços mockados de billing/planos.
+- Serviço estrutural de biblioteca própria.
+- Schema estrutural de entidades futuras.
+- Link `Planos` da landing page.
+- Seção pública de planos/teste gratuito da landing page.
+
+### Changed
+
+- Footer de versão atualizado para `Playback Cifras IA v1.3`.
+- Base do projeto reduzida para manter apenas recursos essenciais da v1.
+- Landing page simplificada para evitar promessas de módulos ainda adiados.
+
+### Fixed
+
+- Redução de rotas e arquivos sem uso que poderiam gerar confusão no desenvolvimento.
+
 ## [v1.2] - 2026-06-11
 
 ### Added

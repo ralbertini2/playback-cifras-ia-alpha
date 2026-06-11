@@ -24,7 +24,7 @@ a{color:inherit;text-decoration:none}.site-header{position:sticky;top:0;z-index:
 @media(max-width:1000px){.human-grid{grid-template-columns:1fr}.hero-photo,.hero-photo img{min-height:420px}.human-grid .human-card,.human-grid .human-card img{min-height:360px}}
 @media(max-width:560px){.hero-photo,.hero-photo img{min-height:360px}.human-card figcaption,.human-card div{left:18px;right:18px;bottom:18px}.human-grid .human-card,.human-grid .human-card img{min-height:330px}}
 
-/* Playback Cifras IA v1.2 — footer discreto de versão */
+/* Playback Cifras IA v1.3 — footer discreto de versão */
 .version-footer{
   position:fixed;
   right:max(10px,env(safe-area-inset-right));
