@@ -1,0 +1,239 @@
+/* Playback Cifras v18.2a — Ajuste seguro da sidebar e botões superiores
+   CSS-only hotfix. Não altera app.js, config.js, Google Drive, player ou IDs. */
+
+/* Mantém a aplicação em layout flexível, priorizando a lista lateral */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Cabeçalho e painéis mais compactos, sem remover funcionalidades */
+.sidebar .brand {
+  flex: 0 0 auto;
+}
+
+.sidebar .panel {
+  flex: 0 0 auto;
+  margin-bottom: 8px;
+}
+
+.sidebar .panel:not(.drive-panel) {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Google Drive mais discreto, preservando botões e eventos */
+.drive-panel {
+  padding: 8px 10px !important;
+  gap: 6px;
+}
+
+.drive-panel label,
+.drive-panel .hint,
+.drive-panel .hidden-drive-id,
+.drive-panel .hidden-action {
+  display: none !important;
+}
+
+.drive-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.drive-icon-btn {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 17px;
+  line-height: 1;
+}
+
+/* Status compacto */
+#loginStatus.status {
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 4px 6px;
+  margin-top: 6px;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#googleBtn,
+#logoutBtn {
+  min-height: 34px;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+/* Filtros compactos, preservados */
+#styleSelect,
+#playlistSelect {
+  min-height: 34px;
+  height: 34px;
+  font-size: 12px;
+}
+
+.sidebar .button-grid {
+  gap: 6px;
+}
+
+.sidebar .button-grid .ghost-btn {
+  min-height: 30px;
+  padding: 5px 6px !important;
+  font-size: 12px;
+}
+
+/* Lista de músicas como elemento dominante */
+#songList.song-list,
+.song-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 8px 10px !important;
+  margin-top: 4px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Células compactas: no máximo 45px */
+.song-list > *,
+.song-item,
+.song-card,
+.music-item,
+.track-item,
+.song-row,
+.song-button,
+.song-list button,
+.song-list .song {
+  max-height: 45px !important;
+  min-height: 45px !important;
+  height: 45px !important;
+  box-sizing: border-box;
+  padding: 5px 8px !important;
+  margin: 0 0 5px 0 !important;
+  border-radius: 12px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+/* Texto dentro da célula */
+.song-list strong,
+.song-list b,
+.song-title,
+.song-name,
+.track-title {
+  font-size: 13px !important;
+  line-height: 1.1 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-list span,
+.song-list small,
+.song-meta,
+.track-meta,
+.song-category {
+  font-size: 10px !important;
+  line-height: 1.1 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.78;
+}
+
+/* Se houver containers internos, força coluna compacta */
+.song-list > * > div,
+.song-item > div,
+.song-card > div,
+.music-item > div,
+.track-item > div,
+.song-row > div,
+.song-button > div {
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Destaque da música ativa, sem depender de um nome único de classe */
+.song-list .active,
+.song-list .selected,
+.song-list [aria-current="true"],
+.song-list [data-active="true"] {
+  background: linear-gradient(135deg, rgba(50, 210, 120, 0.24), rgba(42, 180, 100, 0.12)) !important;
+  border-color: rgba(74, 222, 128, 0.45) !important;
+  color: #ffffff !important;
+}
+
+/* Links/botões superiores sempre brancos */
+.top-actions a,
+.top-actions a:link,
+.top-actions a:visited,
+.top-actions a:hover,
+.top-actions a:active,
+.top-actions a:focus,
+.top-actions .app-link,
+.top-actions .app-link:link,
+.top-actions .app-link:visited,
+.top-actions .app-link:hover,
+.top-actions .app-link:active,
+.top-actions .app-link:focus,
+.secondary-btn.app-link,
+.secondary-btn.app-link:link,
+.secondary-btn.app-link:visited,
+.secondary-btn.app-link:hover,
+.secondary-btn.app-link:active,
+.secondary-btn.app-link:focus {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Mantém botões superiores com aparência de botão, não link */
+.top-actions .app-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tablet/iPad: lista ganha prioridade */
+@media (min-width: 768px) and (max-width: 1180px) {
+  .sidebar {
+    overflow: hidden;
+  }
+
+  .sidebar .panel {
+    margin-bottom: 6px;
+  }
+
+  #songList.song-list,
+  .song-list {
+    flex-basis: auto;
+  }
+}
+
+/* Mobile: evita que a lista fique presa ou sem rolagem */
+@media (max-width: 767px) {
+  .sidebar {
+    min-height: 100dvh;
+  }
+
+  #songList.song-list,
+  .song-list {
+    max-height: none;
+  }
+}

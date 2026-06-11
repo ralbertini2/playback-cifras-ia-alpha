@@ -5,68 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Playback Cifras+ — App</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="sidebar-hotfix.css" />
+  <link rel="stylesheet" href="sidebar-v18-2a-safe.css" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#05080d" />
   <link rel="apple-touch-icon" href="assets/icon-192.png" />
 </head>
 <body>
-  <div id="app" class="app app-sidebar-hotfix">
-    <aside id="sidebar" class="sidebar sidebar-music-first">
+  <div id="app" class="app">
+    <aside id="sidebar" class="sidebar">
       <header class="brand">
         <img src="logo-playback-cifras.jpg" alt="Playback Cifras" class="brand-logo" />
         <button id="toggleSidebar" class="icon-btn hide-desktop" title="Ocultar menu">☰</button>
       </header>
 
-      <section class="panel auth-panel compact-auth-panel">
+      <section class="panel">
         <button id="googleBtn" class="primary-btn">Entrar com Google</button>
         <button id="logoutBtn" class="ghost-btn" type="button">Sair do Google</button>
         <div id="loginStatus" class="status">Desconectado</div>
       </section>
 
-      <details id="driveSettingsPanel" class="panel drive-panel drive-panel-collapsible" open>
-        <summary class="drive-summary">
-          <span class="drive-status-dot" aria-hidden="true"></span>
-          <span class="drive-summary-text">Google Drive</span>
-          <span id="driveCompactStatus" class="drive-compact-status">Configurar</span>
-        </summary>
-        <div class="drive-panel-content">
-          <label>Google Drive</label>
-          <div class="row gap hidden-drive-id" aria-hidden="true">
-            <input id="folderIdInput" type="text" placeholder="ID da pasta principal" autocomplete="off" tabindex="-1" />
-          </div>
-          <div class="drive-actions" aria-label="Ações do Google Drive">
-            <button id="pickFolderBtn" class="drive-icon-btn" type="button" title="Selecionar pasta no Drive" aria-label="Selecionar pasta no Drive">📁</button>
-            <button id="refreshBtn" class="drive-icon-btn" type="button" title="Atualizar biblioteca" aria-label="Atualizar biblioteca">↻</button>
-          </div>
-          <button id="clearFolderBtn" class="ghost-btn hidden-action" type="button" aria-hidden="true" tabindex="-1">Esquecer pasta salva</button>
-          <p class="hint">Selecione uma pasta principal com subpastas por estilo ou uma pasta direta de músicas. PDF e MP3 devem ter o mesmo nome.</p>
+      <section class="panel drive-panel">
+        <label>Google Drive</label>
+        <div class="row gap hidden-drive-id" aria-hidden="true">
+          <input id="folderIdInput" type="text" placeholder="ID da pasta principal" autocomplete="off" tabindex="-1" />
         </div>
-      </details>
-
-      <details id="libraryFiltersPanel" class="panel filters-panel filters-collapsible" open>
-        <summary class="filters-summary">Filtros e Playlist</summary>
-        <div class="filters-panel-content">
-          <label>Estilo</label>
-          <select id="styleSelect"></select>
-          <label>Playlist / Evento</label>
-          <select id="playlistSelect"></select>
-          <div class="button-grid">
-            <button id="newPlaylistBtn" class="ghost-btn">Nova</button>
-            <button id="addPlaylistBtn" class="ghost-btn">Adicionar</button>
-            <button id="deletePlaylistBtn" class="ghost-btn">Excluir</button>
-          </div>
-          <input id="searchInput" type="hidden" value="" />
+        <div class="drive-actions" aria-label="Ações do Google Drive">
+          <button id="pickFolderBtn" class="drive-icon-btn" type="button" title="Selecionar pasta no Drive" aria-label="Selecionar pasta no Drive">📁</button>
+          <button id="refreshBtn" class="drive-icon-btn" type="button" title="Atualizar biblioteca" aria-label="Atualizar biblioteca">↻</button>
         </div>
-      </details>
-
-      <section class="songs-panel">
-        <div class="songs-header">
-          <strong>Músicas</strong>
-          <span id="songCountLabel" class="songs-count">Biblioteca</span>
-        </div>
-        <section id="songList" class="song-list song-list-priority"></section>
+        <button id="clearFolderBtn" class="ghost-btn hidden-action" type="button" aria-hidden="true" tabindex="-1">Esquecer pasta salva</button>
+        <p class="hint">Selecione uma pasta principal com subpastas por estilo ou uma pasta direta de músicas. PDF e MP3 devem ter o mesmo nome.</p>
       </section>
+
+      <section class="panel">
+        <label>Estilo</label>
+        <select id="styleSelect"></select>
+        <label>Playlist / Evento</label>
+        <select id="playlistSelect"></select>
+        <div class="button-grid">
+          <button id="newPlaylistBtn" class="ghost-btn">Nova</button>
+          <button id="addPlaylistBtn" class="ghost-btn">Adicionar</button>
+          <button id="deletePlaylistBtn" class="ghost-btn">Excluir</button>
+        </div>
+        <input id="searchInput" type="hidden" value="" />
+      </section>
+
+      <section id="songList" class="song-list"></section>
+
     </aside>
 
     <main class="main">
@@ -77,6 +62,7 @@
           <span id="songMeta"></span>
         </div>
         <div class="top-actions">
+          
           <a class="secondary-btn small app-link" href="v15-dashboard.html" title="Dashboard comercial IA">Dashboard IA</a>
           <a class="secondary-btn small app-link" href="v15-library.html" title="Biblioteca Premium">Biblioteca</a>
           <a class="secondary-btn small app-link" href="v15-plans.html" title="Planos e créditos">Planos</a>
@@ -88,6 +74,8 @@
           <button id="speedDownBtn" class="secondary-btn small" title="Diminuir rolagem">−</button>
           <span id="speedLabel" class="speed-label">1x</span>
           <button id="speedUpBtn" class="secondary-btn small" title="Aumentar rolagem">+</button>
+          <button id="stageBtn" class="secondary-btn small">Modo palco</button>
+          <button id="fullscreenBtn" class="secondary-btn small">Tela cheia</button>
         </div>
       </header>
 
@@ -116,9 +104,7 @@
     </main>
   </div>
 
-  <!-- Compatibilidade: mantidos fora da interface para evitar erro em app.js caso existam listeners antigos. -->
-  <button id="stageBtn" class="compat-hidden" type="button" aria-hidden="true" tabindex="-1">Modo palco</button>
-  <button id="fullscreenBtn" class="compat-hidden" type="button" aria-hidden="true" tabindex="-1">Tela cheia</button>
+
 
   <div id="toast" class="toast"></div>
 
@@ -127,6 +113,5 @@
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="app.js"></script>
-  <script src="sidebar-hotfix.js"></script>
 </body>
 </html>
