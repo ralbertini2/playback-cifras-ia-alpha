@@ -1,4 +1,4 @@
-# Playback Cifras IA Alpha — Biblioteca Inteligente + Arquitetura IA
+# Playback Cifras v13 Alpha — Biblioteca Inteligente + Arquitetura IA
 
 Base: Playback Cifras+ Focus Stage v2.
 
@@ -13,7 +13,7 @@ Transformar o Playback Cifras em uma plataforma completa de gerenciamento musica
 - Continua compatível com GitHub Pages.
 - `config.js` não está incluído neste pacote para evitar sobrescrever credenciais.
 
-## Novidades IA Alpha
+## Novidades v13 Alpha
 - Base de Biblioteca Própria Playback Cifras.
 - Modelo de metadados por música.
 - Tela estrutural `Adicionar Música`.
