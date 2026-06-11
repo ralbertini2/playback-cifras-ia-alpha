@@ -13,7 +13,7 @@ Transformar o Playback Cifras em uma plataforma completa de gerenciamento musica
 - Continua compatível com GitHub Pages.
 - `config.js` não está incluído neste pacote para evitar sobrescrever credenciais.
 
-## Novidades v13 Alpha
+## Novidades IA Alpha
 - Base de Biblioteca Própria Playback Cifras.
 - Modelo de metadados por música.
 - Tela estrutural `Adicionar Música`.
