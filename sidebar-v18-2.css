@@ -1,0 +1,302 @@
+/* Playback Cifras IA Alpha v18.2 — Sidebar com lista compacta
+   Escopo: ajustes visuais da sidebar e links superiores. Não altera lógica do Google Drive, player, PDF ou config.js. */
+
+:root{
+  --pc-green:#18d26b;
+  --pc-green-soft:rgba(24,210,107,.16);
+  --pc-surface:rgba(255,255,255,.055);
+  --pc-surface-2:rgba(255,255,255,.085);
+  --pc-border:rgba(255,255,255,.10);
+  --pc-muted:rgba(255,255,255,.62);
+}
+
+/* Links superiores devem permanecer brancos em qualquer estado */
+.top-actions a,
+.top-actions a:link,
+.top-actions a:visited,
+.top-actions a:hover,
+.top-actions a:active,
+.app-link,
+.app-link:link,
+.app-link:visited,
+.app-link:hover,
+.app-link:active,
+.secondary-btn.app-link,
+.secondary-btn.app-link:link,
+.secondary-btn.app-link:visited,
+.secondary-btn.app-link:hover,
+.secondary-btn.app-link:active{
+  color:#fff !important;
+  text-decoration:none !important;
+  -webkit-text-fill-color:#fff !important;
+}
+
+/* Sidebar passa a trabalhar como coluna: topo compacto + lista com rolagem */
+.sidebar-v18-2{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  min-height:100dvh;
+}
+
+.sidebar-v18-2 .brand{
+  flex:0 0 auto;
+  padding-bottom:8px;
+}
+
+.sidebar-v18-2 .panel{
+  flex:0 0 auto;
+}
+
+.sidebar-v18-2 .sidebar-compact-panel{
+  margin:0 10px 8px;
+  padding:8px;
+  border:1px solid var(--pc-border);
+  border-radius:14px;
+  background:var(--pc-surface);
+}
+
+/* Login compacto depois da conexão */
+body.google-connected .login-panel{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:6px;
+  padding:7px 8px;
+}
+
+body.google-connected .login-panel #googleBtn{
+  display:none !important;
+}
+
+body.google-connected .login-panel #logoutBtn{
+  min-height:28px;
+  padding:4px 8px;
+  font-size:11px;
+  border-radius:10px;
+  opacity:.72;
+}
+
+body.google-connected .login-panel #loginStatus{
+  margin:0;
+  font-size:12px;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+body.google-connected .login-panel #loginStatus::before{
+  content:'✓ ';
+  color:var(--pc-green);
+  font-weight:800;
+}
+
+/* Google Drive: apenas ícones e status discreto */
+.sidebar-v18-2 .drive-panel label,
+.sidebar-v18-2 .drive-panel .hint,
+.sidebar-v18-2 .drive-panel .hidden-drive-id,
+.sidebar-v18-2 .drive-panel #clearFolderBtn{
+  display:none !important;
+}
+
+.sidebar-v18-2 .drive-panel{
+  padding:7px 8px;
+}
+
+.sidebar-v18-2 .drive-actions{
+  display:flex;
+  justify-content:flex-start;
+  gap:8px;
+}
+
+.sidebar-v18-2 .drive-icon-btn{
+  width:34px;
+  height:34px;
+  min-width:34px;
+  min-height:34px;
+  display:inline-grid;
+  place-items:center;
+  padding:0;
+  border-radius:12px;
+  font-size:17px;
+  line-height:1;
+  border:1px solid var(--pc-border);
+  background:var(--pc-surface-2);
+  color:#fff;
+  box-shadow:none;
+}
+
+.sidebar-v18-2 .drive-icon-btn:active{
+  transform:scale(.96);
+}
+
+body.google-connected .drive-panel{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:42px;
+}
+
+body.google-connected .drive-panel::before{
+  content:'Drive conectado';
+  font-size:12px;
+  color:var(--pc-muted);
+  white-space:nowrap;
+}
+
+/* Filtros discretos: recolhidos por padrão */
+.sidebar-v18-2 .filters-panel{
+  padding:7px 8px;
+}
+
+.sidebar-v18-2 .filters-toggle{
+  width:100%;
+  min-height:32px;
+  padding:5px 10px;
+  border-radius:11px;
+  border:1px solid var(--pc-border);
+  background:var(--pc-surface-2);
+  color:#fff;
+  font-weight:700;
+  text-align:left;
+}
+
+.sidebar-v18-2 .filters-toggle::after{
+  content:'⌄';
+  float:right;
+  opacity:.75;
+}
+
+.sidebar-v18-2 .filters-panel:not(.is-collapsed) .filters-toggle::after{
+  content:'⌃';
+}
+
+.sidebar-v18-2 .filters-content{
+  display:block;
+  margin-top:8px;
+}
+
+.sidebar-v18-2 .filters-panel.is-collapsed .filters-content{
+  display:none !important;
+}
+
+body.google-connected .filters-panel{
+  margin-bottom:6px;
+}
+
+/* Lista domina a sidebar */
+.sidebar-v18-2 .song-list-v18-2,
+.sidebar-v18-2 #songList{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:6px 8px 12px;
+  margin:0;
+  border-top:1px solid var(--pc-border);
+  scrollbar-width:thin;
+}
+
+/* Normalização dos itens, cobrindo nomes de classes comuns usados nas versões anteriores */
+.sidebar-v18-2 #songList > *,
+.sidebar-v18-2 .song-list > *,
+.sidebar-v18-2 .song-item,
+.sidebar-v18-2 .song,
+.sidebar-v18-2 .music-item{
+  min-height:45px !important;
+  max-height:45px !important;
+  box-sizing:border-box;
+  display:flex !important;
+  align-items:center !important;
+  gap:8px;
+  padding:5px 9px !important;
+  margin:0 0 5px !important;
+  border-radius:12px !important;
+  border:1px solid transparent;
+  background:rgba(255,255,255,.045);
+  color:#fff;
+  overflow:hidden;
+}
+
+.sidebar-v18-2 #songList > *::before{
+  content:'♪';
+  width:22px;
+  height:22px;
+  min-width:22px;
+  border-radius:8px;
+  display:grid;
+  place-items:center;
+  color:var(--pc-green);
+  background:rgba(24,210,107,.10);
+  font-size:12px;
+  font-weight:900;
+}
+
+.sidebar-v18-2 #songList > *:hover{
+  background:rgba(255,255,255,.075);
+}
+
+.sidebar-v18-2 #songList > *.active,
+.sidebar-v18-2 #songList > *.is-active,
+.sidebar-v18-2 #songList > *[aria-current="true"],
+.sidebar-v18-2 .song-item.active,
+.sidebar-v18-2 .song.active,
+.sidebar-v18-2 .music-item.active{
+  background:var(--pc-green-soft) !important;
+  border-color:rgba(24,210,107,.42) !important;
+  box-shadow:inset 3px 0 0 var(--pc-green);
+}
+
+.sidebar-v18-2 #songList b,
+.sidebar-v18-2 #songList strong,
+.sidebar-v18-2 .song-title,
+.sidebar-v18-2 .title{
+  display:block;
+  font-size:13px !important;
+  line-height:1.1 !important;
+  font-weight:800;
+  color:#fff;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.sidebar-v18-2 #songList small,
+.sidebar-v18-2 #songList span,
+.sidebar-v18-2 .song-meta,
+.sidebar-v18-2 .meta,
+.sidebar-v18-2 .category{
+  display:block;
+  font-size:10px !important;
+  line-height:1.15 !important;
+  color:var(--pc-muted);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* Ajustes em tablet/iPad */
+@media (min-width:700px) and (max-width:1180px){
+  .sidebar-v18-2{
+    width:min(34vw, 340px);
+  }
+  .sidebar-v18-2 .brand{
+    padding-top:max(10px, env(safe-area-inset-top));
+  }
+  .sidebar-v18-2 .song-list-v18-2,
+  .sidebar-v18-2 #songList{
+    padding-bottom:max(14px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Em telas menores, preserva toque e evita conteúdo escondido pelo player */
+@media (max-width:699px){
+  .sidebar-v18-2 #songList > *,
+  .sidebar-v18-2 .song-item,
+  .sidebar-v18-2 .song,
+  .sidebar-v18-2 .music-item{
+    min-height:45px !important;
+    max-height:45px !important;
+  }
+}
