@@ -1,0 +1,259 @@
+/*
+  Playback Cifras v18.2d — Densidade da Lista de Músicas
+  Aplicar este bloco NO FINAL do styles.css atual.
+  Não altera JS, IDs, eventos, Google Drive, player ou config.js.
+*/
+
+/* Sidebar como coluna, mantendo a lista como área dominante */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+/* Marca/topo compacto */
+.sidebar .brand {
+  flex: 0 0 auto;
+  padding-block: 8px;
+  margin-bottom: 4px;
+}
+
+/* Painéis laterais mais compactos */
+.sidebar .panel {
+  flex: 0 0 auto;
+  margin: 0 0 6px 0 !important;
+  padding: 8px 10px !important;
+  gap: 6px !important;
+}
+
+.sidebar .panel label {
+  margin: 4px 0 3px !important;
+  font-size: 11px !important;
+  line-height: 1.1 !important;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+.sidebar .panel .hint {
+  margin: 4px 0 0 !important;
+  font-size: 10px !important;
+  line-height: 1.25 !important;
+  max-height: 26px;
+  overflow: hidden;
+  opacity: .72;
+}
+
+/* Área Drive compacta: mantém botões e funcionamento, reduz espaço */
+.drive-panel {
+  padding-block: 7px !important;
+}
+
+.drive-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px !important;
+  margin: 4px 0 0 !important;
+}
+
+.drive-icon-btn,
+.sidebar .icon-btn,
+.sidebar .ghost-btn,
+.sidebar .primary-btn {
+  min-height: 32px !important;
+  padding: 6px 9px !important;
+  line-height: 1 !important;
+}
+
+/* Filtros compactos: objetivo 80–110px no total */
+.sidebar select,
+.sidebar input {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+  line-height: 1.1 !important;
+}
+
+.sidebar .button-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px !important;
+  margin-top: 6px !important;
+}
+
+.sidebar .button-grid button {
+  min-height: 28px !important;
+  height: 28px !important;
+  padding: 3px 5px !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Lista domina o espaço lateral */
+#songList,
+.song-list {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 4px 6px 12px !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Compatibilidade com possíveis nomes de item já usados pelo app */
+#songList > *,
+.song-list > *,
+.song-item,
+.song-card,
+.song,
+.music-item,
+.track-item {
+  box-sizing: border-box;
+  min-height: 40px !important;
+  max-height: 48px !important;
+  height: 44px !important;
+  margin: 0 !important;
+  padding: 5px 8px !important;
+  border-radius: 10px !important;
+  display: grid !important;
+  grid-template-columns: auto 1fr auto;
+  align-items: center !important;
+  column-gap: 7px !important;
+  row-gap: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Remove margens internas comuns criadas por elementos dentro da célula */
+#songList > * *,
+.song-list > * * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Título da música */
+#songList b,
+#songList strong,
+#songList .title,
+#songList .song-title,
+.song-list b,
+.song-list strong,
+.song-list .title,
+.song-list .song-title {
+  display: block;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.12 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100%;
+}
+
+/* Categoria/estilo/meta */
+#songList span,
+#songList small,
+#songList .meta,
+#songList .category,
+#songList .style,
+.song-list span,
+.song-list small,
+.song-list .meta,
+.song-list .category,
+.song-list .style {
+  display: block;
+  font-size: 10.5px !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  opacity: .72;
+  max-width: 100%;
+}
+
+/* Item ativo destacado, sem aumentar altura */
+#songList .active,
+#songList [aria-current='true'],
+.song-list .active,
+.song-list [aria-current='true'],
+.song-item.active,
+.song-card.active,
+.music-item.active,
+.track-item.active {
+  background: linear-gradient(135deg, rgba(39, 174, 96, .95), rgba(20, 130, 73, .92)) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .22) !important;
+}
+
+#songList .active *,
+#songList [aria-current='true'] *,
+.song-list .active *,
+.song-list [aria-current='true'] * {
+  color: #fff !important;
+}
+
+/* Links/botões superiores sempre brancos */
+.top-actions a,
+.top-actions a:link,
+.top-actions a:visited,
+.top-actions a:hover,
+.top-actions a:active,
+.top-actions a:focus,
+.app-link,
+.app-link:link,
+.app-link:visited,
+.app-link:hover,
+.app-link:active,
+.app-link:focus,
+.secondary-btn.app-link,
+.secondary-btn.app-link:visited {
+  color: #fff !important;
+  text-decoration: none !important;
+}
+
+/* Tablet/iPad: mais densidade na sidebar sem quebrar toque */
+@media (min-width: 768px) and (max-width: 1180px) {
+  .sidebar {
+    overflow: hidden !important;
+  }
+
+  .sidebar .panel {
+    padding: 7px 9px !important;
+    margin-bottom: 5px !important;
+  }
+
+  #songList > *,
+  .song-list > *,
+  .song-item,
+  .song-card,
+  .song,
+  .music-item,
+  .track-item {
+    height: 44px !important;
+    min-height: 40px !important;
+    max-height: 45px !important;
+    padding-block: 4px !important;
+  }
+}
+
+/* Mobile: mantém compacto, mas com área de toque aceitável */
+@media (max-width: 767px) {
+  #songList > *,
+  .song-list > *,
+  .song-item,
+  .song-card,
+  .song,
+  .music-item,
+  .track-item {
+    height: 46px !important;
+    max-height: 48px !important;
+  }
+}
