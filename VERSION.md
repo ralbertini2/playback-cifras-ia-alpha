@@ -45,3 +45,10 @@ Vite
 CSS Modules
 Lucide Icons
 ```
+
+
+## v2.2 — React PDF/Cifra Viewer
+
+- Visualizador PDF em React com PDF.js.
+- Zoom, ajuste à largura e navegação de páginas.
+- Layout híbrido: sidebar fixa no desktop e drawer no iPad/mobile.

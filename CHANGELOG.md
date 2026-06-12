@@ -4,6 +4,22 @@ Todas as mudanças relevantes do Playback Cifras IA serão documentadas neste ar
 
 ---
 
+## [v2.2] - 2026-06-12
+
+### Added
+
+- Visualizador PDF React baseado em PDF.js.
+- Hook `usePdfViewer` para controle de documento, página e zoom.
+- Service `pdfService.js` para carregamento do PDF.js e worker.
+- Controles de zoom, ajuste à largura e navegação de páginas.
+- PDF de exemplo para validação inicial do viewer.
+
+### Changed
+
+- Área central passa a usar o novo componente `PdfViewer`.
+- Controles de zoom foram movidos da toolbar principal para o viewer.
+- Versão atualizada para `v2.2`.
+
 ## [v2.1] - 2026-06-12
 
 ### Added
