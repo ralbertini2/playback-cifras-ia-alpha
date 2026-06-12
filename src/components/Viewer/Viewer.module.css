@@ -1,0 +1,15 @@
+.viewer {
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  background: radial-gradient(circle at top, rgba(32,196,99,.06), transparent 32%), #05080d;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:18px;
+}
+.emptyState { max-width:560px; margin:auto; text-align:center; color:var(--muted); border:1px solid rgba(255,255,255,.08); border-radius:28px; padding:40px 28px; background:rgba(255,255,255,.045); }
+.emptyState h1 { color:var(--text); margin:0 0 12px; }
+.pdfCanvas { width:min(100%, 980px); min-height:100%; transition:transform .18s ease; }
+.iframe { width:100%; height:calc(100dvh - 210px); min-height:620px; border:0; border-radius: 4px; background:#fff; box-shadow:0 24px 80px rgba(0,0,0,.35); }
+@media (max-width: 900px) { .viewer { padding:10px; } .iframe { height:calc(100dvh - 236px); min-height:520px; } }

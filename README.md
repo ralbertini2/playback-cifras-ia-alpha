@@ -1,32 +1,65 @@
-# Playback Cifras IA v1.3 — Base Enxuta
+# Playback Cifras IA
 
-Versão de estabilização da linha v1 do Playback Cifras IA.
+## v2.0 — React Foundation
 
-## Foco da versão
+Nova fundação técnica do Playback Cifras IA construída com:
 
-- Manter a base estável.
-- Priorizar Tablet/iPad Vertical.
-- Preservar Google Drive.
-- Preservar PDF + MP3.
-- Preservar favoritos e playlists/eventos.
-- Remover módulos futuros que ainda não fazem parte da v1.
+```text
+React
+Vite
+CSS Modules
+Lucide Icons
+```
 
-## Arquivos principais
+## Desenvolvimento
 
-- `index.html` — landing page.
-- `player.html` — app principal.
-- `app.js` — lógica principal do app.
-- `styles.css` — estilos do app.
-- `landing.css` — estilos da landing page.
-- `VERSION.md` — versão atual.
-- `CHANGELOG.md` — histórico de alterações.
+```bash
+npm install
+npm run dev
+```
 
-## Áreas removidas temporariamente
+## Build
 
-- Planos / Assinatura.
-- Biblioteca própria Playback Cifras.
-- IA Lab.
-- Editor de cifras.
-- Adicionar música.
+```bash
+npm run build
+```
 
-Essas áreas serão reconstruídas futuramente quando fizerem parte do roadmap ativo.
+## Configuração Google
+
+Copie:
+
+```text
+public/config.example.js
+```
+
+para:
+
+```text
+public/config.js
+```
+
+Preencha:
+
+```js
+GOOGLE_CLIENT_ID
+GOOGLE_API_KEY
+ROOT_FOLDER_ID
+```
+
+## Branches
+
+```text
+main           → versão estável atual
+develop        → manutenção v1.x
+develop-react  → linha React/v2
+```
+
+## Deploy GitHub Pages
+
+A v2 usa Vite. Portanto, o deploy deve ser feito via GitHub Actions.
+
+O workflow está em:
+
+```text
+.github/workflows/deploy-pages.yml
+```
