@@ -1,54 +1,39 @@
-# Playback Cifras IA — Versionamento
+# Playback Cifras IA — VERSION
 
-## Versão Atual
+Versão atual: `v2.3`
 
-**v2.1 — React Layout Shell**
+Linha de desenvolvimento: `develop-react`
 
-Branch de desenvolvimento:
-
-```text
-feature/v2-1-react-layout-shell
-```
-
-Base:
+Branch da versão:
 
 ```text
-develop-react
+feature/v2-3-react-player
 ```
 
-## Objetivo
+## v2.3 — React Player
 
-Criar a primeira estrutura visual da aplicação em React, usando Vite, CSS Modules e Lucide Icons.
+Criação do player React componentizado para a nova arquitetura do Playback Cifras IA.
 
-## Escopo da v2.1
+Inclui:
 
-- Layout principal React.
-- Sidebar responsiva.
-- Toolbar superior.
-- Área central de visualização.
-- PlayerBar visual.
-- Footer discreto com versão.
-- Organização inicial dos componentes.
+- PlayerBar React.
+- PlaybackControls.
+- ProgressBar.
+- VolumeControl.
+- Hook `useAudioPlayer` evoluído.
+- Service `audioService.js`.
+- Play/Pause.
+- Barra de progresso com seek.
+- Tempo atual e duração.
+- Música anterior e próxima.
+- Avançar/voltar 10 segundos.
+- Volume e mute.
+- Layout Tablet First.
 
 ## Fora do escopo desta versão
 
-- Migração completa do Google Drive.
-- Migração completa do leitor PDF.
-- Migração completa do player funcional.
-- Novas páginas secundárias.
-
-## Stack
-
-```text
-React
-Vite
-CSS Modules
-Lucide Icons
-```
-
-
-## v2.2 — React PDF/Cifra Viewer
-
-- Visualizador PDF em React com PDF.js.
-- Zoom, ajuste à largura e navegação de páginas.
-- Layout híbrido: sidebar fixa no desktop e drawer no iPad/mobile.
+- Google Drive final.
+- Repertórios finais.
+- Favoritos.
+- IA.
+- Sincronização PDF ↔ áudio.

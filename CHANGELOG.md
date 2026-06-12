@@ -4,6 +4,27 @@ Todas as mudanças relevantes do Playback Cifras IA serão documentadas neste ar
 
 ---
 
+## [v2.3] - 2026-06-12
+
+### Added
+
+- Player React componentizado.
+- Componente `PlaybackControls`.
+- Componente `ProgressBar`.
+- Componente `VolumeControl`.
+- Service `audioService.js` para utilitários de áudio.
+- Controle de volume e mute.
+- Avançar e voltar 10 segundos.
+- Estado de áudio persistindo volume e mute no navegador.
+
+### Changed
+
+- `PlayerBar` passa a compor controles menores e reutilizáveis.
+- Hook `useAudioPlayer` passa a expor volume, mute, source, seek incremental e status `hasSource`.
+- Versão atualizada para `v2.3`.
+
+---
+
 ## [v2.2] - 2026-06-12
 
 ### Added

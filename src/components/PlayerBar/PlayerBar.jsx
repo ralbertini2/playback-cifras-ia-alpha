@@ -1,20 +1,64 @@
-import { Pause, Play, SkipBack, SkipForward } from 'lucide-react';
+import PlaybackControls from '../PlaybackControls/PlaybackControls.jsx';
+import ProgressBar from '../ProgressBar/ProgressBar.jsx';
+import VolumeControl from '../VolumeControl/VolumeControl.jsx';
 import styles from './PlayerBar.module.css';
 
-export default function PlayerBar({ audioRef, isPlaying, currentTimeLabel, durationLabel, progress, onToggle, onSeek, onPrevious, onNext }) {
+export default function PlayerBar({
+  audioRef,
+  title,
+  hasSource,
+  isPlaying,
+  currentTimeLabel,
+  durationLabel,
+  progress,
+  volume,
+  muted,
+  onToggle,
+  onSeek,
+  onSeekBack,
+  onSeekForward,
+  onPrevious,
+  onNext,
+  onVolumeChange,
+  onToggleMute,
+}) {
+  const disabled = !hasSource;
+
   return (
-    <div className={styles.playerBar}>
-      <audio ref={audioRef} />
-      <div className={styles.timeline}>
-        <span>{currentTimeLabel}</span>
-        <input type="range" min="0" max="100" value={Math.round((progress || 0) * 100)} onChange={(event) => onSeek(Number(event.target.value) / 100)} aria-label="Progresso do áudio" />
-        <span>{durationLabel}</span>
+    <div className={styles.playerBar} data-disabled={disabled ? 'true' : 'false'}>
+      <audio ref={audioRef} preload="metadata" />
+
+      <div className={styles.playerHeader}>
+        <div className={styles.nowPlaying}>
+          <span>Playback</span>
+          <strong>{title || 'Nenhum áudio selecionado'}</strong>
+        </div>
+        <VolumeControl
+          volume={volume}
+          muted={muted}
+          disabled={disabled}
+          onVolumeChange={onVolumeChange}
+          onToggleMute={onToggleMute}
+        />
       </div>
-      <div className={styles.buttons}>
-        <button onClick={onPrevious}><SkipBack size={24} />Voltar</button>
-        <button className={styles.playButton} onClick={onToggle}>{isPlaying ? <Pause size={30} /> : <Play size={30} />}Tocar</button>
-        <button onClick={onNext}><SkipForward size={24} />Próxima</button>
-      </div>
+
+      <ProgressBar
+        currentTimeLabel={currentTimeLabel}
+        durationLabel={durationLabel}
+        progress={progress}
+        disabled={disabled}
+        onSeek={onSeek}
+      />
+
+      <PlaybackControls
+        disabled={disabled}
+        isPlaying={isPlaying}
+        onToggle={onToggle}
+        onPrevious={onPrevious}
+        onNext={onNext}
+        onSeekBack={onSeekBack}
+        onSeekForward={onSeekForward}
+      />
     </div>
   );
 }

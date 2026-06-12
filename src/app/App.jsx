@@ -200,14 +200,22 @@ export default function App() {
       player={(
         <PlayerBar
           audioRef={audio.audioRef}
+          title={currentSong?.title || ''}
+          hasSource={audio.hasSource}
           isPlaying={audio.isPlaying}
           currentTimeLabel={audio.currentTimeLabel}
           durationLabel={audio.durationLabel}
           progress={audio.progress}
+          volume={audio.volume}
+          muted={audio.muted}
           onToggle={audio.toggle}
           onSeek={audio.seek}
+          onSeekBack={() => audio.seekBy(-10)}
+          onSeekForward={() => audio.seekBy(10)}
           onPrevious={previousSong}
           onNext={nextSong}
+          onVolumeChange={audio.setVolume}
+          onToggleMute={audio.toggleMute}
         />
       )}
       footer={<VersionFooter />}
