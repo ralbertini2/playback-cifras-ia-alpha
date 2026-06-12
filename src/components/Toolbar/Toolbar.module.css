@@ -28,3 +28,13 @@
   .toolbar { grid-template-columns:auto minmax(0,1fr); }
   .controls { grid-column:1 / -1; }
 }
+
+.spinner {
+  animation: toolbarSpin 1s linear infinite;
+  color: var(--accent);
+}
+
+@keyframes toolbarSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

@@ -24,6 +24,7 @@ export default function Sidebar({
   onCreatePlaylist,
   onAddToPlaylist,
   onDeletePlaylist,
+  loading = false,
 }) {
   return (
     <>
@@ -45,11 +46,11 @@ export default function Sidebar({
           <label>Pasta Google Drive</label>
           <div className={styles.inputRow}>
             <input value={folderId} onChange={(event) => setFolderId(event.target.value)} placeholder="ROOT_FOLDER_ID" />
-            <button onClick={onPickFolder} title="Escolher pasta"><FolderOpen size={18} /></button>
+            <button onClick={onPickFolder} title="Escolher pasta" disabled={loading}><FolderOpen size={18} /></button>
           </div>
           <div className={styles.actionsGrid}>
-            <button onClick={connected ? onLogout : onLogin}>{connected ? <LogOut size={17} /> : <LogIn size={17} />}{connected ? 'Sair' : 'Entrar'}</button>
-            <button onClick={onRefresh}><RefreshCcw size={17} />Atualizar</button>
+            <button onClick={connected ? onLogout : onLogin} disabled={loading}>{connected ? <LogOut size={17} /> : <LogIn size={17} />}{connected ? 'Sair' : 'Entrar'}</button>
+            <button onClick={onRefresh} disabled={loading}><RefreshCcw size={17} />{loading ? 'Carregando' : 'Atualizar'}</button>
           </div>
         </section>
 
