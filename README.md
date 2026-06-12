@@ -73,7 +73,7 @@ A linha React usa Vite. Quando a v2 for publicada, o deploy deve ser feito via G
 
 ## Recursos v2.4
 
-- Hook `useGoogleDriveLibrary`.
+- Hook `useGoogleDrive`.
 - Login e logout Google.
 - Seleção de pasta com Google Picker.
 - Atualização da biblioteca de músicas a partir do Drive.
