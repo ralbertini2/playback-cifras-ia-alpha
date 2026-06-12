@@ -1,8 +1,8 @@
 # Playback Cifras IA
 
-## v2.5 — React Library
+## v2.6 — Library Integration
 
-Biblioteca musical React com busca, filtros, favoritos, recentes e repertórios integrados ao fluxo Google Drive → PDF Viewer → Player.
+Integração funcional da Biblioteca, Favoritos e Recentes ao fluxo principal React do Playback Cifras IA.
 
 Stack:
 
@@ -70,19 +70,18 @@ GOOGLE_API_KEY
 ROOT_FOLDER_ID
 ```
 
-## Recursos v2.5
+## Recursos v2.6
 
-- Componente `Library` para organização da biblioteca musical.
-- Componente `Setlists` para controle de repertórios/eventos.
-- Hook `useLibrary` para busca, favoritos, recentes e filtros.
-- Service `libraryService.js` para utilitários da biblioteca.
-- Busca por música, artista ou estilo.
-- Filtro por todas, favoritas e recentes.
-- Favoritar música pela lista ou toolbar.
-- Registro local de músicas recentes.
-- Repertórios integrados à sidebar.
-- Layout híbrido: sidebar fixa no desktop e drawer em iPad/mobile.
-- Atualização da versão para `v2.5`.
+- Biblioteca conectada à Sidebar.
+- Busca funcional por música, artista, estilo e arquivo.
+- Filtros funcionais: Todas, Favoritas e Recentes.
+- Contadores de total, favoritas e recentes.
+- Favoritos persistidos localmente.
+- Recentes registrados automaticamente ao abrir uma música.
+- Botão de busca da Toolbar abre a biblioteca.
+- Service `libraryService.js` centraliza filtros e chaves de músicas.
+- Hook `useLibrary` centraliza busca, filtros, favoritos e recentes.
+- Atualização da versão para `v2.6`.
 
 ## Recursos já existentes da linha React
 
@@ -92,3 +91,4 @@ ROOT_FOLDER_ID
 - v2.3: Player React.
 - v2.3.1: validação automática de build React/Vite.
 - v2.4: integração inicial Google Drive React.
+- v2.5: biblioteca e repertórios React.

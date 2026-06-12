@@ -3,6 +3,7 @@ export const STORAGE = {
   folder: 'pc_root_folder_id',
   style: 'pc_selected_style',
   favorites: 'pc_favorites_v1',
+  recents: 'pc_recent_songs_v2',
   playlists: 'pc_playlists_v1',
   activePlaylist: 'pc_active_playlist',
   library: 'pc_library_cache_v1',

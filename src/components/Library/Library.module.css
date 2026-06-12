@@ -73,3 +73,43 @@
 .favoriteActive { color:#facc15; border-color:rgba(250,204,21,.45); background:rgba(250,204,21,.12); }
 .activeSong { border-color:rgba(34,197,94,.65); background:rgba(34,197,94,.12); }
 .empty { color:var(--muted); font-size:13px; border:1px dashed rgba(255,255,255,.14); border-radius:16px; padding:18px; }
+.resetButton {
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.055);
+  color:var(--muted);
+  border-radius:999px;
+  min-height:30px;
+  padding:0 10px;
+  font-size:12px;
+  font-weight:800;
+}
+.quickStats {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+}
+.quickStats button {
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(255,255,255,.045);
+  border-radius:14px;
+  min-height:54px;
+  color:var(--muted);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:2px;
+  padding:8px 10px;
+}
+.quickStats strong { color:var(--text); font-size:16px; line-height:1; }
+.quickStats span { font-size:11px; font-weight:800; }
+.quickStats .activeStat { border-color:rgba(34,197,94,.55); background:rgba(34,197,94,.12); }
+.searchBox { grid-template-columns:auto minmax(0,1fr) auto; }
+.searchBox button {
+  width:28px;
+  height:28px;
+  border:0;
+  border-radius:10px;
+  background:rgba(255,255,255,.08);
+  color:var(--muted);
+}

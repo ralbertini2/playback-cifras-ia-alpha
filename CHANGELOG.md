@@ -5,6 +5,33 @@ Todas as mudanças relevantes do Playback Cifras IA serão documentadas neste ar
 ---
 
 
+## [v2.6] - 2026-06-12
+
+### Added
+
+- Contadores funcionais de biblioteca: todas, favoritas e recentes.
+- Ação de limpar busca e filtro da Biblioteca.
+- Botão de busca da Toolbar conectado à abertura da Sidebar.
+- `STORAGE.recents` padronizado para histórico local.
+- Funções utilitárias reais em `libraryService.js` para busca, favoritos e recentes.
+
+### Changed
+
+- `useLibrary` passa a usar `libraryService.js` em vez de concentrar toda a lógica internamente.
+- Biblioteca exibe total geral e total filtrado de músicas.
+- Filtros de favoritos e recentes ficam mais visíveis na interface.
+- Versão atualizada para `v2.6`.
+- `package.json` atualizado para `2.6.0`.
+
+### Preserved
+
+- PDF Viewer React.
+- Player React.
+- Google Drive React.
+- Repertórios React.
+- React Build Validation.
+
+
 ## [v2.5] - 2026-06-12
 
 ### Added

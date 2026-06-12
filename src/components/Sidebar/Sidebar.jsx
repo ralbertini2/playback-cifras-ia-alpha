@@ -23,6 +23,8 @@ export default function Sidebar({
   setCollectionFilter,
   favoriteCount = 0,
   recentCount = 0,
+  totalSongs = 0,
+  clearSearch,
   isFavorite,
   onToggleFavorite,
   onClose,
@@ -91,6 +93,8 @@ export default function Sidebar({
           setCollectionFilter={setCollectionFilter}
           favoriteCount={favoriteCount}
           recentCount={recentCount}
+          totalSongs={totalSongs}
+          clearSearch={clearSearch}
           isFavorite={isFavorite}
           onToggleFavorite={onToggleFavorite}
           onSelectSong={onSelectSong}
