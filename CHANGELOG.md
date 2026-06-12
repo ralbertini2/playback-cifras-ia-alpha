@@ -2,106 +2,34 @@
 
 Todas as mudanças relevantes do Playback Cifras IA serão documentadas neste arquivo.
 
-O projeto segue versionamento incremental simples.
-
 ---
 
-
-
-## [v1.4] - 2026-06-11
-
-### Fixed
-
-- Corrigido comportamento do menu lateral em tablet/iPad vertical e mobile.
-- Corrigida rolagem do menu quando os painéis ocupam mais altura que a tela.
-- Corrigido acesso à lista de músicas dentro do menu em telas menores.
-- Corrigido overflow horizontal dos controles superiores em telas estreitas.
-
-### Changed
-
-- Menu lateral passa a ter rolagem total em telas até 900px.
-- Cabeçalho do menu permanece fixo durante a rolagem em tablet/mobile.
-- Lista de músicas deixa de criar uma segunda rolagem interna em telas menores.
-
-## [v1.3] - 2026-06-11
-
-### Removed
-
-- Tela `add-music.html`.
-- Tela `subscription.html`.
-- Tela `editor.html`.
-- Tela `ai-lab.html`.
-- Serviços mockados de IA.
-- Serviços mockados de billing/planos.
-- Serviço estrutural de biblioteca própria.
-- Schema estrutural de entidades futuras.
-- Link `Planos` da landing page.
-- Seção pública de planos/teste gratuito da landing page.
-
-### Changed
-
-- Footer de versão atualizado para `Playback Cifras IA v1.3`.
-- Base do projeto reduzida para manter apenas recursos essenciais da v1.
-- Landing page simplificada para evitar promessas de módulos ainda adiados.
-
-### Fixed
-
-- Redução de rotas e arquivos sem uso que poderiam gerar confusão no desenvolvimento.
-
-## [v1.2] - 2026-06-11
+## [v2.0] - 2026-06-12
 
 ### Added
 
-- Footer discreto com a versão atual do sistema em todas as páginas HTML.
-- Identificação visual pequena e não intrusiva: `Playback Cifras IA v1.2`.
-- Arquivo de release `docs/releases/v1.2.md`.
+- Fundação React do Playback Cifras IA.
+- Configuração Vite.
+- Estrutura com CSS Modules.
+- Lucide Icons como biblioteca oficial de ícones.
+- Componentização inicial da tela principal:
+  - Layout
+  - Sidebar
+  - Toolbar
+  - Viewer
+  - PlayerBar
+  - VersionFooter
+- Service inicial para Google Drive.
+- Hook inicial para áudio.
+- Workflow de deploy para GitHub Pages via GitHub Actions.
+- Pasta `legacy/` com arquivos da v1.4 para referência técnica.
 
 ### Changed
 
-- Padronização para que todas as próximas versões exibam a versão atual na interface.
+- A publicação futura da v2 passa a depender de build Vite.
+- A linha React deve ser desenvolvida a partir de `develop-react`.
 
----
+### Preserved
 
-## [v1.1] - 2026-06-11
-
-### Removed
-
-- Removido o botão Modo Palco da interface principal.
-- Removido o botão Tela Cheia da interface principal.
-- Removido código JavaScript associado ao modo palco e tela cheia.
-- Removidas regras CSS associadas ao estado `body.stage`.
-
-### Changed
-
-- Simplificada a barra superior da tela principal.
-- Mantidos os controles de favoritos, zoom, rolagem automática e velocidade de rolagem.
-
----
-
-## [v1] - 2026-06-11
-
-### Added
-
-- Definição da versão base segura para retomada do desenvolvimento.
-- Estrutura inicial do Playback Cifras IA preservada a partir da versão estável.
-- Estratégia de evolução baseada em branches de feature.
-
----
-
-## [Unreleased]
-
-### Added
-
--
-
-### Changed
-
--
-
-### Fixed
-
--
-
-### Removed
-
--
+- A versão v1.x permanece segura fora da linha React.
+- A arquitetura antiga foi mantida em `legacy/` apenas como referência.

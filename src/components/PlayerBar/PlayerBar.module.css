@@ -1,0 +1,16 @@
+.player {
+  min-height:132px;
+  padding:10px 16px 14px;
+  border-top:1px solid rgba(255,255,255,.08);
+  background:rgba(6,10,17,.96);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.timeline { display:grid; grid-template-columns:54px 1fr 54px; align-items:center; gap:10px; color:var(--text); font-weight:800; }
+.seek { width:100%; accent-color:#27c968; }
+.controls { display:grid; grid-template-columns:1fr 1.18fr 1fr; gap:12px; max-width:520px; width:100%; margin:0 auto; }
+.controlButton { min-height:72px; border-radius:20px; border:1px solid rgba(255,255,255,.12); background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.045)); color:var(--text); display:flex; align-items:center; justify-content:center; gap:8px; font-weight:900; font-size:16px; }
+.controlButton span { display:block; }
+.playButton { background:linear-gradient(135deg, #22c563, #159447); color:#fff; border-color:transparent; }
+@media (max-width: 520px) { .player { min-height:124px; padding:8px; } .controls { gap:8px; } .controlButton { min-height:64px; border-radius:18px; font-size:13px; flex-direction:column; gap:2px; } }
