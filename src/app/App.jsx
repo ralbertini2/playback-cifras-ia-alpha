@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import AppLayout from '../components/Layout/AppLayout.jsx';
 import Sidebar from '../components/Sidebar/Sidebar.jsx';
 import Toolbar from '../components/Toolbar/Toolbar.jsx';
-import Viewer from '../components/Viewer/Viewer.jsx';
+import PdfViewer from '../components/PdfViewer/PdfViewer.jsx';
 import PlayerBar from '../components/PlayerBar/PlayerBar.jsx';
 import VersionFooter from '../components/VersionFooter/VersionFooter.jsx';
 import { useAudioPlayer } from '../hooks/useAudioPlayer.js';
 import { STORAGE, readJson, writeJson } from '../services/storage.js';
-import { getAuthorizedMediaUrl, getDrivePreviewUrl, initGoogleAuth, loadDriveLibrary, logoutGoogle, openFolderPicker, requestAccessToken } from '../services/googleDriveService.js';
+import { getAuthorizedMediaUrl, initGoogleAuth, loadDriveLibrary, logoutGoogle, openFolderPicker, requestAccessToken } from '../services/googleDriveService.js';
 import styles from './App.module.css';
 
 function songKey(song) { return `${song?.styleId || song?.style}|${song?.title}`; }
@@ -22,8 +22,8 @@ export default function App() {
   const [playlists, setPlaylists] = useState(() => readJson(STORAGE.playlists, {}));
   const [selectedPlaylist, setSelectedPlaylist] = useState(localStorage.getItem(STORAGE.activePlaylist) || '');
   const [currentIndex, setCurrentIndex] = useState(-1);
-  const [pdfUrl, setPdfUrl] = useState('');
-  const [zoom, setZoom] = useState(1);
+  const samplePdfUrl = `${import.meta.env.BASE_URL}samples/sample-cifra.pdf`;
+  const [pdfUrl, setPdfUrl] = useState(samplePdfUrl);
   const [toast, setToast] = useState('');
   const audio = useAudioPlayer();
 
@@ -107,7 +107,14 @@ export default function App() {
     const song = filteredSongs[index];
     if (!song) return;
     setCurrentIndex(index);
-    setPdfUrl(getDrivePreviewUrl(song.pdfId));
+    setPdfUrl('');
+    try {
+      const pdfBlobUrl = await getAuthorizedMediaUrl(song.pdfId);
+      setPdfUrl(pdfBlobUrl);
+    } catch (error) {
+      setPdfUrl(samplePdfUrl);
+      notify('Não consegui carregar o PDF do Drive. Exibindo PDF de exemplo.');
+    }
     setSidebarOpen(false);
     try {
       const mediaUrl = await getAuthorizedMediaUrl(song.mp3Id);
@@ -188,8 +195,8 @@ export default function App() {
           onDeletePlaylist={deletePlaylist}
         />
       )}
-      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} zoom={zoom} setZoom={setZoom} />}
-      viewer={<Viewer pdfUrl={pdfUrl} zoom={zoom} />}
+      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} />}
+      viewer={<PdfViewer source={pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />}
       player={(
         <PlayerBar
           audioRef={audio.audioRef}

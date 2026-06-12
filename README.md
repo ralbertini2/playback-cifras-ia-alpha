@@ -1,8 +1,8 @@
 # Playback Cifras IA
 
-## v2.1 — React Layout Shell
+## v2.2 — React PDF/Cifra Viewer
 
-Primeira estrutura visual da nova arquitetura React do Playback Cifras IA.
+Visualizador PDF/cifra React com PDF.js, zoom, ajuste à largura e navegação de páginas.
 
 Stack:
 
@@ -43,3 +43,14 @@ develop-react  → linha React/v2
 ## GitHub Pages
 
 A linha React usa Vite. Quando a v2 for publicada, o deploy deve ser feito via GitHub Actions.
+
+
+## Recursos v2.2
+
+- Visualizador PDF em React.
+- Renderização via PDF.js.
+- Zoom + e zoom -.
+- Ajuste à largura.
+- Página anterior e próxima página.
+- PDF de exemplo para validação inicial.
+- Layout híbrido: sidebar fixa no desktop e drawer em iPad/mobile.
