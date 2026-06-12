@@ -1,22 +1,28 @@
+import { FileText } from 'lucide-react';
 import styles from './Viewer.module.css';
 
 export default function Viewer({ pdfUrl, zoom }) {
   if (!pdfUrl) {
     return (
-      <section className={styles.viewer}>
-        <div className={styles.emptyState}>
-          <h1>Playback Cifras IA</h1>
-          <p>Selecione uma pasta do Google Drive e carregue uma música para visualizar PDF/cifra e playback no mesmo ambiente.</p>
+      <div className={styles.emptyState}>
+        <div className={styles.emptyCard}>
+          <FileText size={44} />
+          <h1>Playback Cifras IA v2</h1>
+          <p>Shell React pronto para receber visualização de PDF, cifras e integrações da próxima etapa.</p>
+          <small>v2.1 — React Layout Shell</small>
         </div>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className={styles.viewer}>
-      <div className={styles.pdfCanvas} style={{ transform: `scale(${zoom})`, transformOrigin: 'top center' }}>
-        <iframe src={pdfUrl} title="Cifra PDF" className={styles.iframe} />
-      </div>
-    </section>
+    <div className={styles.viewer}>
+      <iframe
+        title="Visualizador de PDF"
+        src={pdfUrl}
+        className={styles.frame}
+        style={{ transform: `scale(${zoom})`, transformOrigin: 'top center' }}
+      />
+    </div>
   );
 }

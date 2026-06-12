@@ -1,4 +1,4 @@
-import { FolderOpen, LogIn, LogOut, Music, Plus, RefreshCw, Trash2, X } from 'lucide-react';
+import { FolderOpen, LogIn, LogOut, Music, Plus, RefreshCcw, Trash2, X } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar({
@@ -7,13 +7,13 @@ export default function Sidebar({
   status,
   folderId,
   setFolderId,
-  stylesList,
+  stylesList = [],
   selectedStyle,
   setSelectedStyle,
-  playlists,
+  playlists = {},
   selectedPlaylist,
   setSelectedPlaylist,
-  songs,
+  songs = [],
   currentSongId,
   onClose,
   onLogin,
@@ -23,72 +23,77 @@ export default function Sidebar({
   onSelectSong,
   onCreatePlaylist,
   onAddToPlaylist,
-  onDeletePlaylist
+  onDeletePlaylist,
 }) {
   return (
-    <aside className={`${styles.sidebar} ${open ? styles.open : ''}`}>
-      <header className={styles.brand}>
-        <img src="./logo-playback-cifras.jpg" alt="Playback Cifras IA" className={styles.logo} />
-        <button className={styles.iconButton} onClick={onClose} aria-label="Fechar menu"><X size={20} /></button>
-      </header>
-
-      <section className={styles.panel}>
-        {connected ? (
-          <button className={styles.secondaryButton} onClick={onLogout}><LogOut size={17} /> Sair do Google</button>
-        ) : (
-          <button className={styles.primaryButton} onClick={onLogin}><LogIn size={17} /> Entrar com Google</button>
-        )}
-        <p className={styles.status}>{status}</p>
-      </section>
-
-      <section className={styles.panel}>
-        <label className={styles.label}>Google Drive</label>
-        <input
-          className={styles.input}
-          value={folderId}
-          onChange={(event) => setFolderId(event.target.value)}
-          placeholder="ID ou link da pasta principal"
-        />
-        <div className={styles.actionRow}>
-          <button className={styles.secondaryButton} onClick={onPickFolder}><FolderOpen size={17} /> Pasta</button>
-          <button className={styles.secondaryButton} onClick={onRefresh}><RefreshCw size={17} /> Atualizar</button>
-        </div>
-        <p className={styles.hint}>PDF e MP3 devem ter o mesmo nome. A pasta pode conter músicas diretamente ou subpastas por estilo.</p>
-      </section>
-
-      <section className={styles.panel}>
-        <label className={styles.label}>Estilo</label>
-        <select className={styles.select} value={selectedStyle} onChange={(event) => setSelectedStyle(event.target.value)}>
-          <option value="">Todos os estilos</option>
-          {stylesList.map((style) => <option key={style} value={style}>{style}</option>)}
-        </select>
-
-        <label className={styles.label}>Playlist / Evento</label>
-        <select className={styles.select} value={selectedPlaylist} onChange={(event) => setSelectedPlaylist(event.target.value)}>
-          <option value="">Todas as playlists</option>
-          {Object.keys(playlists).sort().map((name) => <option key={name} value={name}>{name}</option>)}
-        </select>
-        <div className={styles.buttonGrid}>
-          <button className={styles.miniButton} onClick={onCreatePlaylist}><Plus size={15} /> Nova</button>
-          <button className={styles.miniButton} onClick={onAddToPlaylist}><Music size={15} /> Add</button>
-          <button className={styles.miniButton} onClick={onDeletePlaylist}><Trash2 size={15} /> Excluir</button>
-        </div>
-      </section>
-
-      <section className={styles.songList} aria-label="Lista de músicas">
-        {songs.length === 0 ? (
-          <div className={styles.emptyList}>Nenhuma música encontrada.</div>
-        ) : songs.map((song, index) => (
-          <button
-            key={song.id}
-            className={`${styles.songItem} ${song.id === currentSongId ? styles.active : ''}`}
-            onClick={() => onSelectSong(index, true)}
-          >
-            <span className={styles.songIcon}>♪</span>
-            <span><strong>{song.title}</strong><small>{song.style}</small></span>
+    <>
+      <div className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`} onClick={onClose} />
+      <nav className={`${styles.sidebar} ${open ? styles.open : ''}`} aria-label="Biblioteca musical">
+        <div className={styles.header}>
+          <div>
+            <strong>Playback Cifras IA</strong>
+            <span>{connected ? 'Google Drive conectado' : 'Biblioteca local'}</span>
+          </div>
+          <button className={styles.iconButton} onClick={onClose} aria-label="Fechar menu">
+            <X size={20} />
           </button>
-        ))}
-      </section>
-    </aside>
+        </div>
+
+        <div className={styles.status}>{status}</div>
+
+        <section className={styles.section}>
+          <label>Pasta Google Drive</label>
+          <div className={styles.inputRow}>
+            <input value={folderId} onChange={(event) => setFolderId(event.target.value)} placeholder="ROOT_FOLDER_ID" />
+            <button onClick={onPickFolder} title="Escolher pasta"><FolderOpen size={18} /></button>
+          </div>
+          <div className={styles.actionsGrid}>
+            <button onClick={connected ? onLogout : onLogin}>{connected ? <LogOut size={17} /> : <LogIn size={17} />}{connected ? 'Sair' : 'Entrar'}</button>
+            <button onClick={onRefresh}><RefreshCcw size={17} />Atualizar</button>
+          </div>
+        </section>
+
+        <section className={styles.section}>
+          <label>Estilo</label>
+          <select value={selectedStyle} onChange={(event) => setSelectedStyle(event.target.value)}>
+            <option value="">Todos os estilos</option>
+            {stylesList.map((style) => <option key={style} value={style}>{style}</option>)}
+          </select>
+        </section>
+
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <label>Repertórios</label>
+            <div className={styles.miniActions}>
+              <button onClick={onCreatePlaylist} title="Criar repertório"><Plus size={16} /></button>
+              <button onClick={onAddToPlaylist} title="Adicionar música atual"><Music size={16} /></button>
+              <button onClick={onDeletePlaylist} title="Excluir repertório"><Trash2 size={16} /></button>
+            </div>
+          </div>
+          <select value={selectedPlaylist} onChange={(event) => setSelectedPlaylist(event.target.value)}>
+            <option value="">Sem filtro de repertório</option>
+            {Object.keys(playlists).sort((a, b) => a.localeCompare(b, 'pt-BR')).map((name) => <option key={name} value={name}>{name}</option>)}
+          </select>
+        </section>
+
+        <section className={styles.songSection}>
+          <div className={styles.songHeader}>{songs.length} música(s)</div>
+          <div className={styles.songList}>
+            {songs.length === 0 ? (
+              <div className={styles.empty}>Atualize a biblioteca para listar PDFs e playbacks.</div>
+            ) : songs.map((song, index) => (
+              <button
+                key={song.id || `${song.title}-${index}`}
+                className={`${styles.songItem} ${song.id === currentSongId ? styles.activeSong : ''}`}
+                onClick={() => onSelectSong(index)}
+              >
+                <span>{song.title}</span>
+                <small>{song.artist || song.style}</small>
+              </button>
+            ))}
+          </div>
+        </section>
+      </nav>
+    </>
   );
 }
