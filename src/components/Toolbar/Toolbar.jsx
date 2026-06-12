@@ -1,7 +1,7 @@
 import { Loader2, Menu, Search, Star } from 'lucide-react';
 import styles from './Toolbar.module.css';
 
-export default function Toolbar({ song, meta, onOpenMenu, loading = false }) {
+export default function Toolbar({ song, meta, onOpenMenu, loading = false, favoriteActive = false, onToggleFavorite }) {
   return (
     <div className={styles.toolbar}>
       <button className={styles.menuButton} onClick={onOpenMenu} aria-label="Abrir menu"><Menu size={22} /></button>
@@ -12,7 +12,7 @@ export default function Toolbar({ song, meta, onOpenMenu, loading = false }) {
       <div className={styles.controls}>
         {loading ? <Loader2 className={styles.spinner} size={19} aria-label="Carregando" /> : null}
         <button aria-label="Buscar"><Search size={19} /></button>
-        <button aria-label="Favoritar"><Star size={19} /></button>
+        <button className={favoriteActive ? styles.favoriteActive : ''} onClick={onToggleFavorite} aria-label="Favoritar música atual"><Star size={19} /></button>
       </div>
     </div>
   );

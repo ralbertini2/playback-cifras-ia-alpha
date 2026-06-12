@@ -1,4 +1,6 @@
-import { FolderOpen, LogIn, LogOut, Music, Plus, RefreshCcw, Trash2, X } from 'lucide-react';
+import { FolderOpen, LogIn, LogOut, RefreshCcw, X } from 'lucide-react';
+import Library from '../Library/Library.jsx';
+import Setlists from '../Setlists/Setlists.jsx';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar({
@@ -15,6 +17,14 @@ export default function Sidebar({
   setSelectedPlaylist,
   songs = [],
   currentSongId,
+  searchQuery,
+  setSearchQuery,
+  collectionFilter,
+  setCollectionFilter,
+  favoriteCount = 0,
+  recentCount = 0,
+  isFavorite,
+  onToggleFavorite,
   onClose,
   onLogin,
   onLogout,
@@ -62,38 +72,29 @@ export default function Sidebar({
           </select>
         </section>
 
-        <section className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <label>Repertórios</label>
-            <div className={styles.miniActions}>
-              <button onClick={onCreatePlaylist} title="Criar repertório"><Plus size={16} /></button>
-              <button onClick={onAddToPlaylist} title="Adicionar música atual"><Music size={16} /></button>
-              <button onClick={onDeletePlaylist} title="Excluir repertório"><Trash2 size={16} /></button>
-            </div>
-          </div>
-          <select value={selectedPlaylist} onChange={(event) => setSelectedPlaylist(event.target.value)}>
-            <option value="">Sem filtro de repertório</option>
-            {Object.keys(playlists).sort((a, b) => a.localeCompare(b, 'pt-BR')).map((name) => <option key={name} value={name}>{name}</option>)}
-          </select>
-        </section>
+        <Setlists
+          playlists={playlists}
+          selectedPlaylist={selectedPlaylist}
+          setSelectedPlaylist={setSelectedPlaylist}
+          onCreatePlaylist={onCreatePlaylist}
+          onAddToPlaylist={onAddToPlaylist}
+          onDeletePlaylist={onDeletePlaylist}
+        />
 
-        <section className={styles.songSection}>
-          <div className={styles.songHeader}>{songs.length} música(s)</div>
-          <div className={styles.songList}>
-            {songs.length === 0 ? (
-              <div className={styles.empty}>Atualize a biblioteca para listar PDFs e playbacks.</div>
-            ) : songs.map((song, index) => (
-              <button
-                key={song.id || `${song.title}-${index}`}
-                className={`${styles.songItem} ${song.id === currentSongId ? styles.activeSong : ''}`}
-                onClick={() => onSelectSong(index)}
-              >
-                <span>{song.title}</span>
-                <small>{song.artist || song.style}</small>
-              </button>
-            ))}
-          </div>
-        </section>
+        <Library
+          songs={songs}
+          currentSongId={currentSongId}
+          loading={loading}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          collectionFilter={collectionFilter}
+          setCollectionFilter={setCollectionFilter}
+          favoriteCount={favoriteCount}
+          recentCount={recentCount}
+          isFavorite={isFavorite}
+          onToggleFavorite={onToggleFavorite}
+          onSelectSong={onSelectSong}
+        />
       </nav>
     </>
   );

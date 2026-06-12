@@ -7,6 +7,7 @@ import PlayerBar from '../components/PlayerBar/PlayerBar.jsx';
 import VersionFooter from '../components/VersionFooter/VersionFooter.jsx';
 import { useAudioPlayer } from '../hooks/useAudioPlayer.js';
 import { useGoogleDriveLibrary } from '../hooks/useGoogleDrive.js';
+import { useLibrary } from '../hooks/useLibrary.js';
 import { STORAGE, readJson, writeJson } from '../services/storage.js';
 import styles from './App.module.css';
 
@@ -20,6 +21,7 @@ export default function App() {
   const [playlists, setPlaylists] = useState(() => readJson(STORAGE.playlists, {}));
   const [selectedPlaylist, setSelectedPlaylist] = useState(localStorage.getItem(STORAGE.activePlaylist) || '');
   const audio = useAudioPlayer();
+  const libraryView = useLibrary();
 
   const notify = useCallback((message) => {
     setToast(message);
@@ -33,10 +35,11 @@ export default function App() {
   });
 
   const filteredSongs = useMemo(() => {
+    const baseSongs = libraryView.applyFilters(drive.filteredSongs);
     const playlistKeys = selectedPlaylist ? playlists[selectedPlaylist] || [] : null;
-    if (!playlistKeys) return drive.filteredSongs;
-    return drive.filteredSongs.filter((song) => playlistKeys.includes(songKey(song)));
-  }, [drive.filteredSongs, playlists, selectedPlaylist]);
+    if (!playlistKeys) return baseSongs;
+    return baseSongs.filter((song) => playlistKeys.includes(songKey(song)));
+  }, [drive.filteredSongs, libraryView, playlists, selectedPlaylist]);
 
   const currentSong = drive.currentSong;
   const meta = currentSong
@@ -50,6 +53,7 @@ export default function App() {
     if (!song) return;
     const realIndex = drive.filteredSongs.findIndex((item) => item.id === song.id);
     drive.selectSong(realIndex >= 0 ? realIndex : index, autoplay);
+    libraryView.rememberRecent(song);
     setSidebarOpen(false);
   }
 
@@ -115,6 +119,20 @@ export default function App() {
     localStorage.setItem(STORAGE.activePlaylist, value);
   }
 
+  function toggleCurrentFavorite() {
+    if (!currentSong) {
+      notify('Selecione uma música primeiro.');
+      return;
+    }
+    const becameFavorite = libraryView.toggleFavorite(currentSong);
+    notify(becameFavorite ? 'Música adicionada aos favoritos.' : 'Música removida dos favoritos.');
+  }
+
+  function toggleSongFavorite(song) {
+    const becameFavorite = libraryView.toggleFavorite(song);
+    notify(becameFavorite ? 'Música adicionada aos favoritos.' : 'Música removida dos favoritos.');
+  }
+
   return (
     <AppLayout
       sidebar={(
@@ -132,6 +150,14 @@ export default function App() {
           setSelectedPlaylist={changePlaylist}
           songs={filteredSongs}
           currentSongId={currentSong?.id}
+          searchQuery={libraryView.searchQuery}
+          setSearchQuery={libraryView.setSearchQuery}
+          collectionFilter={libraryView.collectionFilter}
+          setCollectionFilter={libraryView.setCollectionFilter}
+          favoriteCount={libraryView.favoriteCount}
+          recentCount={libraryView.recentCount}
+          isFavorite={libraryView.isFavorite}
+          onToggleFavorite={toggleSongFavorite}
           loading={drive.loadingLibrary || drive.loadingSong}
           onClose={() => setSidebarOpen(false)}
           onLogin={drive.login}
@@ -144,7 +170,7 @@ export default function App() {
           onDeletePlaylist={deletePlaylist}
         />
       )}
-      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} />}
+      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} favoriteActive={libraryView.isFavorite(currentSong)} onToggleFavorite={toggleCurrentFavorite} />}
       viewer={<PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />}
       player={(
         <PlayerBar

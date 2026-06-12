@@ -1,0 +1,75 @@
+.library { min-height:0; flex:1; display:flex; flex-direction:column; gap:10px; }
+.header { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.header label { color:var(--muted); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
+.header span { display:block; color:var(--muted); font-size:12px; margin-top:3px; }
+.searchBox {
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.055);
+  border-radius:14px;
+  min-height:42px;
+  padding:0 12px;
+  color:var(--muted);
+}
+.searchBox input {
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--text);
+  min-width:0;
+}
+.searchBox input::placeholder { color:rgba(148,163,184,.8); }
+.filters { display:flex; gap:6px; overflow:auto; padding-bottom:2px; }
+.filters button {
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);
+  color:var(--muted);
+  border-radius:999px;
+  min-height:34px;
+  padding:0 10px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  white-space:nowrap;
+  font-size:12px;
+  font-weight:800;
+}
+.filters .activeFilter { color:var(--text); border-color:rgba(34,197,94,.55); background:rgba(34,197,94,.13); }
+.songList { min-height:0; overflow:auto; display:flex; flex-direction:column; gap:8px; padding-right:2px; }
+.songItem {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);
+  border-radius:16px;
+  padding:4px;
+}
+.songButton {
+  min-width:0;
+  text-align:left;
+  border:0;
+  background:transparent;
+  color:var(--text);
+  padding:9px 8px;
+}
+.songButton span { display:block; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.songButton small { display:block; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.favoriteButton {
+  width:36px;
+  height:36px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+  background:rgba(255,255,255,.04);
+}
+.favoriteActive { color:#facc15; border-color:rgba(250,204,21,.45); background:rgba(250,204,21,.12); }
+.activeSong { border-color:rgba(34,197,94,.65); background:rgba(34,197,94,.12); }
+.empty { color:var(--muted); font-size:13px; border:1px dashed rgba(255,255,255,.14); border-radius:16px; padding:18px; }

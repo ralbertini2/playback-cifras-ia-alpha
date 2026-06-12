@@ -1,34 +1,41 @@
-# Playback Cifras IA — VERSION
+# Playback Cifras IA — Versionamento
 
-Versão atual: `v2.4`
-
-Linha de desenvolvimento: `develop-react`
-
-Branch da versão:
+## Versão Atual
 
 ```text
-feature/v2-4-google-drive-react
+v2.5
 ```
 
-## v2.4 — Google Drive React
+Nome da versão:
 
-Integração inicial do Google Drive na arquitetura React.
+```text
+Playback Cifras IA v2.5 — React Library
+```
 
-Inclui:
+Branch:
 
-- Hook `useGoogleDriveLibrary` para centralizar estado e ações do Google Drive.
-- Login/logout Google via Google Identity Services.
-- Seleção de pasta via Google Picker.
-- Atualização da biblioteca de músicas a partir do Drive.
-- Carregamento autorizado de PDFs e áudios.
-- Integração do Google Drive com `PdfViewer` e `PlayerBar`.
-- Estados de carregamento para biblioteca e música selecionada.
-- Atualização do footer para `Playback Cifras IA v2.4`.
+```text
+feature/v2-5-library-setlists-react
+```
 
-## Fora do escopo desta versão
+## Objetivo da v2.5
 
-- Favoritos finais.
-- Repertórios avançados.
-- IA.
-- Sincronização PDF ↔ áudio.
-- Publicação da v2 em produção.
+Criar a camada de Biblioteca React para organizar as músicas carregadas pelo Google Drive.
+
+## Recursos incluídos
+
+- Biblioteca React.
+- Busca de músicas.
+- Filtros: todas, favoritas e recentes.
+- Favoritos locais.
+- Recentes locais.
+- Repertórios/Eventos integrados à sidebar.
+- Integração com PDF Viewer e Player já existentes.
+
+## Linha de desenvolvimento
+
+```text
+main           → versão estável atual
+develop        → manutenção v1.x
+develop-react  → linha React/v2
+```
