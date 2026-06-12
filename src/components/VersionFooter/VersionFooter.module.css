@@ -1,14 +1,1 @@
-.version {
-  position:fixed;
-  right:12px;
-  bottom:8px;
-  z-index:40;
-  color:rgba(255,255,255,.45);
-  border:1px solid rgba(255,255,255,.08);
-  background:rgba(0,0,0,.32);
-  backdrop-filter: blur(10px);
-  border-radius:999px;
-  padding:4px 10px;
-  font-size:11px;
-  letter-spacing:.02em;
-}
+.footer { position:fixed; right:12px; bottom:8px; z-index:50; color:rgba(255,255,255,.45); border:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.28); border-radius:999px; padding:4px 10px; font-size:11px; letter-spacing:.02em; backdrop-filter:blur(10px); pointer-events:none; }

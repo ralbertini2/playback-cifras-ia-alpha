@@ -1,3 +1,64 @@
-.appShell { min-height:100dvh; display:flex; background:var(--bg); color:var(--text); overflow:hidden; }
-.main { flex:1; min-width:0; height:100dvh; display:flex; flex-direction:column; }
-@media (max-width: 900px) { .appShell { display:block; } .main { width:100vw; } }
+.appShell {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  background: radial-gradient(circle at top left, rgba(34, 197, 94, .08), transparent 30%), var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+.sidebarSlot {
+  min-width: 0;
+  min-height: 100dvh;
+  border-right: 1px solid rgba(255,255,255,.08);
+  background: rgba(5, 8, 13, .86);
+}
+
+.mainArea {
+  min-width: 0;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding-bottom: 26px;
+}
+
+.toolbarSlot {
+  min-width: 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  background: rgba(11, 17, 28, .76);
+  backdrop-filter: blur(18px);
+}
+
+.viewerSlot {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.playerSlot {
+  border-top: 1px solid rgba(255,255,255,.08);
+  background: rgba(11, 17, 28, .92);
+  backdrop-filter: blur(18px);
+}
+
+@media (max-width: 900px) {
+  .appShell {
+    display: block;
+    overflow: hidden;
+  }
+
+  .sidebarSlot {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(86vw, 360px);
+    z-index: 40;
+    border-right: 1px solid rgba(255,255,255,.12);
+    transform: translateX(0);
+    pointer-events: none;
+    background: transparent;
+  }
+
+  .mainArea {
+    min-height: 100dvh;
+  }
+}

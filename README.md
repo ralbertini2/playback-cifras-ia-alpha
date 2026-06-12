@@ -1,8 +1,10 @@
 # Playback Cifras IA
 
-## v2.0 — React Foundation
+## v2.1 — React Layout Shell
 
-Nova fundação técnica do Playback Cifras IA construída com:
+Primeira estrutura visual da nova arquitetura React do Playback Cifras IA.
+
+Stack:
 
 ```text
 React
@@ -24,26 +26,10 @@ npm run dev
 npm run build
 ```
 
-## Configuração Google
+## Preview
 
-Copie:
-
-```text
-public/config.example.js
-```
-
-para:
-
-```text
-public/config.js
-```
-
-Preencha:
-
-```js
-GOOGLE_CLIENT_ID
-GOOGLE_API_KEY
-ROOT_FOLDER_ID
+```bash
+npm run preview
 ```
 
 ## Branches
@@ -54,12 +40,6 @@ develop        → manutenção v1.x
 develop-react  → linha React/v2
 ```
 
-## Deploy GitHub Pages
+## GitHub Pages
 
-A v2 usa Vite. Portanto, o deploy deve ser feito via GitHub Actions.
-
-O workflow está em:
-
-```text
-.github/workflows/deploy-pages.yml
-```
+A linha React usa Vite. Quando a v2 for publicada, o deploy deve ser feito via GitHub Actions.

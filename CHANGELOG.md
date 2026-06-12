@@ -4,6 +4,31 @@ Todas as mudanças relevantes do Playback Cifras IA serão documentadas neste ar
 
 ---
 
+## [v2.1] - 2026-06-12
+
+### Added
+
+- Criado shell visual principal em React.
+- Adicionado componente `AppLayout`.
+- Adicionado componente `Sidebar`.
+- Adicionado componente `Toolbar`.
+- Adicionado componente `Viewer`.
+- Adicionado componente `PlayerBar`.
+- Adicionado componente `VersionFooter`.
+- Adicionados CSS Modules por componente.
+- Aplicado layout Tablet First para a nova arquitetura React.
+
+### Changed
+
+- Atualizada versão exibida para `Playback Cifras IA v2.1`.
+- Atualizado `package.json` para `2.1.0`.
+- Atualizados `README.md` e `VERSION.md`.
+
+### Fixed
+
+- Corrigida estrutura React inicial que importava componentes ainda inexistentes.
+
+---
 ## [v2.0] - 2026-06-12
 
 ### Added
