@@ -1,6 +1,6 @@
 # Playback Cifras IA
 
-## v2.3 — React Player
+## v2.3.1 — React Runtime Validation
 
 Player React componentizado com controles de reprodução, progresso, volume e navegação entre músicas.
 
@@ -64,3 +64,19 @@ A linha React usa Vite. Quando a v2 for publicada, o deploy deve ser feito via G
 - v2.0: fundação React/Vite.
 - v2.1: shell visual principal.
 - v2.2: visualizador PDF/Cifra com PDF.js.
+
+## Validação v2.3.1
+
+Esta versão adiciona uma validação automática para confirmar que a aplicação React/Vite instala dependências e gera build corretamente.
+
+```bash
+npm install
+npm run build
+```
+
+Também foi adicionado:
+
+- Workflow `React Build Validation`.
+- Script `npm run validate`.
+- `public/config.js` seguro para runtime inicial.
+- `.gitignore` para arquivos locais.

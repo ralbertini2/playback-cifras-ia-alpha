@@ -4,6 +4,25 @@ Todas as mudanças relevantes do Playback Cifras IA serão documentadas neste ar
 
 ---
 
+
+## [v2.3.1] - 2026-06-12
+
+### Added
+
+- Workflow `React Build Validation` para validar a aplicação React/Vite.
+- Script `validate` no `package.json`.
+- Arquivo `public/config.js` com configuração segura inicial.
+- Arquivo `.gitignore` para `node_modules`, `dist` e arquivos locais.
+
+### Changed
+
+- Versão atualizada para `v2.3.1`.
+- `APP_VERSION` atualizado para `v2.3.1`.
+
+### Fixed
+
+- Reduzido risco de erro de runtime por ausência de `config.js` no build Vite.
+
 ## [v2.3] - 2026-06-12
 
 ### Added
