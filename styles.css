@@ -387,3 +387,124 @@ body{background:radial-gradient(circle at 80% 0%,#1d2533 0%,#080b0f 42%,#05070a 
   .drive-icon-btn{width:50px;height:44px;}
   .song-list{padding-bottom:76px !important;}
 }
+
+/* Playback Cifras IA v1.3 — footer discreto de versão */
+.version-footer{
+  position:fixed;
+  right:max(10px,env(safe-area-inset-right));
+  bottom:max(8px,env(safe-area-inset-bottom));
+  z-index:220;
+  padding:4px 8px;
+  border-radius:999px;
+  color:rgba(245,248,252,.52);
+  background:rgba(5,8,13,.38);
+  border:1px solid rgba(255,255,255,.06);
+  font-size:10px;
+  line-height:1;
+  font-weight:600;
+  letter-spacing:.02em;
+  pointer-events:none;
+  user-select:none;
+  backdrop-filter:blur(8px);
+}
+@media(max-width:620px){
+  .version-footer{
+    right:max(8px,env(safe-area-inset-right));
+    bottom:max(6px,env(safe-area-inset-bottom));
+    font-size:9px;
+    padding:3px 7px;
+    opacity:.78;
+  }
+}
+@media print{
+  .version-footer{display:none !important;}
+}
+
+/* Playback Cifras IA v1.4 — correção do menu responsivo e scroll lateral */
+:root{--version-footer-space:30px;}
+
+/* Mantém o comportamento estável no desktop: painel fixo e lista de músicas com rolagem própria. */
+.sidebar{
+  overflow:hidden;
+}
+.song-list{
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* Evita que os controles do topo quebrem ou fiquem inacessíveis em telas estreitas. */
+.top-actions{
+  min-width:0;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.top-actions::-webkit-scrollbar{display:none;}
+.top-actions .secondary-btn,
+.top-actions .speed-label{
+  flex:0 0 auto;
+}
+
+@media(max-width:900px){
+  /* No tablet/iPad vertical e mobile, o menu lateral inteiro passa a rolar.
+     Isso evita travamento quando os painéis ocupam mais altura que a tela. */
+  .sidebar{
+    height:100dvh !important;
+    max-height:100dvh !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:calc(var(--version-footer-space) + env(safe-area-inset-bottom)) !important;
+  }
+  .sidebar .brand{
+    position:sticky;
+    top:0;
+    z-index:2;
+  }
+  .song-list{
+    flex:0 0 auto !important;
+    min-height:220px !important;
+    overflow:visible !important;
+    padding-bottom:calc(88px + env(safe-area-inset-bottom)) !important;
+  }
+  .top-actions{
+    max-width:min(62vw,520px);
+    padding-bottom:2px;
+  }
+  .main{
+    min-width:0;
+  }
+}
+
+@media(max-width:620px){
+  .top-actions{
+    max-width:50vw;
+  }
+  .topbar{
+    align-items:center;
+  }
+  .now{
+    min-width:88px;
+  }
+  .sidebar{
+    width:min(90vw,360px) !important;
+  }
+  .song-list{
+    min-height:180px !important;
+  }
+}
+
+@media(orientation:landscape) and (max-height:620px){
+  .sidebar{
+    overflow-y:auto !important;
+  }
+  .sidebar .brand{
+    position:relative;
+  }
+  .song-list{
+    min-height:160px !important;
+    padding-bottom:calc(64px + env(safe-area-inset-bottom)) !important;
+  }
+}

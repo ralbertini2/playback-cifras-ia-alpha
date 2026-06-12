@@ -1,229 +1,58 @@
 # Playback Cifras IA
 
-## Versionamento Oficial
+## Versão Atual
 
-Este documento define a política oficial de versionamento do projeto Playback Cifras IA.
+**Versão:** `v1.4`
 
----
+**Nome:** Playback Cifras IA v1.4 — Limpeza de Módulos Adiados
 
-# Versão Atual
-
-**Versão Base:** `v1`
-
-Data de criação: Junho/2026
-
-Branch de desenvolvimento inicial:
+**Branch:**
 
 ```text
-feature/v1-foundation
+feature/v1-3-clean-deferred-modules
 ```
 
 ---
 
-# Objetivo da v1
+## Histórico Rápido
 
-A versão v1 representa o reinício oficial do desenvolvimento do Playback Cifras IA.
-
-Esta versão foi criada a partir da branch estável `main` e estabelece uma nova base para evolução do sistema.
-
-Principais objetivos:
-
-* Estabilizar a aplicação
-* Eliminar regressões históricas
-* Priorizar experiência Tablet/iPad Vertical
-* Consolidar integração com Google Drive
-* Simplificar a interface
-* Preparar arquitetura para futuras funcionalidades
+- `v1`: fundação da nova linha de desenvolvimento.
+- `v1.1`: remoção dos botões Modo Palco e Tela Cheia.
+- `v1.2`: inclusão de footer discreto com versão atual.
+- `v1.4`: limpeza de módulos e telas adiadas para reduzir complexidade da base.
 
 ---
 
-# Política de Versionamento
+## Prioridade de Plataforma
 
-O projeto utiliza versionamento incremental simples.
-
-## Grandes Marcos
-
-```text
-v1
-v2
-v3
-v4
-```
-
-Utilizado quando ocorrer:
-
-* Mudanças estruturais importantes
-* Grandes refatorações
-* Novas fases do produto
+1. Tablet / iPad Vertical
+2. Desktop
+3. Mobile
 
 ---
 
-## Funcionalidades Relevantes
+## Áreas Fora da v1
 
-```text
-v1.1
-v1.2
-v1.3
-```
+As áreas abaixo permanecem fora do escopo da v1 e serão reconstruídas futuramente:
 
-Utilizado quando ocorrer:
-
-* Novos módulos
-* Novas áreas da aplicação
-* Recursos significativos para o usuário
+- Dashboard
+- Planos / Assinatura
+- Biblioteca própria Playback Cifras
+- IA Lab
+- Editor de cifras
+- Fluxo Adicionar Música
 
 ---
 
-## Melhorias e Ajustes
+## Base Funcional Mantida
 
-```text
-v1.1.1
-v1.1.2
-```
+A v1 mantém foco em:
 
-Utilizado quando ocorrer:
-
-* Melhorias de UX
-* Melhorias visuais
-* Ajustes funcionais
-* Pequenas evoluções
-
----
-
-## Correções Pontuais
-
-```text
-v1.1.1.1
-v1.1.1.2
-```
-
-Utilizado quando ocorrer:
-
-* Correção de bugs
-* Hotfixes
-* Ajustes emergenciais
-
----
-
-# Prioridade de Plataformas
-
-## 1. Tablet / iPad Vertical
-
-Prioridade máxima do projeto.
-
-Toda decisão de interface deve ser validada primeiro para uso em iPad vertical.
-
----
-
-## 2. Desktop
-
-Adaptação da experiência Tablet para telas maiores.
-
----
-
-## 3. Mobile
-
-Versão compacta mantendo as funcionalidades essenciais.
-
----
-
-# Áreas Temporariamente Removidas
-
-As seguintes áreas não fazem parte da v1:
-
-* Dashboard
-* Planos
-* Biblioteca
-
-Essas funcionalidades serão reconstruídas futuramente.
-
----
-
-# Regras de Desenvolvimento
-
-Nenhuma alteração deve ser realizada diretamente na branch:
-
-```text
-main
-```
-
-Fluxo oficial:
-
-```text
-main
-↓
-develop
-↓
-feature/*
-```
-
-Exemplo:
-
-```text
-feature/v1-1-google-drive-improvements
-feature/v1-2-pdf-reader
-feature/v1-3-setlists
-```
-
----
-
-# Requisitos Obrigatórios para Pull Requests
-
-Todo Pull Request deve conter:
-
-## Nome do Branch
-
-```text
-feature/vX-descricao
-```
-
-## Título do PR
-
-Exemplo:
-
-```text
-feat: melhora visualização de PDFs no tablet
-```
-
-## Descrição
-
-* Objetivo
-* Arquivos alterados
-* Impactos
-* Testes realizados
-* Riscos conhecidos
-
----
-
-# Checklist de Aprovação
-
-* [ ] Build executado com sucesso
-* [ ] Sem erros de compilação
-* [ ] Tablet vertical validado
-* [ ] Desktop validado
-* [ ] Mobile validado
-* [ ] Google Drive funcionando
-* [ ] Sem regressões conhecidas
-
----
-
-# Visão do Produto
-
-O Playback Cifras IA é um hub musical inteligente que centraliza:
-
-* Cifras
-* PDFs
-* Playbacks
-* Repertórios
-* Arquivos do Google Drive
-* Recursos futuros de Inteligência Artificial
-
-O objetivo é permitir que músicos, bandas, igrejas e professores realizem estudo, ensaio e apresentação utilizando uma única plataforma.
-
----
-
-**Status:** Versão Oficial Ativa
-
-```text
-Playback Cifras IA v1
-```
+- Google Drive
+- Listagem de músicas
+- Abertura de PDFs
+- Reprodução de playbacks
+- Favoritos
+- Playlists / Eventos
+- Experiência Tablet First
+- Footer discreto com versão atual
