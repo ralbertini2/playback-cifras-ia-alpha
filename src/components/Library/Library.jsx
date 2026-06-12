@@ -1,4 +1,4 @@
-import { Clock3, Search, Star } from 'lucide-react';
+import { Clock3, Search, Star, X } from 'lucide-react';
 import styles from './Library.module.css';
 
 export default function Library({
@@ -7,21 +7,49 @@ export default function Library({
   loading = false,
   searchQuery,
   setSearchQuery,
+  clearSearch,
   collectionFilter,
   setCollectionFilter,
   favoriteCount = 0,
   recentCount = 0,
+  totalSongs = 0,
   isFavorite,
   onToggleFavorite,
   onSelectSong,
 }) {
+  const visibleLabel = totalSongs > 0 ? `${songs.length} de ${totalSongs} música(s)` : `${songs.length} música(s)`;
+
+  function changeFilter(filter) {
+    setCollectionFilter(filter);
+  }
+
   return (
     <section className={styles.library} aria-label="Biblioteca de músicas">
       <div className={styles.header}>
         <div>
           <label>Biblioteca</label>
-          <span>{songs.length} música(s) visível(is)</span>
+          <span>{visibleLabel}</span>
         </div>
+        {(searchQuery || collectionFilter !== 'all') ? (
+          <button className={styles.resetButton} onClick={() => { setCollectionFilter('all'); clearSearch?.(); }}>
+            Limpar
+          </button>
+        ) : null}
+      </div>
+
+      <div className={styles.quickStats} aria-label="Resumo da biblioteca">
+        <button className={collectionFilter === 'all' ? styles.activeStat : ''} onClick={() => changeFilter('all')}>
+          <strong>{totalSongs || songs.length}</strong>
+          <span>Todas</span>
+        </button>
+        <button className={collectionFilter === 'favorites' ? styles.activeStat : ''} onClick={() => changeFilter('favorites')}>
+          <strong>{favoriteCount}</strong>
+          <span>Favoritas</span>
+        </button>
+        <button className={collectionFilter === 'recent' ? styles.activeStat : ''} onClick={() => changeFilter('recent')}>
+          <strong>{recentCount}</strong>
+          <span>Recentes</span>
+        </button>
       </div>
 
       <div className={styles.searchBox}>
@@ -32,12 +60,15 @@ export default function Library({
           placeholder="Buscar música, artista ou estilo"
           aria-label="Buscar na biblioteca"
         />
+        {searchQuery ? (
+          <button onClick={clearSearch} aria-label="Limpar busca"><X size={15} /></button>
+        ) : null}
       </div>
 
       <div className={styles.filters} role="tablist" aria-label="Filtros da biblioteca">
-        <button className={collectionFilter === 'all' ? styles.activeFilter : ''} onClick={() => setCollectionFilter('all')}>Todas</button>
-        <button className={collectionFilter === 'favorites' ? styles.activeFilter : ''} onClick={() => setCollectionFilter('favorites')}><Star size={14} /> Favoritas {favoriteCount ? `(${favoriteCount})` : ''}</button>
-        <button className={collectionFilter === 'recent' ? styles.activeFilter : ''} onClick={() => setCollectionFilter('recent')}><Clock3 size={14} /> Recentes {recentCount ? `(${recentCount})` : ''}</button>
+        <button className={collectionFilter === 'all' ? styles.activeFilter : ''} onClick={() => changeFilter('all')}>Todas</button>
+        <button className={collectionFilter === 'favorites' ? styles.activeFilter : ''} onClick={() => changeFilter('favorites')}><Star size={14} /> Favoritas {favoriteCount ? `(${favoriteCount})` : ''}</button>
+        <button className={collectionFilter === 'recent' ? styles.activeFilter : ''} onClick={() => changeFilter('recent')}><Clock3 size={14} /> Recentes {recentCount ? `(${recentCount})` : ''}</button>
       </div>
 
       <div className={styles.songList}>

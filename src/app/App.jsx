@@ -156,6 +156,8 @@ export default function App() {
           setCollectionFilter={libraryView.setCollectionFilter}
           favoriteCount={libraryView.favoriteCount}
           recentCount={libraryView.recentCount}
+          totalSongs={drive.filteredSongs.length}
+          clearSearch={libraryView.clearSearch}
           isFavorite={libraryView.isFavorite}
           onToggleFavorite={toggleSongFavorite}
           loading={drive.loadingLibrary || drive.loadingSong}
@@ -170,7 +172,7 @@ export default function App() {
           onDeletePlaylist={deletePlaylist}
         />
       )}
-      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} favoriteActive={libraryView.isFavorite(currentSong)} onToggleFavorite={toggleCurrentFavorite} />}
+      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} onOpenSearch={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} favoriteActive={libraryView.isFavorite(currentSong)} onToggleFavorite={toggleCurrentFavorite} />}
       viewer={<PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />}
       player={(
         <PlayerBar

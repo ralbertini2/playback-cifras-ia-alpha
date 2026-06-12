@@ -1,41 +1,30 @@
-# Playback Cifras IA — Versionamento
+# Playback Cifras IA v2.6
 
-## Versão Atual
+## Nome da Versão
 
-```text
-v2.5
-```
-
-Nome da versão:
-
-```text
-Playback Cifras IA v2.5 — React Library
-```
+**Playback Cifras IA v2.6 — Integração Funcional da Biblioteca**
 
 Branch:
 
 ```text
-feature/v2-5-library-setlists-react
+feature/v2-6-library-integration
 ```
 
-## Objetivo da v2.5
+## Objetivo
 
-Criar a camada de Biblioteca React para organizar as músicas carregadas pelo Google Drive.
+Conectar Biblioteca, Favoritos e Recentes ao fluxo principal da aplicação React.
 
-## Recursos incluídos
+## Entrega funcional
 
-- Biblioteca React.
-- Busca de músicas.
-- Filtros: todas, favoritas e recentes.
-- Favoritos locais.
-- Recentes locais.
-- Repertórios/Eventos integrados à sidebar.
-- Integração com PDF Viewer e Player já existentes.
+- Biblioteca integrada à Sidebar.
+- Busca por música, artista, estilo ou arquivo.
+- Filtros funcionais: Todas, Favoritas e Recentes.
+- Favoritos persistidos em localStorage.
+- Recentes registrados ao abrir uma música.
+- Botão de busca da Toolbar abre o menu da biblioteca.
+- Contadores visíveis de total, favoritas e recentes.
+- Versão exibida atualizada para v2.6.
 
-## Linha de desenvolvimento
+## Status
 
-```text
-main           → versão estável atual
-develop        → manutenção v1.x
-develop-react  → linha React/v2
-```
+Ready for Development
