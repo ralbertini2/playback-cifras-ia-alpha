@@ -1,8 +1,8 @@
 # Playback Cifras IA
 
-## v2.4 — React Google Drive
+## v2.5 — React Library
 
-Integração inicial do Google Drive na arquitetura React do Playback Cifras IA.
+Biblioteca musical React com busca, filtros, favoritos, recentes e repertórios integrados ao fluxo Google Drive → PDF Viewer → Player.
 
 Stack:
 
@@ -36,6 +36,18 @@ npm run build
 npm run preview
 ```
 
+## Branches
+
+```text
+main           → versão estável atual
+develop        → manutenção v1.x
+develop-react  → linha React/v2
+```
+
+## GitHub Pages
+
+A linha React usa Vite. Quando a v2 for publicada, o deploy deve ser feito via GitHub Actions.
+
 ## Configuração Google
 
 Copie:
@@ -58,36 +70,25 @@ GOOGLE_API_KEY
 ROOT_FOLDER_ID
 ```
 
-## Branches
+## Recursos v2.5
 
-```text
-main           → versão estável atual
-backup/base-ia-alpha → cópia de segurança da base antiga
-develop        → manutenção v1.x
-develop-react  → linha React/v2
-```
-
-## GitHub Pages
-
-A linha React usa Vite. Quando a v2 for publicada, o deploy deve ser feito via GitHub Actions.
-
-## Recursos v2.4
-
-- Hook `useGoogleDrive`.
-- Login e logout Google.
-- Seleção de pasta com Google Picker.
-- Atualização da biblioteca de músicas a partir do Drive.
-- Listagem de músicas por estilo.
-- Carregamento autorizado de PDF do Drive.
-- Carregamento autorizado de áudio do Drive.
-- Integração do Drive com `PdfViewer`.
-- Integração do Drive com `PlayerBar`.
-- Estados de carregamento no menu e toolbar.
+- Componente `Library` para organização da biblioteca musical.
+- Componente `Setlists` para controle de repertórios/eventos.
+- Hook `useLibrary` para busca, favoritos, recentes e filtros.
+- Service `libraryService.js` para utilitários da biblioteca.
+- Busca por música, artista ou estilo.
+- Filtro por todas, favoritas e recentes.
+- Favoritar música pela lista ou toolbar.
+- Registro local de músicas recentes.
+- Repertórios integrados à sidebar.
+- Layout híbrido: sidebar fixa no desktop e drawer em iPad/mobile.
+- Atualização da versão para `v2.5`.
 
 ## Recursos já existentes da linha React
 
 - v2.0: fundação React/Vite.
 - v2.1: shell visual principal.
 - v2.2: visualizador PDF/Cifra com PDF.js.
-- v2.3: player React.
+- v2.3: Player React.
 - v2.3.1: validação automática de build React/Vite.
+- v2.4: integração inicial Google Drive React.
