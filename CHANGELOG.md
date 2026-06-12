@@ -4,6 +4,24 @@ Todas as mudanças relevantes do Playback Cifras IA serão documentadas neste ar
 
 ---
 
+## [v2.4] - 2026-06-12
+
+### Added
+
+- Hook `useGoogleDriveLibrary` para centralizar a integração Google Drive na arquitetura React.
+- Login/logout Google no fluxo React.
+- Seleção de pasta via Google Picker.
+- Atualização da biblioteca de músicas a partir do Drive.
+- Carregamento autorizado de PDFs e áudios do Drive.
+- Integração do Google Drive com `PdfViewer` e `PlayerBar`.
+- Estados de carregamento para biblioteca e música selecionada.
+
+### Changed
+
+- `App.jsx` passa a usar o hook `useGoogleDriveLibrary`.
+- `Sidebar` passa a receber estado de carregamento.
+- `Toolbar` passa a exibir indicador de carregamento.
+- Versão atualizada para `v2.4`.
 
 ## [v2.3.1] - 2026-06-12
 

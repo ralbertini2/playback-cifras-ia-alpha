@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import AppLayout from '../components/Layout/AppLayout.jsx';
 import Sidebar from '../components/Sidebar/Sidebar.jsx';
 import Toolbar from '../components/Toolbar/Toolbar.jsx';
@@ -6,132 +6,65 @@ import PdfViewer from '../components/PdfViewer/PdfViewer.jsx';
 import PlayerBar from '../components/PlayerBar/PlayerBar.jsx';
 import VersionFooter from '../components/VersionFooter/VersionFooter.jsx';
 import { useAudioPlayer } from '../hooks/useAudioPlayer.js';
+import { useGoogleDriveLibrary } from '../hooks/useGoogleDrive.js';
 import { STORAGE, readJson, writeJson } from '../services/storage.js';
-import { getAuthorizedMediaUrl, initGoogleAuth, loadDriveLibrary, logoutGoogle, openFolderPicker, requestAccessToken } from '../services/googleDriveService.js';
 import styles from './App.module.css';
 
-function songKey(song) { return `${song?.styleId || song?.style}|${song?.title}`; }
+function songKey(song) {
+  return `${song?.styleId || song?.style}|${song?.title}`;
+}
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [connected, setConnected] = useState(localStorage.getItem(STORAGE.connected) === '1');
-  const [status, setStatus] = useState('Inicializando Google Drive...');
-  const [folderId, setFolderId] = useState(localStorage.getItem(STORAGE.folder) || window.APP_CONFIG?.ROOT_FOLDER_ID || '');
-  const [library, setLibrary] = useState(() => readJson(STORAGE.library, []));
-  const [selectedStyle, setSelectedStyle] = useState(localStorage.getItem(STORAGE.style) || '');
+  const [toast, setToast] = useState('');
   const [playlists, setPlaylists] = useState(() => readJson(STORAGE.playlists, {}));
   const [selectedPlaylist, setSelectedPlaylist] = useState(localStorage.getItem(STORAGE.activePlaylist) || '');
-  const [currentIndex, setCurrentIndex] = useState(-1);
-  const samplePdfUrl = `${import.meta.env.BASE_URL}samples/sample-cifra.pdf`;
-  const [pdfUrl, setPdfUrl] = useState(samplePdfUrl);
-  const [toast, setToast] = useState('');
   const audio = useAudioPlayer();
 
-  useEffect(() => {
-    initGoogleAuth()
-      .then(() => setStatus(connected ? 'Google conectado.' : 'Desconectado.'))
-      .catch((error) => setStatus(error.message));
-  }, []);
-
-  useEffect(() => { localStorage.setItem(STORAGE.style, selectedStyle); }, [selectedStyle]);
-  useEffect(() => { localStorage.setItem(STORAGE.activePlaylist, selectedPlaylist); }, [selectedPlaylist]);
-
-  const styleList = useMemo(() => [...new Set(library.map((song) => song.style))].sort((a, b) => a.localeCompare(b, 'pt-BR')), [library]);
-
-  const filteredSongs = useMemo(() => {
-    const playlistKeys = selectedPlaylist ? playlists[selectedPlaylist] || [] : null;
-    return library.filter((song) => {
-      const styleOk = !selectedStyle || song.style === selectedStyle;
-      const playlistOk = !playlistKeys || playlistKeys.includes(songKey(song));
-      return styleOk && playlistOk;
-    });
-  }, [library, selectedStyle, playlists, selectedPlaylist]);
-
-  const currentSong = filteredSongs[currentIndex] || null;
-  const meta = currentSong ? `${currentSong.style} • ${currentIndex + 1} de ${filteredSongs.length}` : '';
-
-  function notify(message) {
+  const notify = useCallback((message) => {
     setToast(message);
     window.clearTimeout(notify.timer);
     notify.timer = window.setTimeout(() => setToast(''), 3000);
-  }
+  }, []);
 
-  async function login() {
-    try {
-      await requestAccessToken('consent');
-      setConnected(true);
-      setStatus('Google conectado.');
-      notify('Login Google realizado.');
-    } catch (error) {
-      setStatus(error.message);
-      notify('Não foi possível concluir o login Google.');
-    }
-  }
+  const drive = useGoogleDriveLibrary({
+    onSongAudioReady: audio.setSource,
+    onNotify: notify,
+  });
 
-  function logout() {
-    logoutGoogle();
-    setConnected(false);
-    setStatus('Desconectado.');
-    notify('Sessão Google encerrada.');
-  }
+  const filteredSongs = useMemo(() => {
+    const playlistKeys = selectedPlaylist ? playlists[selectedPlaylist] || [] : null;
+    if (!playlistKeys) return drive.filteredSongs;
+    return drive.filteredSongs.filter((song) => playlistKeys.includes(songKey(song)));
+  }, [drive.filteredSongs, playlists, selectedPlaylist]);
 
-  async function refreshLibrary() {
-    try {
-      if (!connected) await login();
-      setStatus('Atualizando biblioteca...');
-      const nextLibrary = await loadDriveLibrary(folderId);
-      setLibrary(nextLibrary);
-      setCurrentIndex(nextLibrary.length ? 0 : -1);
-      setStatus(`Biblioteca atualizada: ${nextLibrary.length} música(s).`);
-      notify(`Biblioteca atualizada: ${nextLibrary.length} música(s).`);
-    } catch (error) {
-      setStatus(error.message);
-      notify(error.message);
-    }
-  }
+  const currentSong = drive.currentSong;
+  const meta = currentSong
+    ? `${currentSong.style} • ${drive.currentIndex + 1} de ${filteredSongs.length || drive.filteredSongs.length}`
+    : drive.connected
+      ? 'Google Drive conectado • selecione uma música'
+      : 'Conecte o Google Drive para carregar PDFs e playbacks';
 
-  async function pickFolder() {
-    try {
-      if (!connected) await login();
-      openFolderPicker((folder) => {
-        setFolderId(folder.id);
-        localStorage.setItem(STORAGE.folder, folder.id);
-        notify(`Pasta selecionada: ${folder.name}`);
-      });
-    } catch (error) {
-      notify(error.message);
-    }
-  }
-
-  async function selectSong(index, autoplay = false) {
+  function selectSong(index, autoplay = false) {
     const song = filteredSongs[index];
     if (!song) return;
-    setCurrentIndex(index);
-    setPdfUrl('');
-    try {
-      const pdfBlobUrl = await getAuthorizedMediaUrl(song.pdfId);
-      setPdfUrl(pdfBlobUrl);
-    } catch (error) {
-      setPdfUrl(samplePdfUrl);
-      notify('Não consegui carregar o PDF do Drive. Exibindo PDF de exemplo.');
-    }
+    const realIndex = drive.filteredSongs.findIndex((item) => item.id === song.id);
+    drive.selectSong(realIndex >= 0 ? realIndex : index, autoplay);
     setSidebarOpen(false);
-    try {
-      const mediaUrl = await getAuthorizedMediaUrl(song.mp3Id);
-      audio.setSource(mediaUrl, autoplay);
-    } catch (error) {
-      notify('PDF aberto. Não consegui carregar o áudio.');
-    }
   }
 
   function previousSong() {
     if (!filteredSongs.length) return;
-    selectSong((currentIndex - 1 + filteredSongs.length) % filteredSongs.length, false);
+    const currentFilteredIndex = filteredSongs.findIndex((song) => song.id === currentSong?.id);
+    const nextIndex = currentFilteredIndex <= 0 ? filteredSongs.length - 1 : currentFilteredIndex - 1;
+    selectSong(nextIndex, false);
   }
 
   function nextSong() {
     if (!filteredSongs.length) return;
-    selectSong((currentIndex + 1) % filteredSongs.length, false);
+    const currentFilteredIndex = filteredSongs.findIndex((song) => song.id === currentSong?.id);
+    const nextIndex = currentFilteredIndex < 0 || currentFilteredIndex >= filteredSongs.length - 1 ? 0 : currentFilteredIndex + 1;
+    selectSong(nextIndex, false);
   }
 
   function createPlaylist() {
@@ -141,30 +74,45 @@ export default function App() {
     setPlaylists(next);
     writeJson(STORAGE.playlists, next);
     setSelectedPlaylist(name.trim());
+    localStorage.setItem(STORAGE.activePlaylist, name.trim());
   }
 
   function addToPlaylist() {
-    if (!currentSong) { notify('Selecione uma música primeiro.'); return; }
+    if (!currentSong) {
+      notify('Selecione uma música primeiro.');
+      return;
+    }
     let name = selectedPlaylist;
     if (!name) name = prompt('Adicionar a qual playlist?');
     if (!name?.trim()) return;
+    const cleanName = name.trim();
     const key = songKey(currentSong);
-    const list = playlists[name] || [];
-    const next = { ...playlists, [name]: list.includes(key) ? list : [...list, key] };
+    const list = playlists[cleanName] || [];
+    const next = { ...playlists, [cleanName]: list.includes(key) ? list : [...list, key] };
     setPlaylists(next);
     writeJson(STORAGE.playlists, next);
-    setSelectedPlaylist(name);
-    notify('Música adicionada à playlist.');
+    setSelectedPlaylist(cleanName);
+    localStorage.setItem(STORAGE.activePlaylist, cleanName);
+    notify('Música adicionada ao repertório.');
   }
 
   function deletePlaylist() {
-    if (!selectedPlaylist) { notify('Selecione uma playlist para excluir.'); return; }
-    if (!confirm(`Excluir a playlist "${selectedPlaylist}" deste dispositivo?`)) return;
+    if (!selectedPlaylist) {
+      notify('Selecione um repertório para excluir.');
+      return;
+    }
+    if (!confirm(`Excluir o repertório "${selectedPlaylist}" deste dispositivo?`)) return;
     const next = { ...playlists };
     delete next[selectedPlaylist];
     setPlaylists(next);
     writeJson(STORAGE.playlists, next);
     setSelectedPlaylist('');
+    localStorage.removeItem(STORAGE.activePlaylist);
+  }
+
+  function changePlaylist(value) {
+    setSelectedPlaylist(value);
+    localStorage.setItem(STORAGE.activePlaylist, value);
   }
 
   return (
@@ -172,31 +120,32 @@ export default function App() {
       sidebar={(
         <Sidebar
           open={sidebarOpen}
-          connected={connected}
-          status={status}
-          folderId={folderId}
-          setFolderId={setFolderId}
-          stylesList={styleList}
-          selectedStyle={selectedStyle}
-          setSelectedStyle={setSelectedStyle}
+          connected={drive.connected}
+          status={drive.loadingLibrary ? 'Atualizando biblioteca...' : drive.status}
+          folderId={drive.folderId}
+          setFolderId={drive.setFolderId}
+          stylesList={drive.styleList}
+          selectedStyle={drive.selectedStyle}
+          setSelectedStyle={drive.setSelectedStyle}
           playlists={playlists}
           selectedPlaylist={selectedPlaylist}
-          setSelectedPlaylist={setSelectedPlaylist}
+          setSelectedPlaylist={changePlaylist}
           songs={filteredSongs}
           currentSongId={currentSong?.id}
+          loading={drive.loadingLibrary || drive.loadingSong}
           onClose={() => setSidebarOpen(false)}
-          onLogin={login}
-          onLogout={logout}
-          onPickFolder={pickFolder}
-          onRefresh={refreshLibrary}
+          onLogin={drive.login}
+          onLogout={drive.logout}
+          onPickFolder={drive.pickFolder}
+          onRefresh={drive.refreshLibrary}
           onSelectSong={selectSong}
           onCreatePlaylist={createPlaylist}
           onAddToPlaylist={addToPlaylist}
           onDeletePlaylist={deletePlaylist}
         />
       )}
-      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} />}
-      viewer={<PdfViewer source={pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />}
+      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} />}
+      viewer={<PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />}
       player={(
         <PlayerBar
           audioRef={audio.audioRef}
