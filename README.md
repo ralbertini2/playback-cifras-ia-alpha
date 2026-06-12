@@ -1,8 +1,8 @@
 # Playback Cifras IA
 
-## v2.2 — React PDF/Cifra Viewer
+## v2.3 — React Player
 
-Visualizador PDF/cifra React com PDF.js, zoom, ajuste à largura e navegação de páginas.
+Player React componentizado com controles de reprodução, progresso, volume e navegação entre músicas.
 
 Stack:
 
@@ -11,6 +11,7 @@ React
 Vite
 CSS Modules
 Lucide Icons
+PDF.js
 ```
 
 ## Desenvolvimento
@@ -44,13 +45,22 @@ develop-react  → linha React/v2
 
 A linha React usa Vite. Quando a v2 for publicada, o deploy deve ser feito via GitHub Actions.
 
+## Recursos v2.3
 
-## Recursos v2.2
+- Player React em `PlayerBar`.
+- Controles separados em `PlaybackControls`.
+- Barra de progresso em `ProgressBar`.
+- Volume e mute em `VolumeControl`.
+- Hook `useAudioPlayer` evoluído.
+- Service `audioService.js`.
+- Play/Pause.
+- Seek na barra de progresso.
+- Avançar e voltar 10 segundos.
+- Música anterior e próxima.
+- Layout Tablet First.
 
-- Visualizador PDF em React.
-- Renderização via PDF.js.
-- Zoom + e zoom -.
-- Ajuste à largura.
-- Página anterior e próxima página.
-- PDF de exemplo para validação inicial.
-- Layout híbrido: sidebar fixa no desktop e drawer em iPad/mobile.
+## Recursos já existentes da linha React
+
+- v2.0: fundação React/Vite.
+- v2.1: shell visual principal.
+- v2.2: visualizador PDF/Cifra com PDF.js.
