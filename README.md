@@ -1,73 +1,34 @@
 # Playback Cifras IA
 
-## v2.6.1 — GitHub Pages React Deploy Fix
+## v2.7 — iPad Touch & Drive Media Fix
 
-Correção de deploy da linha React/Vite no GitHub Pages.
+Correção funcional da versão React publicada no GitHub Pages.
 
-## Problema corrigido
+## Problemas corrigidos
 
-A aplicação React estava sendo publicada via:
+- Controles do Player não respondiam ao toque no iPad.
+- Controles do PDF Viewer não respondiam corretamente em tablet.
+- Existia uma camada visual dividindo a tela no iPad.
+- PDF Viewer chamava `getDocument` sem receber `url`, `data` ou `range`.
+- Player funcionava no desktop, mas não no iPad.
+- Seleção de música precisava enviar PDF e áudio de forma mais segura aos módulos React.
 
-```text
-Deploy from a branch
-Folder: / root
-```
+## Inclui
 
-Esse fluxo funciona para HTML/CSS/JS puro, mas não para Vite.
+- Correção de `pointer-events`.
+- Correção de `z-index`.
+- Correção de layout tablet/iPad.
+- Correção de carregamento seguro no `PdfViewer`.
+- Correção do service de PDF.
+- Correção do service Google Drive.
+- Ajustes no hook de áudio para melhor compatibilidade iPad/Safari.
+- Atualização para v2.7.
 
-React/Vite precisa ser compilado com:
+## Validação esperada
 
-```bash
-npm run build
-```
-
-e publicado a partir da pasta:
-
-```text
-dist/
-```
-
-## Alterações
-
-- Adicionado workflow de deploy React para GitHub Pages.
-- Configurado build Vite para gerar `dist/`.
-- Configurado `base` do Vite para `/playback-cifras-ia-alpha/`.
-- Mantido deploy automático apenas para a branch `develop-react`.
-
-## Configuração necessária no GitHub
-
-Após o merge desta versão em `develop-react`, vá em:
-
-```text
-Settings → Pages → Build and deployment
-```
-
-Altere:
-
-```text
-Source: Deploy from a branch
-```
-
-para:
-
-```text
-Source: GitHub Actions
-```
-
-Depois acesse:
-
-```text
-https://ralbertini2.github.io/playback-cifras-ia-alpha/
-```
-
-## Branch
-
-```text
-feature/v2-6-1-github-pages-react-deploy
-```
-
-## PR
-
-```text
-fix: corrige deploy React no GitHub Pages
-```
+- React Build Validation verde.
+- GitHub Pages deploy verde.
+- Desktop abrindo a aplicação.
+- iPad permitindo toque nos controles.
+- Player respondendo ao botão tocar.
+- PDF Viewer não exibindo erro quando não houver PDF válido.
