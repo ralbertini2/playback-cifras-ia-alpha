@@ -1,19 +1,3 @@
-# Playback Cifras IA
+# Playback Cifras IA v3.0.1
 
-## Versão Atual
-
-```text
-v2.9.0
-```
-
-## Nome da versão
-
-```text
-Drive Library Source Fix
-```
-
-## Branch
-
-```text
-feature/v2-9-drive-library-source-fix
-```
+Correção do workflow de validação para instalar devDependencies no GitHub Actions.
