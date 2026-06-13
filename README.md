@@ -1,36 +1,41 @@
 # Playback Cifras IA
 
-## v2.8 — Real Google Config & Drive State
+## v2.8.1 — Filtered Songs Runtime Fix
 
-Correção funcional do estado real do Google Drive.
+Correção de runtime após v2.8.
 
 ## Problema
 
-O app mostrava “Google Drive conectado” mesmo quando:
+Após corrigir o estado real do Google Drive, o app passou a quebrar com:
 
-- `ROOT_FOLDER_ID` estava vazio;
-- o usuário ainda não tinha escolhido uma pasta;
-- não existia token válido;
-- nenhum PDF/MP3 real havia sido carregado.
+```text
+Cannot read property "length" of undefined
+```
+
+Causa:
+
+```text
+drive.filteredSongs
+```
+
+não estava sendo retornado pelo hook `useGoogleDriveLibrary`.
 
 ## Correção
 
-- `ROOT_FOLDER_ID` pode ficar vazio.
-- O app passa a exigir seleção de pasta após login.
-- A pasta escolhida via Google Picker é salva no `localStorage`.
-- O Google Drive só fica “conectado” quando há token e pasta válida.
-- Biblioteca retorna vazia com mensagem correta quando o Drive ainda não está pronto.
-- Estado falso de conexão é eliminado.
-- `public/config.js` passa a conter as credenciais reais informadas pelo usuário.
+- `filteredSongs` passa a existir sempre como array.
+- `library`, `songs`, `files` e `musicLibrary` também sempre retornam arrays.
+- `currentSong` e `currentIndex` passam a existir desde o estado inicial.
+- `selectSong`, `selectNext` e `selectPrevious` foram restaurados para compatibilidade com `App.jsx`.
+- PDF e áudio são enviados aos callbacks apenas quando existe arquivo válido.
 
 ## Branch
 
 ```text
-feature/v2-8-real-google-config-and-drive-state
+feature/v2-8-1-filtered-songs-runtime-fix
 ```
 
 ## PR
 
 ```text
-fix: corrige estado real do Google Drive
+fix: corrige filteredSongs undefined
 ```
