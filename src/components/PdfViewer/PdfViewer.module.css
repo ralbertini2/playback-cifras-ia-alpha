@@ -1,151 +1,161 @@
-.viewerShell {
-  height: 100%;
-  min-height: 0;
+.viewer {
+  position: relative;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  background: radial-gradient(circle at top, rgba(34, 197, 94, .07), transparent 35%);
-}
-
-.viewerTopbar {
+  grid-template-rows: auto 1fr auto;
   min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-  background: rgba(5, 8, 13, .46);
+  min-height: 0;
+  height: 100%;
+  background: radial-gradient(circle at top, rgba(0, 96, 72, 0.12), transparent 36%), #05090d;
+  color: #f8fafc;
+  pointer-events: auto;
+  z-index: 1;
 }
 
-.documentTitle { min-width: 0; }
-.documentTitle strong { display:block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.documentTitle span { display:block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  pointer-events: auto;
+  z-index: 3;
+}
 
-.zoomControls,
-.pageControls {
+.header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.header p {
+  margin: 0.25rem 0 0;
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
+  pointer-events: auto;
 }
 
-.zoomControls { overflow:auto; padding-bottom:2px; }
-.zoomControls button,
-.pageControls button {
-  border: 1px solid rgba(255,255,255,.1);
-  background: rgba(255,255,255,.06);
-  color: var(--text);
-  border-radius: 13px;
-  min-width: 40px;
-  min-height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  font-weight: 800;
+.actions button,
+.footer button {
+  appearance: none;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 0.85rem;
+  background: rgba(15, 23, 42, 0.92);
+  color: #f8fafc;
+  min-width: 3rem;
+  min-height: 3rem;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
-.zoomControls span,
-.pageControls span {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 900;
-  min-width: 48px;
+
+.actions button:disabled,
+.footer button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.actions span {
+  min-width: 3.5rem;
   text-align: center;
-  font-variant-numeric: tabular-nums;
+  color: #cbd5e1;
+  font-weight: 700;
 }
 
-.canvasViewport {
-  min-width: 0;
+.stage {
+  position: relative;
   min-height: 0;
   overflow: auto;
-  padding: 18px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  pointer-events: auto;
+  z-index: 1;
   -webkit-overflow-scrolling: touch;
 }
 
-.pageSurface {
-  position: relative;
-  min-width: min-content;
-  min-height: 320px;
-  border-radius: 18px;
-  background: #f8fafc;
-  box-shadow: 0 28px 90px rgba(0,0,0,.36);
-  overflow: hidden;
+.empty,
+.error {
+  width: min(92%, 620px);
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  color: #cbd5e1;
+}
+
+.empty {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.36);
+}
+
+.error {
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(127, 29, 29, 0.24);
+  color: #fecaca;
+}
+
+.canvasWrap {
+  max-width: 100%;
+  overflow: auto;
+  pointer-events: auto;
 }
 
 .canvas {
   display: block;
-  background: #fff;
+  max-width: 100%;
+  height: auto;
+  background: #ffffff;
+  border-radius: 0.35rem;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
 }
 
-.loadingPill {
-  position: absolute;
-  left: 50%;
-  top: 14px;
-  transform: translateX(-50%);
-  border: 1px solid rgba(15, 23, 42, .1);
-  background: rgba(255,255,255,.92);
-  color: #0f172a;
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 12px;
-  font-weight: 900;
-  box-shadow: 0 12px 40px rgba(0,0,0,.12);
-}
-
-.pageControls {
+.footer {
+  display: flex;
   justify-content: center;
-  padding: 10px 16px 12px;
-  border-top: 1px solid rgba(255,255,255,.08);
-  background: rgba(5, 8, 13, .55);
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+  pointer-events: auto;
+  z-index: 3;
 }
 
-.pageControls button {
-  min-width: 120px;
-  min-height: 44px;
-}
-.pageControls button:disabled {
-  opacity: .4;
-  cursor: not-allowed;
-}
-
-.emptyState { min-height:100%; display:grid; place-items:center; padding:24px; }
-.emptyCard { width:min(560px, 100%); border:1px solid rgba(255,255,255,.1); border-radius:28px; background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035)); padding:34px; text-align:center; box-shadow:0 28px 90px rgba(0,0,0,.3); }
-.emptyCard svg { color:var(--accent); }
-.emptyCard h1 { margin:16px 0 8px; font-size:28px; letter-spacing:-.04em; }
-.emptyCard p { margin:0 auto 14px; color:var(--muted); line-height:1.55; }
-.emptyCard small { color:rgba(255,255,255,.55); font-weight:700; }
-
-.errorCard {
-  width: min(520px, 100%);
-  margin: auto;
-  align-self: center;
-  border: 1px solid rgba(248, 113, 113, .25);
-  border-radius: 22px;
-  background: rgba(127, 29, 29, .18);
-  color: var(--text);
-  padding: 28px;
+.footer span {
+  min-width: 4rem;
   text-align: center;
+  color: #cbd5e1;
+  font-weight: 700;
 }
-.errorCard svg { color: #fca5a5; }
-.errorCard strong { display:block; margin: 12px 0 6px; }
-.errorCard span { color: var(--muted); font-size: 13px; }
 
-@media (max-width: 900px) {
-  .viewerTopbar {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
+@media (max-width: 1024px) {
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 0.9rem 1rem;
   }
-  .zoomControls { justify-content: flex-start; }
-  .canvasViewport { padding: 12px; }
-}
 
-@media (max-width: 560px) {
-  .viewerTopbar { padding: 10px; }
-  .zoomControls button { min-width: 38px; min-height: 38px; }
-  .pageControls { padding: 9px 10px 11px; }
-  .pageControls button { min-width: 0; flex: 1; font-size: 13px; }
-  .emptyCard { padding:24px; border-radius:22px; }
-  .emptyCard h1 { font-size:23px; }
+  .actions {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.15rem;
+  }
+
+  .stage {
+    padding: 0.75rem;
+  }
+
+  .footer {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
 }

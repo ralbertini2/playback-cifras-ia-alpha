@@ -1,60 +1,84 @@
-import { ChevronLeft, ChevronRight, FileText, Maximize2, Minus, Plus, RotateCcw } from 'lucide-react';
+import { FileText, Maximize2, Minus, Plus, RotateCcw } from 'lucide-react';
 import { usePdfViewer } from '../../hooks/usePdfViewer.js';
 import styles from './PdfViewer.module.css';
 
-export default function PdfViewer({ source, title }) {
-  const pdf = usePdfViewer(source);
-  const isBusy = pdf.status === 'loading' || pdf.status === 'rendering';
+export default function PdfViewer({ source, title = 'Selecione uma música' }) {
+  const viewer = usePdfViewer(source);
 
-  if (!source) {
-    return (
-      <div className={styles.emptyState}>
-        <div className={styles.emptyCard}>
-          <FileText size={44} />
-          <h1>Visualizador PDF React</h1>
-          <p>Selecione uma música para abrir PDF/cifra. Esta área foi preparada para leitura em iPad vertical, desktop e mobile.</p>
-          <small>v2.2 — PDF/Cifra Viewer</small>
-        </div>
-      </div>
-    );
-  }
+  const zoomLabel = `${Math.round(viewer.zoom * 100)}%`;
 
   return (
-    <div className={styles.viewerShell}>
-      <div className={styles.viewerTopbar}>
-        <div className={styles.documentTitle}>
-          <strong>{title || 'PDF / Cifra'}</strong>
-          <span>{pdf.totalPages ? `Página ${pdf.pageNumber} de ${pdf.totalPages}` : 'Carregando documento...'}</span>
+    <section className={styles.viewer} aria-label="Visualizador de PDF">
+      <header className={styles.header}>
+        <div>
+          <h2>{title}</h2>
+          <p>
+            {viewer.status === 'ready'
+              ? `Página ${viewer.pageNumber} de ${viewer.pageCount}`
+              : viewer.status === 'loading'
+                ? 'Carregando documento...'
+                : 'Nenhum PDF carregado'}
+          </p>
         </div>
-        <div className={styles.zoomControls} aria-label="Controles de zoom do PDF">
-          <button onClick={pdf.zoomOut} aria-label="Reduzir zoom"><Minus size={17} /></button>
-          <span>{Math.round(pdf.scale * 100)}%</span>
-          <button onClick={pdf.zoomIn} aria-label="Aumentar zoom"><Plus size={17} /></button>
-          <button onClick={pdf.fitWidth} aria-label="Ajustar à largura"><Maximize2 size={17} /></button>
-          <button onClick={pdf.resetZoom} aria-label="Redefinir zoom"><RotateCcw size={17} /></button>
-        </div>
-      </div>
 
-      <div className={styles.canvasViewport} ref={pdf.containerRef}>
-        {pdf.error ? (
-          <div className={styles.errorCard}>
-            <FileText size={36} />
-            <strong>Não foi possível abrir este PDF.</strong>
-            <span>{pdf.error}</span>
+        <div className={styles.actions}>
+          <button type="button" onClick={viewer.zoomOut} aria-label="Diminuir zoom">
+            <Minus size={18} />
+          </button>
+          <span>{zoomLabel}</span>
+          <button type="button" onClick={viewer.zoomIn} aria-label="Aumentar zoom">
+            <Plus size={18} />
+          </button>
+          <button type="button" onClick={viewer.fitWidth} aria-label="Ajustar largura">
+            <Maximize2 size={18} />
+          </button>
+          <button type="button" onClick={viewer.fitWidth} aria-label="Redefinir zoom">
+            <RotateCcw size={18} />
+          </button>
+        </div>
+      </header>
+
+      <div className={styles.stage}>
+        {viewer.status === 'empty' && (
+          <div className={styles.empty}>
+            <FileText size={40} />
+            <strong>Selecione uma música</strong>
+            <span>O PDF será exibido aqui quando uma música válida for aberta.</span>
           </div>
-        ) : (
-          <div className={styles.pageSurface} data-busy={isBusy ? 'true' : 'false'}>
-            <canvas ref={pdf.canvasRef} className={styles.canvas} />
-            {isBusy && <div className={styles.loadingPill}>Carregando PDF...</div>}
+        )}
+
+        {viewer.status === 'loading' && (
+          <div className={styles.empty}>
+            <FileText size={40} />
+            <strong>Carregando PDF...</strong>
+            <span>Aguarde enquanto o documento é preparado.</span>
+          </div>
+        )}
+
+        {viewer.status === 'error' && (
+          <div className={styles.error}>
+            <FileText size={40} />
+            <strong>Não foi possível abrir este PDF.</strong>
+            <span>{viewer.error}</span>
+          </div>
+        )}
+
+        {viewer.status === 'ready' && (
+          <div className={styles.canvasWrap}>
+            <canvas ref={viewer.canvasRef} className={styles.canvas} />
           </div>
         )}
       </div>
 
-      <div className={styles.pageControls} aria-label="Controles de página do PDF">
-        <button onClick={pdf.previousPage} disabled={!pdf.canGoPrevious}><ChevronLeft size={20} />Anterior</button>
-        <span>{pdf.totalPages ? `${pdf.pageNumber} / ${pdf.totalPages}` : '—'}</span>
-        <button onClick={pdf.nextPage} disabled={!pdf.canGoNext}>Próxima<ChevronRight size={20} /></button>
-      </div>
-    </div>
+      <footer className={styles.footer}>
+        <button type="button" onClick={viewer.previousPage} disabled={viewer.pageNumber <= 1}>
+          Anterior
+        </button>
+        <span>{viewer.pageCount ? `${viewer.pageNumber} / ${viewer.pageCount}` : '—'}</span>
+        <button type="button" onClick={viewer.nextPage} disabled={!viewer.pageCount || viewer.pageNumber >= viewer.pageCount}>
+          Próxima
+        </button>
+      </footer>
+    </section>
   );
 }
