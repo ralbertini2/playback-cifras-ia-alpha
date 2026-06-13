@@ -1,14 +1,15 @@
 # Changelog
 
-## [v2.7.2] - 2026-06-12
+## [v2.7.3] - 2026-06-12
 
 ### Fixed
 
-- Corrigida tela preta no runtime React.
-- Corrigido erro `Cannot read properties of null (reading 'then')`.
-- `initGoogleAuth` passa a retornar sempre uma Promise.
-- `requestAccessToken` passa a retornar sempre uma Promise.
-- `logoutGoogle` passa a retornar sempre uma Promise.
-- `openFolderPicker` passa a retornar sempre uma Promise.
-- `loadDriveLibrary` retorna array vazio quando Google Drive ainda não está disponível.
-- Adicionado fallback seguro para `crypto.randomUUID`.
+- Corrigido carregamento inválido de áudio no Player React.
+- Corrigido erro de console `URI inválida. Falha no carregamento do recurso de mídia`.
+- Player deixa de tentar carregar áudio vazio, nulo, `undefined`, `null` ou `[object Object]`.
+- `useAudioPlayer` passa a expor `hasValidSource` e `error`.
+- PlayerBar passa a exibir mensagem de erro de áudio quando necessário.
+
+### Added
+
+- `src/services/audioService.js`

@@ -1,129 +1,182 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { clampProgress, clampVolume, formatAudioTime } from '../services/audioService.js';
+import { normalizeAudioSource } from '../services/audioService.js';
 
-export function useAudioPlayer() {
+export function useAudioPlayer(initialSource = '') {
   const audioRef = useRef(null);
-  const [source, setSourceState] = useState('');
+  const [source, setSourceState] = useState(() => normalizeAudioSource(initialSource));
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolumeState] = useState(() => {
-    const saved = Number(localStorage.getItem('pc_ia_audio_volume'));
-    return Number.isFinite(saved) ? clampVolume(saved) : 1;
-  });
-  const [muted, setMuted] = useState(() => localStorage.getItem('pc_ia_audio_muted') === '1');
+  const [currentTime, setCurrentTime] = useState(0);
+  const [volume, setVolumeState] = useState(0.8);
+  const [muted, setMuted] = useState(false);
+  const [error, setError] = useState('');
 
-  const sync = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    setCurrentTime(Number.isFinite(audio.currentTime) ? audio.currentTime : 0);
-    setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
+  useEffect(() => {
+    const audio = new Audio();
+    audio.preload = 'metadata';
+    audio.playsInline = true;
+    audioRef.current = audio;
+
+    const onLoaded = () => {
+      setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
+      setError('');
+    };
+
+    const onTime = () => {
+      setCurrentTime(audio.currentTime || 0);
+    };
+
+    const onEnded = () => {
+      setIsPlaying(false);
+    };
+
+    const onError = () => {
+      setIsPlaying(false);
+      setError('URI inválida ou áudio indisponível.');
+    };
+
+    audio.addEventListener('loadedmetadata', onLoaded);
+    audio.addEventListener('timeupdate', onTime);
+    audio.addEventListener('ended', onEnded);
+    audio.addEventListener('error', onError);
+
+    return () => {
+      audio.pause();
+      audio.removeEventListener('loadedmetadata', onLoaded);
+      audio.removeEventListener('timeupdate', onTime);
+      audio.removeEventListener('ended', onEnded);
+      audio.removeEventListener('error', onError);
+      audioRef.current = null;
+    };
   }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return undefined;
-
-    const onPlay = () => setIsPlaying(true);
-    const onPause = () => setIsPlaying(false);
-    const onEnded = () => setIsPlaying(false);
+    if (!audio) return;
 
     audio.volume = volume;
     audio.muted = muted;
+  }, [volume, muted]);
 
-    audio.addEventListener('timeupdate', sync);
-    audio.addEventListener('loadedmetadata', sync);
-    audio.addEventListener('durationchange', sync);
-    audio.addEventListener('play', onPlay);
-    audio.addEventListener('pause', onPause);
-    audio.addEventListener('ended', onEnded);
-
-    return () => {
-      audio.removeEventListener('timeupdate', sync);
-      audio.removeEventListener('loadedmetadata', sync);
-      audio.removeEventListener('durationchange', sync);
-      audio.removeEventListener('play', onPlay);
-      audio.removeEventListener('pause', onPause);
-      audio.removeEventListener('ended', onEnded);
-    };
-  }, [muted, sync, volume]);
-
-  useEffect(() => {
+  const stopAndClearAudio = useCallback(() => {
     const audio = audioRef.current;
-    if (audio) audio.volume = volume;
-    localStorage.setItem('pc_ia_audio_volume', String(volume));
-  }, [volume]);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio) audio.muted = muted;
-    localStorage.setItem('pc_ia_audio_muted', muted ? '1' : '0');
-  }, [muted]);
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+    }
 
-  function setSource(url, autoplay = false) {
-    const audio = audioRef.current;
-    setSourceState(url || '');
+    setSourceState('');
+    setIsPlaying(false);
     setCurrentTime(0);
     setDuration(0);
+  }, []);
+
+  const setSource = useCallback((nextSource) => {
+    const safeSource = normalizeAudioSource(nextSource);
+    const audio = audioRef.current;
+
+    setError('');
+
+    if (!safeSource) {
+      stopAndClearAudio();
+      return false;
+    }
+
+    setSourceState(safeSource);
     setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+
+    if (!audio) {
+      return true;
+    }
+
+    audio.pause();
+    audio.src = safeSource;
+    audio.load();
+
+    return true;
+  }, [stopAndClearAudio]);
+
+  const play = useCallback(async () => {
+    const audio = audioRef.current;
+
+    if (!audio || !source) {
+      setError('Nenhum áudio válido selecionado.');
+      return false;
+    }
+
+    try {
+      await audio.play();
+      setIsPlaying(true);
+      setError('');
+      return true;
+    } catch {
+      setIsPlaying(false);
+      setError('Não foi possível iniciar o áudio.');
+      return false;
+    }
+  }, [source]);
+
+  const pause = useCallback(() => {
+    const audio = audioRef.current;
     if (!audio) return;
 
     audio.pause();
-    audio.src = url || '';
-    audio.load();
+    setIsPlaying(false);
+  }, []);
 
-    if (autoplay && url) {
-      window.setTimeout(() => audio.play().catch(() => {}), 150);
+  const toggle = useCallback(async () => {
+    if (isPlaying) {
+      pause();
+      return false;
     }
-  }
 
-  function toggle() {
+    return play();
+  }, [isPlaying, pause, play]);
+
+  const seek = useCallback((time) => {
     const audio = audioRef.current;
-    if (!audio?.src) return;
-    if (audio.paused) audio.play().catch(() => {});
-    else audio.pause();
-  }
+    if (!audio || !source) return;
 
-  function seek(progress) {
-    const audio = audioRef.current;
-    if (!audio || !duration) return;
-    audio.currentTime = clampProgress(progress) * duration;
-    sync();
-  }
+    const maxDuration = duration || 0;
+    const nextTime = Math.max(0, Math.min(Number(time) || 0, maxDuration));
+    audio.currentTime = nextTime;
+    setCurrentTime(nextTime);
+  }, [duration, source]);
 
-  function seekBy(seconds) {
-    const audio = audioRef.current;
-    if (!audio || !duration) return;
-    audio.currentTime = Math.min(duration, Math.max(0, audio.currentTime + seconds));
-    sync();
-  }
+  const skip = useCallback((seconds) => {
+    seek(currentTime + seconds);
+  }, [currentTime, seek]);
 
-  function setVolume(nextVolume) {
-    setVolumeState(clampVolume(nextVolume));
-    if (Number(nextVolume) > 0 && muted) setMuted(false);
-  }
+  const setVolume = useCallback((nextVolume) => {
+    const value = Math.max(0, Math.min(1, Number(nextVolume)));
+    setVolumeState(Number.isFinite(value) ? value : 0.8);
+  }, []);
 
-  function toggleMute() {
-    setMuted((current) => !current);
-  }
+  const toggleMute = useCallback(() => {
+    setMuted((value) => !value);
+  }, []);
 
   return {
-    audioRef,
     source,
-    hasSource: Boolean(source),
-    isPlaying,
-    currentTime,
-    duration,
-    currentTimeLabel: formatAudioTime(currentTime),
-    durationLabel: formatAudioTime(duration),
-    progress: duration ? currentTime / duration : 0,
-    volume,
-    muted,
+    hasValidSource: Boolean(source),
+    error,
     setSource,
+    clearSource: stopAndClearAudio,
+    isPlaying,
+    play,
+    pause,
     toggle,
+    duration,
+    currentTime,
     seek,
-    seekBy,
+    skip,
+    volume,
     setVolume,
+    muted,
     toggleMute,
   };
 }

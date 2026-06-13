@@ -1,18 +1,46 @@
-export function formatAudioTime(totalSeconds) {
-  const safe = Math.max(0, Math.floor(Number.isFinite(totalSeconds) ? totalSeconds : 0));
-  const minutes = Math.floor(safe / 60);
-  const seconds = safe % 60;
-  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+export function isValidAudioSource(source) {
+  if (!source || typeof source !== 'string') {
+    return false;
+  }
+
+  const value = source.trim();
+
+  if (!value) {
+    return false;
+  }
+
+  if (value === 'undefined' || value === 'null' || value === '[object Object]') {
+    return false;
+  }
+
+  if (value.startsWith('blob:')) {
+    return true;
+  }
+
+  if (value.startsWith('data:audio/')) {
+    return true;
+  }
+
+  try {
+    const url = new URL(value, window.location.href);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
 }
 
-export function clampProgress(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 0;
-  return Math.min(1, Math.max(0, number));
+export function normalizeAudioSource(source) {
+  if (!isValidAudioSource(source)) {
+    return '';
+  }
+
+  return source.trim();
 }
 
-export function clampVolume(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 1;
-  return Math.min(1, Math.max(0, number));
+export function createEmptyAudioState() {
+  return {
+    source: '',
+    title: 'Nenhum áudio selecionado',
+    isValid: false,
+  };
 }

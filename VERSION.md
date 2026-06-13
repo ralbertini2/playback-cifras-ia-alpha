@@ -3,23 +3,17 @@
 ## Versão Atual
 
 ```text
-v2.7.2
+v2.7.3
 ```
 
 ## Nome da versão
 
 ```text
-React Black Screen Fix
+Audio Source Validation Fix
 ```
 
 ## Branch
 
 ```text
-feature/v2-7-2-react-black-screen-fix
-```
-
-## Status
-
-```text
-Ready for Development
+feature/v2-7-3-audio-source-validation-fix
 ```
