@@ -176,23 +176,10 @@ export default function App() {
       viewer={<PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />}
       player={(
         <PlayerBar
-          audioRef={audio.audioRef}
-          title={currentSong?.title || ''}
-          hasSource={audio.hasSource}
-          isPlaying={audio.isPlaying}
-          currentTimeLabel={audio.currentTimeLabel}
-          durationLabel={audio.durationLabel}
-          progress={audio.progress}
-          volume={audio.volume}
-          muted={audio.muted}
-          onToggle={audio.toggle}
-          onSeek={audio.seek}
-          onSeekBack={() => audio.seekBy(-10)}
-          onSeekForward={() => audio.seekBy(10)}
+          audio={audio}
+          title={currentSong?.title || 'Nenhum áudio selecionado'}
           onPrevious={previousSong}
           onNext={nextSong}
-          onVolumeChange={audio.setVolume}
-          onToggleMute={audio.toggleMute}
         />
       )}
       footer={<VersionFooter />}
