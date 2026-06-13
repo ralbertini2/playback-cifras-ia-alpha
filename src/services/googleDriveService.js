@@ -7,6 +7,14 @@ function getConfig() {
   return window.PLAYBACK_CIFRAS_CONFIG || window.APP_CONFIG || {};
 }
 
+function safeRandomId() {
+  if (window.crypto?.randomUUID) {
+    return window.crypto.randomUUID();
+  }
+
+  return `file-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 export function getDriveConfig() {
   const config = getConfig();
 
@@ -27,14 +35,18 @@ export function getAccessToken() {
   return accessToken;
 }
 
-export function initGoogleAuth({ onToken } = {}) {
+/**
+ * Inicializa o cliente Google OAuth.
+ *
+ * Importante:
+ * Esta função sempre retorna uma Promise.
+ * Isso evita tela preta quando algum hook chama `initGoogleAuth(...).then(...)`
+ * e a configuração Google ainda não está disponível.
+ */
+export async function initGoogleAuth({ onToken } = {}) {
   const config = getDriveConfig();
 
-  if (!config.clientId) {
-    return null;
-  }
-
-  if (!window.google?.accounts?.oauth2) {
+  if (!config.clientId || !window.google?.accounts?.oauth2) {
     return null;
   }
 
@@ -52,9 +64,14 @@ export function initGoogleAuth({ onToken } = {}) {
   return tokenClient;
 }
 
-export function requestAccessToken({ prompt = '' } = {}) {
+/**
+ * Solicita token OAuth.
+ *
+ * Sempre retorna Promise<boolean> para manter compatibilidade com chamadas `.then`.
+ */
+export async function requestAccessToken({ prompt = '' } = {}) {
   if (!tokenClient) {
-    initGoogleAuth();
+    await initGoogleAuth();
   }
 
   if (!tokenClient) {
@@ -65,12 +82,19 @@ export function requestAccessToken({ prompt = '' } = {}) {
   return true;
 }
 
-export function logoutGoogle() {
+/**
+ * Logout Google.
+ *
+ * Sempre retorna Promise<boolean>.
+ */
+export async function logoutGoogle() {
   if (accessToken && window.google?.accounts?.oauth2?.revoke) {
     window.google.accounts.oauth2.revoke(accessToken);
   }
 
   accessToken = '';
+  tokenClient = null;
+  return true;
 }
 
 export function buildDriveDownloadUrl(fileId) {
@@ -103,7 +127,7 @@ export function normalizeDriveSong(file) {
   if (!file) return null;
 
   return {
-    id: file.id || file.fileId || crypto.randomUUID(),
+    id: file.id || file.fileId || safeRandomId(),
     title: file.title || file.name || 'Música sem título',
     artist: file.artist || '',
     style: file.style || file.category || 'Sem estilo',
@@ -120,6 +144,12 @@ function mapDriveFile(file) {
   return normalizeDriveSong(file);
 }
 
+/**
+ * Lista arquivos da pasta Google Drive.
+ *
+ * Sempre retorna Promise<Array>.
+ * Se não houver folderId/token/config, retorna [] em vez de null.
+ */
 export async function loadDriveLibrary({ folderId, token = accessToken } = {}) {
   const config = getDriveConfig();
   const targetFolderId = folderId || config.rootFolderId;
@@ -150,7 +180,12 @@ export async function loadDriveLibrary({ folderId, token = accessToken } = {}) {
     .filter(Boolean);
 }
 
-export function openFolderPicker({ onPicked } = {}) {
+/**
+ * Abre Google Picker.
+ *
+ * Sempre retorna Promise<boolean> para evitar erro de `.then` em runtime.
+ */
+export async function openFolderPicker({ onPicked } = {}) {
   const config = getDriveConfig();
 
   if (!window.google?.picker || !config.apiKey || !accessToken) {
