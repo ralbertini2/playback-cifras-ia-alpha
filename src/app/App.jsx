@@ -164,7 +164,7 @@ export default function App() {
           onClose={() => setSidebarOpen(false)}
           onLogin={drive.login}
           onLogout={drive.logout}
-          onPickFolder={drive.pickFolder}
+          onPickFolder={drive.pickFolder || drive.chooseFolder || drive.openPicker || drive.openFolderPicker}
           onRefresh={drive.refreshLibrary}
           onSelectSong={selectSong}
           onCreatePlaylist={createPlaylist}
