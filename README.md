@@ -1,26 +1,34 @@
 # Playback Cifras IA
 
-## v2.8.3 — Folder Picker UI & Version Fix
+## v2.8.4 — Folder Picker Unlock Fix
 
-Correção de interface do seletor de pasta e versão exibida no footer.
+Correção do botão de escolher pasta do Google Drive.
 
-## Problemas corrigidos
+## Problema
 
-- O campo `ROOT_FOLDER_ID` aparecia para o usuário.
-- O fluxo atual deve permitir escolher a pasta pelo Google Picker, não digitar o ID manualmente.
-- O footer continuava exibindo `v2.6`.
-- `src/config/appVersion.js` estava parado em `v2.6`.
+O botão "Escolher" pasta ficava desabilitado porque dependia de `connected`.
 
-## Inclui
+Mas `connected` só fica verdadeiro depois que a pasta já foi escolhida e a biblioteca foi carregada.
 
-- Remoção do input editável `ROOT_FOLDER_ID` da Sidebar.
-- Exibição de estado da pasta selecionada.
-- Botão `Escolher` pasta mais claro.
-- Botão de pasta desabilitado quando o usuário ainda não fez login.
-- Atualização de `APP_VERSION` para `v2.8.3`.
+Isso criava um bloqueio circular:
+
+```text
+precisa escolher pasta para conectar
+mas
+precisa estar conectado para escolher pasta
+```
+
+## Correção
+
+- O botão "Escolher" passa a ser habilitado quando o status é:
+  - `need-folder`
+  - `authenticated`
+  - `connected`
+- A Sidebar passa a mostrar "Google autenticado" quando o login foi feito mas a pasta ainda não foi selecionada.
+- Footer atualizado para v2.8.4.
 
 ## Branch
 
 ```text
-feature/v2-8-3-folder-picker-ui-version-fix
+feature/v2-8-4-folder-picker-unlock-fix
 ```
