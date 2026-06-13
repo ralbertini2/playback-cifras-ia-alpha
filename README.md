@@ -1,94 +1,73 @@
 # Playback Cifras IA
 
-## v2.6 — Library Integration
+## v2.6.1 — GitHub Pages React Deploy Fix
 
-Integração funcional da Biblioteca, Favoritos e Recentes ao fluxo principal React do Playback Cifras IA.
+Correção de deploy da linha React/Vite no GitHub Pages.
 
-Stack:
+## Problema corrigido
+
+A aplicação React estava sendo publicada via:
 
 ```text
-React
-Vite
-CSS Modules
-Lucide Icons
-PDF.js
-Google Drive API
-Google Picker
-Google Identity Services
+Deploy from a branch
+Folder: / root
 ```
 
-## Desenvolvimento
+Esse fluxo funciona para HTML/CSS/JS puro, mas não para Vite.
 
-```bash
-npm install
-npm run dev
-```
-
-## Build
+React/Vite precisa ser compilado com:
 
 ```bash
 npm run build
 ```
 
-## Preview
-
-```bash
-npm run preview
-```
-
-## Branches
+e publicado a partir da pasta:
 
 ```text
-main           → versão estável atual
-develop        → manutenção v1.x
-develop-react  → linha React/v2
+dist/
 ```
 
-## GitHub Pages
+## Alterações
 
-A linha React usa Vite. Quando a v2 for publicada, o deploy deve ser feito via GitHub Actions.
+- Adicionado workflow de deploy React para GitHub Pages.
+- Configurado build Vite para gerar `dist/`.
+- Configurado `base` do Vite para `/playback-cifras-ia-alpha/`.
+- Mantido deploy automático apenas para a branch `develop-react`.
 
-## Configuração Google
+## Configuração necessária no GitHub
 
-Copie:
+Após o merge desta versão em `develop-react`, vá em:
 
 ```text
-public/config.example.js
+Settings → Pages → Build and deployment
+```
+
+Altere:
+
+```text
+Source: Deploy from a branch
 ```
 
 para:
 
 ```text
-public/config.js
+Source: GitHub Actions
 ```
 
-Preencha:
+Depois acesse:
 
 ```text
-GOOGLE_CLIENT_ID
-GOOGLE_API_KEY
-ROOT_FOLDER_ID
+https://ralbertini2.github.io/playback-cifras-ia-alpha/
 ```
 
-## Recursos v2.6
+## Branch
 
-- Biblioteca conectada à Sidebar.
-- Busca funcional por música, artista, estilo e arquivo.
-- Filtros funcionais: Todas, Favoritas e Recentes.
-- Contadores de total, favoritas e recentes.
-- Favoritos persistidos localmente.
-- Recentes registrados automaticamente ao abrir uma música.
-- Botão de busca da Toolbar abre a biblioteca.
-- Service `libraryService.js` centraliza filtros e chaves de músicas.
-- Hook `useLibrary` centraliza busca, filtros, favoritos e recentes.
-- Atualização da versão para `v2.6`.
+```text
+feature/v2-6-1-github-pages-react-deploy
+```
 
-## Recursos já existentes da linha React
+## PR
 
-- v2.0: fundação React/Vite.
-- v2.1: shell visual principal.
-- v2.2: visualizador PDF/Cifra com PDF.js.
-- v2.3: Player React.
-- v2.3.1: validação automática de build React/Vite.
-- v2.4: integração inicial Google Drive React.
-- v2.5: biblioteca e repertórios React.
+```text
+fix: corrige deploy React no GitHub Pages
+```
