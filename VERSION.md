@@ -1,30 +1,29 @@
-# Playback Cifras IA v2.6
+# Playback Cifras IA
 
-## Nome da Versão
-
-**Playback Cifras IA v2.6 — Integração Funcional da Biblioteca**
-
-Branch:
+## Versão Atual
 
 ```text
-feature/v2-6-library-integration
+v2.6.1
+```
+
+## Nome da versão
+
+```text
+GitHub Pages React Deploy Fix
 ```
 
 ## Objetivo
 
-Conectar Biblioteca, Favoritos e Recentes ao fluxo principal da aplicação React.
+Corrigir o processo de publicação da aplicação React/Vite no GitHub Pages.
 
-## Entrega funcional
+## Branch
 
-- Biblioteca integrada à Sidebar.
-- Busca por música, artista, estilo ou arquivo.
-- Filtros funcionais: Todas, Favoritas e Recentes.
-- Favoritos persistidos em localStorage.
-- Recentes registrados ao abrir uma música.
-- Botão de busca da Toolbar abre o menu da biblioteca.
-- Contadores visíveis de total, favoritas e recentes.
-- Versão exibida atualizada para v2.6.
+```text
+feature/v2-6-1-github-pages-react-deploy
+```
 
 ## Status
 
+```text
 Ready for Development
+```
