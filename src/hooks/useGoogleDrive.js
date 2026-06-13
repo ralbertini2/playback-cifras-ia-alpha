@@ -157,6 +157,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       if (!songs.length) {
         setCurrentSong(null);
         setCurrentIndex(-1);
+        clearCurrentMedia();
       } else if (currentIndex >= songs.length) {
         setCurrentIndex(0);
         setCurrentSong(songs[0]);
@@ -185,7 +186,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     setStatus(STATUS.AUTHENTICATING);
     notify('Aguardando login do Google...');
     return requestAccessToken({ prompt: 'consent' });
-  }, [isConfigured, notify]);
+  }, [clearCurrentMedia, isConfigured, notify]);
 
   const chooseFolder = useCallback(async () => {
     if (!accessToken && !getAccessToken()) {
@@ -230,9 +231,10 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     setLibrary([]);
     setCurrentSong(null);
     setCurrentIndex(-1);
+    clearCurrentMedia();
     setStatus(isConfigured ? STATUS.READY : STATUS.NOT_CONFIGURED);
     notify(isConfigured ? 'Google desconectado.' : 'Google Drive não configurado.');
-  }, [isConfigured, notify]);
+  }, [clearCurrentMedia, isConfigured, notify]);
 
   const clearFolder = useCallback(() => {
     clearSelectedDriveFolder();
@@ -240,6 +242,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     setLibrary([]);
     setCurrentSong(null);
     setCurrentIndex(-1);
+    clearCurrentMedia();
     setStatus(hasToken ? STATUS.NEED_FOLDER : STATUS.READY);
     notify('Pasta removida. Escolha uma nova pasta do Google Drive.');
   }, [clearCurrentMedia, hasToken, notify]);

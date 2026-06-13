@@ -15,7 +15,9 @@ export async function getPdfJs() {
 
 export async function loadPdfDocument(source) {
   if (!source) return null;
+
   const pdfjs = await getPdfJs();
-  const loadingTask = pdfjs.getDocument(source);
+  const documentSource = typeof source === 'string' ? { url: source } : source;
+  const loadingTask = pdfjs.getDocument(documentSource);
   return loadingTask.promise;
 }
