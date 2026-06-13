@@ -1,47 +1,30 @@
 # Playback Cifras IA
 
-## v2.7.2 — React Black Screen Fix
+## v2.7.3 — Audio Source Validation Fix
 
-Correção emergencial para tela preta na aplicação React publicada.
+Correção funcional do Player React.
 
 ## Problema
 
-Após a restauração do build, a aplicação passou a abrir com tela preta no runtime.
-
-Erro identificado no console:
+No desktop e no iPad, o console passou a exibir:
 
 ```text
-Uncaught TypeError: can't access property "then", gt(...) is null
+URI inválida. Falha no carregamento do recurso de mídia.
 ```
 
-## Causa provável
-
-Alguma função do `googleDriveService.js` estava retornando `null`, enquanto algum hook/componente chamava `.then()` sobre esse retorno.
+O botão Play ficava indisponível porque o navegador recebia uma origem de áudio inválida.
 
 ## Correção
 
-O arquivo `src/services/googleDriveService.js` foi ajustado para que funções assíncronas/sensíveis retornem sempre `Promise`, `false`, `''` ou `[]`, nunca `null` em fluxos encadeados.
-
-Funções protegidas:
-
-```text
-initGoogleAuth
-requestAccessToken
-logoutGoogle
-loadDriveLibrary
-openFolderPicker
-getAuthorizedMediaUrl
-fetchDriveBlobUrl
-```
+- Adicionado `audioService.js`.
+- `useAudioPlayer` passa a validar a origem antes de carregar.
+- Player não tenta carregar áudio vazio, nulo ou inválido.
+- Player exibe estado seguro quando não há MP3 válido.
+- Botão Play fica desabilitado apenas quando não existe fonte válida.
+- Mensagem de erro controlada no PlayerBar quando o áudio é inválido.
 
 ## Branch
 
 ```text
-feature/v2-7-2-react-black-screen-fix
-```
-
-## PR
-
-```text
-fix: corrige tela preta no runtime React
+feature/v2-7-3-audio-source-validation-fix
 ```
