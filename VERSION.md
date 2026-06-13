@@ -3,17 +3,17 @@
 ## Versão Atual
 
 ```text
-v2.8.1
+v2.8.2
 ```
 
 ## Nome da versão
 
 ```text
-Filtered Songs Runtime Fix
+Google Picker Loader Fix
 ```
 
 ## Branch
 
 ```text
-feature/v2-8-1-filtered-songs-runtime-fix
+feature/v2-8-2-google-picker-loader-fix
 ```

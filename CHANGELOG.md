@@ -1,11 +1,13 @@
 # Changelog
 
-## [v2.8.1] - 2026-06-13
+## [v2.8.2] - 2026-06-13
 
 ### Fixed
 
-- Corrigido erro `Cannot read property "length" of undefined`.
-- `useGoogleDriveLibrary` volta a expor `filteredSongs`.
-- `filteredSongs`, `library`, `songs`, `files` e `musicLibrary` sempre retornam array.
-- Restaurados `currentSong`, `currentIndex`, `selectSong`, `selectNext` e `selectPrevious`.
-- Seleção de música passa a enviar PDF/áudio apenas quando existe mídia válida.
+- Corrigido botão de escolher pasta raiz do Google Drive.
+- Corrigido problema em que `window.google?.picker` ficava `undefined`.
+- `openFolderPicker()` passa a carregar a Google Picker API antes de abrir o seletor.
+
+### Added
+
+- `src/services/googlePickerService.js`

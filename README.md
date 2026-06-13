@@ -1,41 +1,43 @@
 # Playback Cifras IA
 
-## v2.8.1 — Filtered Songs Runtime Fix
+## v2.8.2 — Google Picker Loader Fix
 
-Correção de runtime após v2.8.
+Correção do botão de escolha da pasta raiz do Google Drive.
 
 ## Problema
 
-Após corrigir o estado real do Google Drive, o app passou a quebrar com:
+O login Google funcionava, mas o botão de escolher pasta não abria o seletor porque:
 
-```text
-Cannot read property "length" of undefined
+```js
+window.google?.picker
 ```
 
-Causa:
+retornava:
 
 ```text
-drive.filteredSongs
+undefined
 ```
-
-não estava sendo retornado pelo hook `useGoogleDriveLibrary`.
 
 ## Correção
 
-- `filteredSongs` passa a existir sempre como array.
-- `library`, `songs`, `files` e `musicLibrary` também sempre retornam arrays.
-- `currentSong` e `currentIndex` passam a existir desde o estado inicial.
-- `selectSong`, `selectNext` e `selectPrevious` foram restaurados para compatibilidade com `App.jsx`.
-- PDF e áudio são enviados aos callbacks apenas quando existe arquivo válido.
+- Adicionado `googlePickerService.js`.
+- Carregamento explícito de `https://apis.google.com/js/api.js`.
+- Execução de `gapi.load('picker')`.
+- `openFolderPicker()` aguarda o Picker estar disponível antes de abrir.
+- Mantida compatibilidade com login via Google Identity Services.
+
+## Validação esperada
+
+No console:
+
+```js
+window.google?.picker
+```
+
+deve retornar um objeto após carregar o Picker.
 
 ## Branch
 
 ```text
-feature/v2-8-1-filtered-songs-runtime-fix
-```
-
-## PR
-
-```text
-fix: corrige filteredSongs undefined
+feature/v2-8-2-google-picker-loader-fix
 ```
