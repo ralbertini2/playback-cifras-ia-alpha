@@ -3,23 +3,17 @@
 ## Versão Atual
 
 ```text
-v2.8
+v2.8.1
 ```
 
 ## Nome da versão
 
 ```text
-Real Google Config & Drive State
+Filtered Songs Runtime Fix
 ```
 
 ## Branch
 
 ```text
-feature/v2-8-real-google-config-and-drive-state
-```
-
-## Status
-
-```text
-Ready for Development
+feature/v2-8-1-filtered-songs-runtime-fix
 ```
