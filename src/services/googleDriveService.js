@@ -1,3 +1,5 @@
+import { isGooglePickerReady, loadGooglePicker } from './googlePickerService.js';
+
 const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
 const SELECTED_FOLDER_STORAGE_KEY = 'playback-cifras:selected-google-drive-folder';
 
@@ -9,10 +11,7 @@ function getConfig() {
 }
 
 function safeRandomId() {
-  if (window.crypto?.randomUUID) {
-    return window.crypto.randomUUID();
-  }
-
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
   return `file-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
@@ -127,9 +126,7 @@ export async function getAuthorizedMediaUrl(fileId, token = accessToken) {
   if (!fileId || !token) return '';
 
   const response = await fetch(buildDriveDownloadUrl(fileId), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!response.ok) {
@@ -225,18 +222,14 @@ function groupDriveFilesAsSongs(files = []) {
 export async function loadDriveLibrary({ folderId, token = accessToken } = {}) {
   const targetFolderId = folderId || getEffectiveFolderId();
 
-  if (!targetFolderId || !token) {
-    return [];
-  }
+  if (!targetFolderId || !token) return [];
 
   const query = encodeURIComponent(`'${targetFolderId}' in parents and trashed = false`);
   const fields = encodeURIComponent('files(id,name,mimeType,modifiedTime,size,webViewLink)');
   const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=${fields}&pageSize=1000`;
 
   const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!response.ok) {
@@ -249,10 +242,21 @@ export async function loadDriveLibrary({ folderId, token = accessToken } = {}) {
   return groupDriveFilesAsSongs(files);
 }
 
+export async function ensureGooglePickerReady() {
+  await loadGooglePicker();
+  return isGooglePickerReady();
+}
+
 export async function openFolderPicker({ onPicked } = {}) {
   const config = getDriveConfig();
 
-  if (!window.google?.picker || !config.apiKey || !accessToken) {
+  if (!config.apiKey || !accessToken) {
+    return false;
+  }
+
+  await loadGooglePicker();
+
+  if (!window.google?.picker) {
     return false;
   }
 
