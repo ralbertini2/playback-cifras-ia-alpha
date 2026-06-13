@@ -1,19 +1,14 @@
 # Changelog
 
-## [v2.7.1] - 2026-06-12
+## [v2.7.2] - 2026-06-12
 
 ### Fixed
 
-- Restaurados exports esperados pelo hook `useGoogleDrive.js`.
-- Corrigido erro de build causado por exports ausentes em `googleDriveService.js`.
-- Preservada compatibilidade com:
-  - `getAuthorizedMediaUrl`
-  - `initGoogleAuth`
-  - `loadDriveLibrary`
-  - `logoutGoogle`
-  - `openFolderPicker`
-  - `requestAccessToken`
-
-### Changed
-
-- `googleDriveService.js` volta a expor API compatível com a arquitetura React atual.
+- Corrigida tela preta no runtime React.
+- Corrigido erro `Cannot read properties of null (reading 'then')`.
+- `initGoogleAuth` passa a retornar sempre uma Promise.
+- `requestAccessToken` passa a retornar sempre uma Promise.
+- `logoutGoogle` passa a retornar sempre uma Promise.
+- `openFolderPicker` passa a retornar sempre uma Promise.
+- `loadDriveLibrary` retorna array vazio quando Google Drive ainda não está disponível.
+- Adicionado fallback seguro para `crypto.randomUUID`.

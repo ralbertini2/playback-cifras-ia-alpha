@@ -3,19 +3,19 @@
 ## Versão Atual
 
 ```text
-v2.7.1
+v2.7.2
 ```
 
 ## Nome da versão
 
 ```text
-Fix Build Google Drive Service
+React Black Screen Fix
 ```
 
 ## Branch
 
 ```text
-feature/v2-7-1-fix-build
+feature/v2-7-2-react-black-screen-fix
 ```
 
 ## Status
