@@ -38,11 +38,32 @@ export default function Sidebar({
   onDeletePlaylist,
   loading = false,
 }) {
+  const normalizedStatus = String(status || '').toLowerCase();
+
+  const canPickFolder = !loading && [
+    'need-folder',
+    'authenticated',
+    'connected',
+  ].includes(normalizedStatus);
+
+  const isLoggedIn = connected || [
+    'need-folder',
+    'authenticated',
+    'connected',
+    'loading',
+  ].includes(normalizedStatus);
+
   const folderLabel = folderId
     ? 'Pasta selecionada'
-    : connected
+    : isLoggedIn
       ? 'Escolha a pasta raiz do repertório'
       : 'Entre no Google para escolher a pasta';
+
+  const headerStatus = connected
+    ? 'Google Drive conectado'
+    : isLoggedIn
+      ? 'Google autenticado'
+      : 'Biblioteca local';
 
   return (
     <>
@@ -51,7 +72,7 @@ export default function Sidebar({
         <div className={styles.header}>
           <div>
             <strong>Playback Cifras IA</strong>
-            <span>{connected ? 'Google Drive conectado' : 'Biblioteca local'}</span>
+            <span>{headerStatus}</span>
           </div>
 
           <button className={styles.iconButton} onClick={onClose} aria-label="Fechar menu">
@@ -74,9 +95,9 @@ export default function Sidebar({
               type="button"
               className={styles.folderButton}
               onClick={onPickFolder}
-              disabled={loading || !connected}
+              disabled={loading || !canPickFolder}
               aria-label="Escolher pasta do Google Drive"
-              title={!connected ? 'Entre no Google antes de escolher a pasta' : 'Escolher pasta'}
+              title={!isLoggedIn ? 'Entre no Google antes de escolher a pasta' : 'Escolher pasta'}
             >
               <FolderOpen size={18} />
               <span>Escolher</span>
