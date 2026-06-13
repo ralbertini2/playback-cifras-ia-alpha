@@ -1,4 +1,4 @@
-import { isGooglePickerReady, loadGooglePicker } from './googlePickerService.js';
+import { forceLoadGooglePicker } from './googlePickerService.js';
 
 const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
 const SELECTED_FOLDER_STORAGE_KEY = 'playback-cifras:selected-google-drive-folder';
@@ -243,33 +243,39 @@ export async function loadDriveLibrary({ folderId, token = accessToken } = {}) {
 }
 
 export async function ensureGooglePickerReady() {
-  await loadGooglePicker();
-  return isGooglePickerReady();
+  await forceLoadGooglePicker();
+  return Boolean(window.google?.picker);
 }
 
 export async function openFolderPicker({ onPicked } = {}) {
   const config = getDriveConfig();
 
-  if (!config.apiKey || !accessToken) {
-    return false;
+  if (!config.apiKey) {
+    throw new Error('GOOGLE_API_KEY não configurada.');
   }
 
-  await loadGooglePicker();
-
-  if (!window.google?.picker) {
-    return false;
+  if (!accessToken) {
+    throw new Error('Faça login no Google antes de escolher a pasta.');
   }
 
-  const view = new window.google.picker.DocsView(window.google.picker.ViewId.FOLDERS)
+  const pickerApi = await forceLoadGooglePicker();
+
+  if (!pickerApi) {
+    throw new Error('Google Picker não ficou disponível.');
+  }
+
+  console.info('[Playback Cifras IA] Abrindo Google Picker...');
+
+  const view = new pickerApi.DocsView(pickerApi.ViewId.FOLDERS)
     .setIncludeFolders(true)
     .setSelectFolderEnabled(true);
 
-  const picker = new window.google.picker.PickerBuilder()
+  const picker = new pickerApi.PickerBuilder()
     .setDeveloperKey(config.apiKey)
     .setOAuthToken(accessToken)
     .addView(view)
     .setCallback((data) => {
-      if (data?.action === window.google.picker.Action.PICKED) {
+      if (data?.action === pickerApi.Action.PICKED) {
         const folder = data.docs?.[0];
 
         if (folder) {
