@@ -16,6 +16,22 @@ retornava:
 
 ```text
 undefined
+## v2.8.4 — Folder Picker Unlock Fix
+
+Correção do botão de escolher pasta do Google Drive.
+
+## Problema
+
+O botão "Escolher" pasta ficava desabilitado porque dependia de `connected`.
+
+Mas `connected` só fica verdadeiro depois que a pasta já foi escolhida e a biblioteca foi carregada.
+
+Isso criava um bloqueio circular:
+
+```text
+precisa escolher pasta para conectar
+mas
+precisa estar conectado para escolher pasta
 ```
 
 ## Correção
@@ -25,6 +41,12 @@ undefined
 - Execução de `gapi.load('picker')`.
 - `openFolderPicker()` aguarda o Picker estar disponível antes de abrir.
 - Mantida compatibilidade com login via Google Identity Services.
+- O botão "Escolher" passa a ser habilitado quando o status é:
+  - `need-folder`
+  - `authenticated`
+  - `connected`
+- A Sidebar passa a mostrar "Google autenticado" quando o login foi feito mas a pasta ainda não foi selecionada.
+- Footer atualizado para v2.8.4.
 
 ## Validação esperada
 
@@ -40,4 +62,6 @@ deve retornar um objeto após carregar o Picker.
 
 ```text
 feature/v2-8-2-google-picker-loader-fix
+```text
+feature/v2-8-4-folder-picker-unlock-fix
 ```

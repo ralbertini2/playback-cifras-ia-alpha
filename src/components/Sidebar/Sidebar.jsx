@@ -1,4 +1,4 @@
-import { FolderOpen, LogIn, LogOut, RefreshCcw, X } from 'lucide-react';
+import { FolderOpen, LogIn, LogOut, RefreshCw, X } from 'lucide-react';
 import Library from '../Library/Library.jsx';
 import Setlists from '../Setlists/Setlists.jsx';
 import styles from './Sidebar.module.css';
@@ -9,7 +9,7 @@ export default function Sidebar({
   status,
   folderId,
   setFolderId,
-  stylesList = [],
+  styleList = [],
   selectedStyle,
   setSelectedStyle,
   playlists = {},
@@ -38,6 +38,33 @@ export default function Sidebar({
   onDeletePlaylist,
   loading = false,
 }) {
+  const normalizedStatus = String(status || '').toLowerCase();
+
+  const canPickFolder = !loading && [
+    'need-folder',
+    'authenticated',
+    'connected',
+  ].includes(normalizedStatus);
+
+  const isLoggedIn = connected || [
+    'need-folder',
+    'authenticated',
+    'connected',
+    'loading',
+  ].includes(normalizedStatus);
+
+  const folderLabel = folderId
+    ? 'Pasta selecionada'
+    : isLoggedIn
+      ? 'Escolha a pasta raiz do repertório'
+      : 'Entre no Google para escolher a pasta';
+
+  const headerStatus = connected
+    ? 'Google Drive conectado'
+    : isLoggedIn
+      ? 'Google autenticado'
+      : 'Biblioteca local';
+
   return (
     <>
       <div className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`} onClick={onClose} />
@@ -45,8 +72,9 @@ export default function Sidebar({
         <div className={styles.header}>
           <div>
             <strong>Playback Cifras IA</strong>
-            <span>{connected ? 'Google Drive conectado' : 'Biblioteca local'}</span>
+            <span>{headerStatus}</span>
           </div>
+
           <button className={styles.iconButton} onClick={onClose} aria-label="Fechar menu">
             <X size={20} />
           </button>
@@ -56,13 +84,36 @@ export default function Sidebar({
 
         <section className={styles.section}>
           <label>Pasta Google Drive</label>
-          <div className={styles.inputRow}>
-            <input value={folderId} onChange={(event) => setFolderId(event.target.value)} placeholder="ROOT_FOLDER_ID" />
-            <button onClick={onPickFolder} title="Escolher pasta" disabled={loading}><FolderOpen size={18} /></button>
+
+          <div className={styles.folderCard}>
+            <div className={styles.folderInfo}>
+              <strong>{folderLabel}</strong>
+              <span>{folderId || 'Nenhuma pasta selecionada'}</span>
+            </div>
+
+            <button
+              type="button"
+              className={styles.folderButton}
+              onClick={onPickFolder}
+              disabled={loading || !canPickFolder}
+              aria-label="Escolher pasta do Google Drive"
+              title={!isLoggedIn ? 'Entre no Google antes de escolher a pasta' : 'Escolher pasta'}
+            >
+              <FolderOpen size={18} />
+              <span>Escolher</span>
+            </button>
           </div>
+
           <div className={styles.actionsGrid}>
-            <button onClick={connected ? onLogout : onLogin} disabled={loading}>{connected ? <LogOut size={17} /> : <LogIn size={17} />}{connected ? 'Sair' : 'Entrar'}</button>
-            <button onClick={onRefresh} disabled={loading}><RefreshCcw size={17} />{loading ? 'Carregando' : 'Atualizar'}</button>
+            <button onClick={connected ? onLogout : onLogin} disabled={loading}>
+              {connected ? <LogOut size={17} /> : <LogIn size={17} />}
+              {connected ? 'Sair' : 'Entrar'}
+            </button>
+
+            <button onClick={onRefresh} disabled={loading}>
+              <RefreshCw size={17} />
+              Atualizar
+            </button>
           </div>
         </section>
 
@@ -70,7 +121,7 @@ export default function Sidebar({
           <label>Estilo</label>
           <select value={selectedStyle} onChange={(event) => setSelectedStyle(event.target.value)}>
             <option value="">Todos os estilos</option>
-            {stylesList.map((style) => <option key={style} value={style}>{style}</option>)}
+            {styleList.map((style) => <option key={style} value={style}>{style}</option>)}
           </select>
         </section>
 
