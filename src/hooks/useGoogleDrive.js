@@ -181,18 +181,35 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       notify('Faça login antes de escolher uma pasta.');
       return false;
     }
+
     if (!pickerConfigured) {
       setStatus(STATUS.NEED_FOLDER);
       notify('Google Picker indisponível. Configure GOOGLE_API_KEY.');
       return false;
     }
-    return openFolderPicker({
-      onPicked: async (folder) => {
-        setSelectedFolder(folder);
-        notify(`Pasta selecionada: ${folder?.name || folder?.id}`);
-        await refreshLibrary({ nextFolderId: folder?.id });
-      },
-    });
+
+    try {
+      notify('Abrindo seletor de pasta do Google Drive...');
+
+      const opened = await openFolderPicker({
+        onPicked: async (folder) => {
+          setSelectedFolder(folder);
+          notify(`Pasta selecionada: ${folder?.name || folder?.id}`);
+          await refreshLibrary({ nextFolderId: folder?.id });
+        },
+      });
+
+      if (!opened) {
+        notify('Não foi possível abrir o seletor de pasta.');
+      }
+
+      return opened;
+    } catch (err) {
+      setStatus(STATUS.ERROR);
+      setError(err?.message || 'Erro ao abrir seletor de pasta.');
+      notify(err?.message || 'Erro ao abrir seletor de pasta.');
+      return false;
+    }
   }, [accessToken, pickerConfigured, notify, refreshLibrary]);
 
   const disconnect = useCallback(async () => {
@@ -306,6 +323,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     logout: disconnect,
     disconnect,
     chooseFolder,
+    pickFolder: chooseFolder,
     selectFolder: chooseFolder,
     openPicker: chooseFolder,
     openFolderPicker: chooseFolder,

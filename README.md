@@ -1,33 +1,68 @@
 # Playback Cifras IA
 
-## v2.8.6 — Pick Folder Prop Fix
+## v2.8.7 — Real Pick Folder Fix
 
-Correção mínima para o botão **Escolher** pasta.
+Correção real do botão **Escolher** pasta do Google Drive.
 
-## Problema
+## Diagnóstico
 
-O `App.jsx` passa:
+A varredura do branch `develop-react` mostrou que o problema não era mais a API Google.
+
+O teste manual confirmou:
+
+```js
+window.gapi.load('picker', ...)
+```
+
+funciona corretamente e carrega:
+
+```js
+window.google.picker
+```
+
+O problema real estava entre `App.jsx` e `useGoogleDrive.js`:
 
 ```jsx
 onPickFolder={drive.pickFolder}
 ```
 
-Mas o hook `useGoogleDriveLibrary()` não retorna `pickFolder`.
+mas o hook não retornava:
+
+```js
+pickFolder
+```
+
+Ele retornava apenas:
+
+```js
+chooseFolder
+selectFolder
+openPicker
+openFolderPicker
+```
 
 ## Correção
 
-Adicionar no retorno do hook:
+- Adicionado `pickFolder: chooseFolder` no retorno do hook.
+- `App.jsx` passa a usar fallback seguro:
+  - `drive.pickFolder`
+  - `drive.chooseFolder`
+  - `drive.openPicker`
+  - `drive.openFolderPicker`
+- `chooseFolder` passa a ter tratamento de erro e mensagens claras.
+- Footer atualizado para v2.8.7.
 
-```js
-pickFolder: chooseFolder,
-```
+## Resultado esperado
 
-## Trecho correto
+- Após login Google, botão **Escolher** deve chamar o Google Picker.
+- O console deve mostrar:
+  - `[Playback Cifras IA] Carregando Google Picker...`
+  - `[Playback Cifras IA] Google Picker carregado.`
+  - `[Playback Cifras IA] Abrindo Google Picker...`
+- O seletor de pasta do Google Drive deve abrir.
 
-```js
-chooseFolder,
-pickFolder: chooseFolder,
-setFolder: chooseFolder,
-openPicker: chooseFolder,
-openFolderPicker: chooseFolder,
+## Branch
+
+```text
+feature/v2-8-7-real-pick-folder-fix
 ```

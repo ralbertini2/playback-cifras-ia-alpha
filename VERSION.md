@@ -3,11 +3,17 @@
 ## Versão Atual
 
 ```text
-v2.8.6
+v2.8.7
 ```
 
 ## Nome da versão
 
 ```text
-Pick Folder Prop Fix
+Real Pick Folder Fix
+```
+
+## Branch
+
+```text
+feature/v2-8-7-real-pick-folder-fix
 ```
