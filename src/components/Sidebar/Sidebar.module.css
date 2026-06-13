@@ -12,7 +12,7 @@
 .header strong { display:block; font-size:16px; letter-spacing:-.02em; }
 .header span { display:block; color:var(--muted); font-size:12px; margin-top:3px; }
 
-.iconButton, .inputRow button, .miniActions button {
+.iconButton, .inputRow button, .miniActions button, .folderButton {
   border:1px solid rgba(255,255,255,.1);
   border-radius:12px;
   background:rgba(255,255,255,.06);
@@ -34,7 +34,7 @@
 }
 
 .section { display:flex; flex-direction:column; gap:8px; }
-.section label, .sectionHeader label { color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+.section label, .sectionHeader label { color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; }
 .section select, .section input {
   width:100%;
   border:1px solid rgba(255,255,255,.12);
@@ -46,6 +46,53 @@
   outline:none;
 }
 .section option { color:#111827; }
+
+.folderCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.folderInfo {
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  border-radius: 14px;
+  min-height: 52px;
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.folderInfo strong {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.folderInfo span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folderButton {
+  gap: 8px;
+  padding: 0 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.folderButton:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
 .inputRow { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; }
 .actionsGrid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .actionsGrid button {
@@ -60,13 +107,14 @@
   gap:8px;
   font-weight:700;
 }
+
 .sectionHeader { display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .miniActions { display:flex; gap:6px; }
 .miniActions button { min-width:34px; min-height:34px; border-radius:10px; }
 
 .songSection { min-height:0; flex:1; display:flex; flex-direction:column; gap:8px; }
 .songHeader { color:var(--muted); font-size:12px; font-weight:700; }
-.songList { min-height:0; overflow:auto; display:flex; flex-direction:column; gap:8px; padding-right:2px; }
+.songList { min-height:0; overflow:auto; display:flex; flex-direction:column; gap:8px; padding-right:4px; }
 .songItem {
   text-align:left;
   border:1px solid rgba(255,255,255,.08);
@@ -78,7 +126,7 @@
 .songItem span { display:block; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .songItem small { display:block; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .activeSong { border-color:rgba(34,197,94,.65); background:rgba(34,197,94,.12); }
-.empty { color:var(--muted); font-size:13px; border:1px dashed rgba(255,255,255,.14); border-radius:16px; padding:18px; }
+.empty { color:var(--muted); font-size:13px; border:1px dashed rgba(255,255,255,.14); border-radius:14px; padding:12px; }
 .backdrop { display:none; }
 
 @media (max-width: 900px) {

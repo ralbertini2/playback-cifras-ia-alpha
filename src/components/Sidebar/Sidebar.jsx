@@ -1,4 +1,4 @@
-import { FolderOpen, LogIn, LogOut, RefreshCcw, X } from 'lucide-react';
+import { FolderOpen, LogIn, LogOut, RefreshCw, X } from 'lucide-react';
 import Library from '../Library/Library.jsx';
 import Setlists from '../Setlists/Setlists.jsx';
 import styles from './Sidebar.module.css';
@@ -9,7 +9,7 @@ export default function Sidebar({
   status,
   folderId,
   setFolderId,
-  stylesList = [],
+  styleList = [],
   selectedStyle,
   setSelectedStyle,
   playlists = {},
@@ -38,6 +38,12 @@ export default function Sidebar({
   onDeletePlaylist,
   loading = false,
 }) {
+  const folderLabel = folderId
+    ? 'Pasta selecionada'
+    : connected
+      ? 'Escolha a pasta raiz do repertório'
+      : 'Entre no Google para escolher a pasta';
+
   return (
     <>
       <div className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`} onClick={onClose} />
@@ -47,6 +53,7 @@ export default function Sidebar({
             <strong>Playback Cifras IA</strong>
             <span>{connected ? 'Google Drive conectado' : 'Biblioteca local'}</span>
           </div>
+
           <button className={styles.iconButton} onClick={onClose} aria-label="Fechar menu">
             <X size={20} />
           </button>
@@ -56,13 +63,36 @@ export default function Sidebar({
 
         <section className={styles.section}>
           <label>Pasta Google Drive</label>
-          <div className={styles.inputRow}>
-            <input value={folderId} onChange={(event) => setFolderId(event.target.value)} placeholder="ROOT_FOLDER_ID" />
-            <button onClick={onPickFolder} title="Escolher pasta" disabled={loading}><FolderOpen size={18} /></button>
+
+          <div className={styles.folderCard}>
+            <div className={styles.folderInfo}>
+              <strong>{folderLabel}</strong>
+              <span>{folderId || 'Nenhuma pasta selecionada'}</span>
+            </div>
+
+            <button
+              type="button"
+              className={styles.folderButton}
+              onClick={onPickFolder}
+              disabled={loading || !connected}
+              aria-label="Escolher pasta do Google Drive"
+              title={!connected ? 'Entre no Google antes de escolher a pasta' : 'Escolher pasta'}
+            >
+              <FolderOpen size={18} />
+              <span>Escolher</span>
+            </button>
           </div>
+
           <div className={styles.actionsGrid}>
-            <button onClick={connected ? onLogout : onLogin} disabled={loading}>{connected ? <LogOut size={17} /> : <LogIn size={17} />}{connected ? 'Sair' : 'Entrar'}</button>
-            <button onClick={onRefresh} disabled={loading}><RefreshCcw size={17} />{loading ? 'Carregando' : 'Atualizar'}</button>
+            <button onClick={connected ? onLogout : onLogin} disabled={loading}>
+              {connected ? <LogOut size={17} /> : <LogIn size={17} />}
+              {connected ? 'Sair' : 'Entrar'}
+            </button>
+
+            <button onClick={onRefresh} disabled={loading}>
+              <RefreshCw size={17} />
+              Atualizar
+            </button>
           </div>
         </section>
 
@@ -70,7 +100,7 @@ export default function Sidebar({
           <label>Estilo</label>
           <select value={selectedStyle} onChange={(event) => setSelectedStyle(event.target.value)}>
             <option value="">Todos os estilos</option>
-            {stylesList.map((style) => <option key={style} value={style}>{style}</option>)}
+            {styleList.map((style) => <option key={style} value={style}>{style}</option>)}
           </select>
         </section>
 

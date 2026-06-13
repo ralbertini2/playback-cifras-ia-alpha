@@ -1,41 +1,26 @@
 # Playback Cifras IA
 
-## v2.8.1 — Filtered Songs Runtime Fix
+## v2.8.3 — Folder Picker UI & Version Fix
 
-Correção de runtime após v2.8.
+Correção de interface do seletor de pasta e versão exibida no footer.
 
-## Problema
+## Problemas corrigidos
 
-Após corrigir o estado real do Google Drive, o app passou a quebrar com:
+- O campo `ROOT_FOLDER_ID` aparecia para o usuário.
+- O fluxo atual deve permitir escolher a pasta pelo Google Picker, não digitar o ID manualmente.
+- O footer continuava exibindo `v2.6`.
+- `src/config/appVersion.js` estava parado em `v2.6`.
 
-```text
-Cannot read property "length" of undefined
-```
+## Inclui
 
-Causa:
-
-```text
-drive.filteredSongs
-```
-
-não estava sendo retornado pelo hook `useGoogleDriveLibrary`.
-
-## Correção
-
-- `filteredSongs` passa a existir sempre como array.
-- `library`, `songs`, `files` e `musicLibrary` também sempre retornam arrays.
-- `currentSong` e `currentIndex` passam a existir desde o estado inicial.
-- `selectSong`, `selectNext` e `selectPrevious` foram restaurados para compatibilidade com `App.jsx`.
-- PDF e áudio são enviados aos callbacks apenas quando existe arquivo válido.
+- Remoção do input editável `ROOT_FOLDER_ID` da Sidebar.
+- Exibição de estado da pasta selecionada.
+- Botão `Escolher` pasta mais claro.
+- Botão de pasta desabilitado quando o usuário ainda não fez login.
+- Atualização de `APP_VERSION` para `v2.8.3`.
 
 ## Branch
 
 ```text
-feature/v2-8-1-filtered-songs-runtime-fix
-```
-
-## PR
-
-```text
-fix: corrige filteredSongs undefined
+feature/v2-8-3-folder-picker-ui-version-fix
 ```

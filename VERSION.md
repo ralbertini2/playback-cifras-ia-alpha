@@ -3,17 +3,17 @@
 ## Versão Atual
 
 ```text
-v2.8.1
+v2.8.3
 ```
 
 ## Nome da versão
 
 ```text
-Filtered Songs Runtime Fix
+Folder Picker UI & Version Fix
 ```
 
 ## Branch
 
 ```text
-feature/v2-8-1-filtered-songs-runtime-fix
+feature/v2-8-3-folder-picker-ui-version-fix
 ```

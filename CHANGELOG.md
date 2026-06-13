@@ -1,11 +1,15 @@
 # Changelog
 
-## [v2.8.1] - 2026-06-13
+## [v2.8.3] - 2026-06-13
 
 ### Fixed
 
-- Corrigido erro `Cannot read property "length" of undefined`.
-- `useGoogleDriveLibrary` volta a expor `filteredSongs`.
-- `filteredSongs`, `library`, `songs`, `files` e `musicLibrary` sempre retornam array.
-- Restaurados `currentSong`, `currentIndex`, `selectSong`, `selectNext` e `selectPrevious`.
-- Seleção de música passa a enviar PDF/áudio apenas quando existe mídia válida.
+- Removido campo editável `ROOT_FOLDER_ID` da interface.
+- Sidebar passa a exibir estado da pasta Google Drive.
+- Botão de escolher pasta passa a comunicar melhor o fluxo de seleção.
+- Corrigida versão exibida no footer para `v2.8.3`.
+
+### Changed
+
+- `src/config/appVersion.js` atualizado para `v2.8.3`.
+- `Sidebar.jsx` ajustado para o fluxo de pasta via Google Picker.
