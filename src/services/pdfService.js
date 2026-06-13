@@ -13,9 +13,33 @@ export async function getPdfJs() {
   return pdfjsLibPromise;
 }
 
-export async function loadPdfDocument(source) {
+function toPdfJsDocumentSource(source) {
   if (!source) return null;
+
+  if (typeof source === 'string') {
+    return { url: source };
+  }
+
+  if (source instanceof URL) {
+    return { url: source.toString() };
+  }
+
+  if (source instanceof ArrayBuffer || ArrayBuffer.isView(source)) {
+    return { data: source };
+  }
+
+  if (typeof source === 'object') {
+    if (source.url || source.data || source.range) return source;
+  }
+
+  return null;
+}
+
+export async function loadPdfDocument(source) {
+  const documentSource = toPdfJsDocumentSource(source);
+  if (!documentSource) return null;
+
   const pdfjs = await getPdfJs();
-  const loadingTask = pdfjs.getDocument(source);
+  const loadingTask = pdfjs.getDocument(documentSource);
   return loadingTask.promise;
 }

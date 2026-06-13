@@ -1,19 +1,8 @@
 # Playback Cifras IA
 
-## Versão Atual
+Versão atual:
 
-```text
-v2.9.0
-```
+v3.0.0
 
-## Nome da versão
-
-```text
-Drive Library Source Fix
-```
-
-## Branch
-
-```text
-feature/v2-9-drive-library-source-fix
-```
+Base: develop-react pós-PR v2.9
+Foco: correção definitiva do carregamento de PDF via Google Drive mantendo MP3 funcional.
