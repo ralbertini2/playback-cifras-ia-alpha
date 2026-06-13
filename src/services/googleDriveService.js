@@ -1,4 +1,5 @@
 const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
+const SELECTED_FOLDER_STORAGE_KEY = 'playback-cifras:selected-google-drive-folder';
 
 let tokenClient = null;
 let accessToken = '';
@@ -28,21 +29,50 @@ export function getDriveConfig() {
 
 export function isGoogleConfigured() {
   const config = getDriveConfig();
-  return Boolean(config.clientId && config.apiKey);
+  return Boolean(config.clientId);
+}
+
+export function isGooglePickerConfigured() {
+  const config = getDriveConfig();
+  return Boolean(config.apiKey);
 }
 
 export function getAccessToken() {
   return accessToken;
 }
 
-/**
- * Inicializa o cliente Google OAuth.
- *
- * Importante:
- * Esta função sempre retorna uma Promise.
- * Isso evita tela preta quando algum hook chama `initGoogleAuth(...).then(...)`
- * e a configuração Google ainda não está disponível.
- */
+export function getStoredDriveFolder() {
+  try {
+    const raw = window.localStorage.getItem(SELECTED_FOLDER_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveSelectedDriveFolder(folder) {
+  if (!folder?.id) return null;
+
+  const normalized = {
+    id: folder.id,
+    name: folder.name || folder.title || 'Pasta selecionada',
+  };
+
+  window.localStorage.setItem(SELECTED_FOLDER_STORAGE_KEY, JSON.stringify(normalized));
+  return normalized;
+}
+
+export function clearSelectedDriveFolder() {
+  window.localStorage.removeItem(SELECTED_FOLDER_STORAGE_KEY);
+}
+
+export function getEffectiveFolderId() {
+  const config = getDriveConfig();
+  const stored = getStoredDriveFolder();
+
+  return stored?.id || config.rootFolderId || '';
+}
+
 export async function initGoogleAuth({ onToken } = {}) {
   const config = getDriveConfig();
 
@@ -55,6 +85,7 @@ export async function initGoogleAuth({ onToken } = {}) {
     scope: config.scope,
     callback: (response) => {
       accessToken = response?.access_token || '';
+
       if (typeof onToken === 'function') {
         onToken(accessToken);
       }
@@ -64,11 +95,6 @@ export async function initGoogleAuth({ onToken } = {}) {
   return tokenClient;
 }
 
-/**
- * Solicita token OAuth.
- *
- * Sempre retorna Promise<boolean> para manter compatibilidade com chamadas `.then`.
- */
 export async function requestAccessToken({ prompt = '' } = {}) {
   if (!tokenClient) {
     await initGoogleAuth();
@@ -82,11 +108,6 @@ export async function requestAccessToken({ prompt = '' } = {}) {
   return true;
 }
 
-/**
- * Logout Google.
- *
- * Sempre retorna Promise<boolean>.
- */
 export async function logoutGoogle() {
   if (accessToken && window.google?.accounts?.oauth2?.revoke) {
     window.google.accounts.oauth2.revoke(accessToken);
@@ -123,36 +144,86 @@ export async function fetchDriveBlobUrl(fileId, token = accessToken) {
   return getAuthorizedMediaUrl(fileId, token);
 }
 
+function stripExtension(name = '') {
+  return name.replace(/\.[^/.]+$/, '').trim();
+}
+
+function isPdf(file) {
+  return file?.mimeType === 'application/pdf' || String(file?.name || '').toLowerCase().endsWith('.pdf');
+}
+
+function isAudio(file) {
+  const name = String(file?.name || '').toLowerCase();
+  const mime = String(file?.mimeType || '').toLowerCase();
+
+  return mime.startsWith('audio/')
+    || name.endsWith('.mp3')
+    || name.endsWith('.wav')
+    || name.endsWith('.m4a')
+    || name.endsWith('.aac')
+    || name.endsWith('.ogg');
+}
+
 export function normalizeDriveSong(file) {
   if (!file) return null;
 
   return {
     id: file.id || file.fileId || safeRandomId(),
-    title: file.title || file.name || 'Música sem título',
+    title: stripExtension(file.title || file.name || 'Música sem título'),
+    fileName: file.name || file.title || '',
     artist: file.artist || '',
-    style: file.style || file.category || 'Sem estilo',
+    style: file.style || file.category || 'Google Drive',
     mimeType: file.mimeType || '',
-    pdfFileId: file.pdfFileId || file.pdfId || (file.mimeType === 'application/pdf' ? file.id : ''),
-    audioFileId: file.audioFileId || file.audioId || (String(file.mimeType || '').startsWith('audio/') ? file.id : ''),
-    pdfUrl: file.pdfUrl || file.url || '',
+    pdfFileId: file.pdfFileId || file.pdfId || (isPdf(file) ? file.id : ''),
+    audioFileId: file.audioFileId || file.audioId || (isAudio(file) ? file.id : ''),
+    pdfUrl: file.pdfUrl || '',
     audioUrl: file.audioUrl || '',
+    webViewLink: file.webViewLink || '',
     raw: file,
   };
 }
 
-function mapDriveFile(file) {
-  return normalizeDriveSong(file);
+function groupDriveFilesAsSongs(files = []) {
+  const groups = new Map();
+
+  files.forEach((file) => {
+    if (!isPdf(file) && !isAudio(file)) return;
+
+    const key = stripExtension(file.name || file.title || file.id || safeRandomId()).toLowerCase();
+
+    if (!groups.has(key)) {
+      groups.set(key, {
+        id: key || safeRandomId(),
+        title: stripExtension(file.name || file.title || 'Música sem título'),
+        artist: '',
+        style: 'Google Drive',
+        pdfFileId: '',
+        audioFileId: '',
+        pdfUrl: '',
+        audioUrl: '',
+        files: [],
+      });
+    }
+
+    const song = groups.get(key);
+    song.files.push(file);
+
+    if (isPdf(file)) {
+      song.pdfFileId = file.id;
+      song.pdfName = file.name;
+    }
+
+    if (isAudio(file)) {
+      song.audioFileId = file.id;
+      song.audioName = file.name;
+    }
+  });
+
+  return Array.from(groups.values());
 }
 
-/**
- * Lista arquivos da pasta Google Drive.
- *
- * Sempre retorna Promise<Array>.
- * Se não houver folderId/token/config, retorna [] em vez de null.
- */
 export async function loadDriveLibrary({ folderId, token = accessToken } = {}) {
-  const config = getDriveConfig();
-  const targetFolderId = folderId || config.rootFolderId;
+  const targetFolderId = folderId || getEffectiveFolderId();
 
   if (!targetFolderId || !token) {
     return [];
@@ -175,16 +246,9 @@ export async function loadDriveLibrary({ folderId, token = accessToken } = {}) {
   const data = await response.json();
   const files = Array.isArray(data.files) ? data.files : [];
 
-  return files
-    .map(mapDriveFile)
-    .filter(Boolean);
+  return groupDriveFilesAsSongs(files);
 }
 
-/**
- * Abre Google Picker.
- *
- * Sempre retorna Promise<boolean> para evitar erro de `.then` em runtime.
- */
 export async function openFolderPicker({ onPicked } = {}) {
   const config = getDriveConfig();
 
@@ -203,8 +267,16 @@ export async function openFolderPicker({ onPicked } = {}) {
     .setCallback((data) => {
       if (data?.action === window.google.picker.Action.PICKED) {
         const folder = data.docs?.[0];
-        if (folder && typeof onPicked === 'function') {
-          onPicked(folder);
+
+        if (folder) {
+          const savedFolder = saveSelectedDriveFolder({
+            id: folder.id,
+            name: folder.name || folder.title,
+          });
+
+          if (typeof onPicked === 'function') {
+            onPicked(savedFolder);
+          }
         }
       }
     })
