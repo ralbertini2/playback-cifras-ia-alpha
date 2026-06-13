@@ -1,5 +1,12 @@
-# v2.9
+# Changelog
 
-- Corrigir carregamento da biblioteca real do Google Drive.
-- Agrupar PDF e MP3 por nome.
-- Remover dependência de músicas mockadas/localStorage quando conectado ao Drive.
+## [v2.9.0] - 2026-06-13
+
+### Fixed
+
+- Corrigido fluxo Google Drive → Biblioteca → PDF Viewer → Player.
+- `useGoogleDrive.js` passa a manter `pdfUrl` e `audioUrl` da música selecionada.
+- `selectSong` carrega blobs autorizados de PDF e áudio usando `pdfFileId` e `audioFileId`.
+- `App.jsx` passa a enviar o objeto `audio` correto para `PlayerBar`.
+- `PlayerBar` volta a reconhecer fonte válida e habilitar o botão Tocar.
+- `PdfViewer` passa a receber `drive.pdfUrl` válido.

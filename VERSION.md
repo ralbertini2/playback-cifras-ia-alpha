@@ -3,17 +3,17 @@
 ## Versão Atual
 
 ```text
-v2.8.7
+v2.9.0
 ```
 
 ## Nome da versão
 
 ```text
-Real Pick Folder Fix
+Drive Library Source Fix
 ```
 
 ## Branch
 
 ```text
-feature/v2-8-7-real-pick-folder-fix
+feature/v2-9-drive-library-source-fix
 ```
