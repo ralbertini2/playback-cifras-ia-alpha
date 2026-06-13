@@ -1,18 +1,17 @@
 let gapiLoadPromise = null;
-let pickerLoadPromise = null;
 
 export function loadScript(src) {
   return new Promise((resolve, reject) => {
     const existing = document.querySelector(`script[src="${src}"]`);
 
     if (existing) {
-      existing.addEventListener('load', () => resolve(existing), { once: true });
-      existing.addEventListener('error', () => reject(new Error(`Falha ao carregar ${src}`)), { once: true });
-
-      if (existing.dataset.loaded === 'true') {
+      if (window.gapi) {
         resolve(existing);
+        return;
       }
 
+      existing.addEventListener('load', () => resolve(existing), { once: true });
+      existing.addEventListener('error', () => reject(new Error(`Falha ao carregar ${src}`)), { once: true });
       return;
     }
 
@@ -21,65 +20,59 @@ export function loadScript(src) {
     script.async = true;
     script.defer = true;
 
-    script.addEventListener('load', () => {
-      script.dataset.loaded = 'true';
-      resolve(script);
-    }, { once: true });
-
-    script.addEventListener('error', () => {
-      reject(new Error(`Falha ao carregar ${src}`));
-    }, { once: true });
+    script.addEventListener('load', () => resolve(script), { once: true });
+    script.addEventListener('error', () => reject(new Error(`Falha ao carregar ${src}`)), { once: true });
 
     document.head.appendChild(script);
   });
 }
 
 export async function loadGoogleApiClient() {
-  if (window.gapi) {
+  if (window.gapi?.load) {
     return window.gapi;
   }
 
   if (!gapiLoadPromise) {
-    gapiLoadPromise = loadScript('https://apis.google.com/js/api.js')
-      .then(() => window.gapi);
+    gapiLoadPromise = loadScript('https://apis.google.com/js/api.js').then(() => {
+      if (!window.gapi?.load) {
+        throw new Error('Google API Client carregou, mas gapi.load não ficou disponível.');
+      }
+
+      return window.gapi;
+    });
   }
 
   return gapiLoadPromise;
 }
 
-export async function loadGooglePicker() {
+export async function forceLoadGooglePicker() {
   if (window.google?.picker) {
     return window.google.picker;
   }
 
-  if (!pickerLoadPromise) {
-    pickerLoadPromise = loadGoogleApiClient().then((gapi) => {
-      if (!gapi?.load) {
-        throw new Error('Google API Client não foi carregado corretamente.');
-      }
+  const gapi = await loadGoogleApiClient();
 
-      return new Promise((resolve, reject) => {
-        try {
-          gapi.load('picker', {
-            callback: () => {
-              if (window.google?.picker) {
-                resolve(window.google.picker);
-              } else {
-                reject(new Error('Google Picker não ficou disponível após o carregamento.'));
-              }
-            },
-            onerror: () => reject(new Error('Falha ao carregar Google Picker.')),
-            timeout: 10000,
-            ontimeout: () => reject(new Error('Tempo esgotado ao carregar Google Picker.')),
-          });
-        } catch (error) {
-          reject(error);
-        }
+  return new Promise((resolve, reject) => {
+    try {
+      console.info('[Playback Cifras IA] Carregando Google Picker...');
+
+      gapi.load('picker', {
+        callback: () => {
+          if (window.google?.picker) {
+            console.info('[Playback Cifras IA] Google Picker carregado.');
+            resolve(window.google.picker);
+          } else {
+            reject(new Error('Google Picker não ficou disponível após gapi.load("picker").'));
+          }
+        },
+        onerror: () => reject(new Error('Erro ao carregar Google Picker.')),
+        timeout: 10000,
+        ontimeout: () => reject(new Error('Tempo esgotado ao carregar Google Picker.')),
       });
-    });
-  }
-
-  return pickerLoadPromise;
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
 
 export function isGooglePickerReady() {

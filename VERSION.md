@@ -3,20 +3,17 @@
 ## Versão Atual
 
 ```text
-v2.8.2
-v2.8.4
+v2.8.5
 ```
 
 ## Nome da versão
 
 ```text
-Google Picker Loader Fix
-Folder Picker Unlock Fix
+Force Picker Load on Click
 ```
 
 ## Branch
 
 ```text
-feature/v2-8-2-google-picker-loader-fix
-feature/v2-8-4-folder-picker-unlock-fix
+feature/v2-8-5-force-picker-load-on-click
 ```
