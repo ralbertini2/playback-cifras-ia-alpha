@@ -1,15 +1,22 @@
 # Changelog
 
-## [v2.7.3] - 2026-06-12
+## [v2.8] - 2026-06-13
 
 ### Fixed
 
-- Corrigido carregamento inválido de áudio no Player React.
-- Corrigido erro de console `URI inválida. Falha no carregamento do recurso de mídia`.
-- Player deixa de tentar carregar áudio vazio, nulo, `undefined`, `null` ou `[object Object]`.
-- `useAudioPlayer` passa a expor `hasValidSource` e `error`.
-- PlayerBar passa a exibir mensagem de erro de áudio quando necessário.
+- Corrigido estado falso de “Google Drive conectado”.
+- Corrigido fluxo quando `ROOT_FOLDER_ID` está vazio.
+- Google Drive passa a exigir seleção de pasta pelo usuário.
+- Pasta escolhida no Google Picker é salva localmente.
+- `loadDriveLibrary` passa a retornar biblioteca real somente com token e pasta válidos.
+- `useGoogleDrive` passa a expor estados claros: não configurado, pronto, autenticado, precisa de pasta, carregando, conectado e erro.
 
 ### Added
 
-- `src/services/audioService.js`
+- `public/config.example.js`
+- Persistência local da pasta selecionada.
+- Agrupamento inicial de arquivos PDF/áudio por nome base.
+
+### Changed
+
+- `public/config.js` atualizado com credenciais Google informadas.

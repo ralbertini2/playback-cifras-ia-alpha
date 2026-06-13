@@ -1,30 +1,36 @@
 # Playback Cifras IA
 
-## v2.7.3 — Audio Source Validation Fix
+## v2.8 — Real Google Config & Drive State
 
-Correção funcional do Player React.
+Correção funcional do estado real do Google Drive.
 
 ## Problema
 
-No desktop e no iPad, o console passou a exibir:
+O app mostrava “Google Drive conectado” mesmo quando:
 
-```text
-URI inválida. Falha no carregamento do recurso de mídia.
-```
-
-O botão Play ficava indisponível porque o navegador recebia uma origem de áudio inválida.
+- `ROOT_FOLDER_ID` estava vazio;
+- o usuário ainda não tinha escolhido uma pasta;
+- não existia token válido;
+- nenhum PDF/MP3 real havia sido carregado.
 
 ## Correção
 
-- Adicionado `audioService.js`.
-- `useAudioPlayer` passa a validar a origem antes de carregar.
-- Player não tenta carregar áudio vazio, nulo ou inválido.
-- Player exibe estado seguro quando não há MP3 válido.
-- Botão Play fica desabilitado apenas quando não existe fonte válida.
-- Mensagem de erro controlada no PlayerBar quando o áudio é inválido.
+- `ROOT_FOLDER_ID` pode ficar vazio.
+- O app passa a exigir seleção de pasta após login.
+- A pasta escolhida via Google Picker é salva no `localStorage`.
+- O Google Drive só fica “conectado” quando há token e pasta válida.
+- Biblioteca retorna vazia com mensagem correta quando o Drive ainda não está pronto.
+- Estado falso de conexão é eliminado.
+- `public/config.js` passa a conter as credenciais reais informadas pelo usuário.
 
 ## Branch
 
 ```text
-feature/v2-7-3-audio-source-validation-fix
+feature/v2-8-real-google-config-and-drive-state
+```
+
+## PR
+
+```text
+fix: corrige estado real do Google Drive
 ```

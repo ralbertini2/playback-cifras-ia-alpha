@@ -3,17 +3,23 @@
 ## Versão Atual
 
 ```text
-v2.7.3
+v2.8
 ```
 
 ## Nome da versão
 
 ```text
-Audio Source Validation Fix
+Real Google Config & Drive State
 ```
 
 ## Branch
 
 ```text
-feature/v2-7-3-audio-source-validation-fix
+feature/v2-8-real-google-config-and-drive-state
+```
+
+## Status
+
+```text
+Ready for Development
 ```
