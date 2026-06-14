@@ -202,7 +202,13 @@ function isAudio(file) {
 
 
 function isDriveFolder(file) {
-  return file?.mimeType === 'application/vnd.google-apps.folder';
+  return file?.mimeType === 'application/vnd.google-apps.folder'
+    || (file?.mimeType === 'application/vnd.google-apps.shortcut'
+      && file?.shortcutDetails?.targetMimeType === 'application/vnd.google-apps.folder');
+}
+
+function getDriveFolderId(file) {
+  return file?.shortcutDetails?.targetId || file?.id || '';
 }
 
 function normalizeStylePath(pathParts = []) {
@@ -215,14 +221,14 @@ async function listDriveChildren(folderId, token = accessToken) {
   if (!folderId || !token) return [];
 
   const query = encodeURIComponent(`'${folderId}' in parents and trashed = false`);
-  const fields = encodeURIComponent('nextPageToken,files(id,name,mimeType,modifiedTime,size,webViewLink)');
+  const fields = encodeURIComponent('nextPageToken,files(id,name,mimeType,modifiedTime,size,webViewLink,shortcutDetails(targetId,targetMimeType))');
   const orderBy = encodeURIComponent('folder,name');
   const files = [];
   let pageToken = '';
 
   do {
     const pageTokenParam = pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '';
-    const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=${fields}&orderBy=${orderBy}&pageSize=1000${pageTokenParam}`;
+    const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=${fields}&orderBy=${orderBy}&pageSize=1000&supportsAllDrives=true&includeItemsFromAllDrives=true${pageTokenParam}`;
 
     const response = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
@@ -248,7 +254,7 @@ async function collectDriveFilesRecursively({ folderId, token = accessToken, pat
     if (isDriveFolder(child)) {
       if (depth < maxDepth) {
         const nestedFiles = await collectDriveFilesRecursively({
-          folderId: child.id,
+          folderId: getDriveFolderId(child),
           token,
           pathParts: [...pathParts, child.name],
           depth: depth + 1,

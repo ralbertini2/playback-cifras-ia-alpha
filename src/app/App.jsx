@@ -139,6 +139,7 @@ export default function App() {
         <Sidebar
           open={sidebarOpen}
           connected={drive.connected}
+          isAuthenticated={drive.isAuthenticated}
           status={drive.loadingLibrary ? 'Atualizando biblioteca...' : drive.status}
           folderId={drive.folderId}
           setFolderId={drive.setFolderId}
