@@ -143,7 +143,7 @@ export default function App() {
           status={drive.loadingLibrary ? 'Atualizando biblioteca...' : drive.status}
           folderId={drive.folderId}
           setFolderId={drive.setFolderId}
-          stylesList={drive.styleList}
+          styleList={drive.styleList}
           selectedStyle={drive.selectedStyle}
           setSelectedStyle={drive.setSelectedStyle}
           playlists={playlists}
