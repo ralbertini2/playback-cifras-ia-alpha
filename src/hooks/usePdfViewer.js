@@ -9,10 +9,25 @@ function clampScale(value) {
   return Math.min(MAX_SCALE, Math.max(MIN_SCALE, Number(value.toFixed(2))));
 }
 
+function getErrorMessage(error, fallback) {
+  const message = error?.message || fallback;
+
+  if (/worker/i.test(message)) {
+    return 'Erro ao inicializar o leitor de PDF. Recarregue a página e tente novamente.';
+  }
+
+  if (/invalid|pdf/i.test(message)) {
+    return 'O arquivo carregado não pôde ser lido como PDF válido.';
+  }
+
+  return message;
+}
+
 export function usePdfViewer(source) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const renderTaskRef = useRef(null);
+  const documentRef = useRef(null);
   const [documentProxy, setDocumentProxy] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -22,25 +37,37 @@ export function usePdfViewer(source) {
 
   useEffect(() => {
     let cancelled = false;
+
     setStatus(source ? 'loading' : 'idle');
     setError('');
     setDocumentProxy(null);
     setTotalPages(0);
     setPageNumber(1);
 
+    if (documentRef.current?.destroy) {
+      documentRef.current.destroy().catch(() => {});
+      documentRef.current = null;
+    }
+
     if (!source) return undefined;
 
     loadPdfDocument(source)
       .then((pdf) => {
-        if (cancelled) return;
+        if (cancelled) {
+          if (pdf?.destroy) pdf.destroy().catch(() => {});
+          return;
+        }
+
+        documentRef.current = pdf;
         setDocumentProxy(pdf);
         setTotalPages(pdf.numPages || 0);
         setStatus('ready');
       })
       .catch((loadError) => {
         if (cancelled) return;
+        console.error('[Playback Cifras IA] Erro ao carregar PDF:', loadError);
         setStatus('error');
-        setError(loadError?.message || 'Não foi possível carregar o PDF.');
+        setError(getErrorMessage(loadError, 'Não foi possível carregar o PDF.'));
       });
 
     return () => {
@@ -51,17 +78,21 @@ export function usePdfViewer(source) {
   useEffect(() => {
     let cancelled = false;
     const canvas = canvasRef.current;
+
     if (!documentProxy || !canvas) return undefined;
 
     async function renderPage() {
       setStatus('rendering');
+
       try {
         if (renderTaskRef.current) {
           renderTaskRef.current.cancel();
           renderTaskRef.current = null;
         }
+
         const page = await documentProxy.getPage(pageNumber);
         if (cancelled) return;
+
         const viewport = page.getViewport({ scale });
         const context = canvas.getContext('2d');
         const outputScale = window.devicePixelRatio || 1;
@@ -77,12 +108,18 @@ export function usePdfViewer(source) {
         const task = page.render({ canvasContext: context, viewport });
         renderTaskRef.current = task;
         await task.promise;
-        if (!cancelled) setStatus('ready');
+
+        if (!cancelled) {
+          renderTaskRef.current = null;
+          setStatus('ready');
+        }
       } catch (renderError) {
         if (renderError?.name === 'RenderingCancelledException') return;
+
         if (!cancelled) {
+          console.error('[Playback Cifras IA] Erro ao renderizar PDF:', renderError);
           setStatus('error');
-          setError(renderError?.message || 'Erro ao renderizar a página do PDF.');
+          setError(getErrorMessage(renderError, 'Erro ao renderizar a página do PDF.'));
         }
       }
     }
