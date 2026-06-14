@@ -3,17 +3,23 @@
 ## Versão Atual
 
 ```text
-v3.0.0-pdf-audit-from-v2.9
+v3.0.0-pdf-fix
 ```
 
 ## Nome da versão
 
 ```text
-Drive Library Source Fix
+PDF Fix From v2.9 Baseline
 ```
 
 ## Branch
 
 ```text
-feature/v2-9-drive-library-source-fix
+feature/v3-pdf-fix-from-v2-9
+```
+
+## Base
+
+```text
+v2.9.0 - Drive Library Source Fix
 ```
