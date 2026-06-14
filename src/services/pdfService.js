@@ -1,95 +1,72 @@
 let pdfjsLibPromise = null;
+let pdfWorkerSrcPromise = null;
 
-const PDF_IMPORT_CANDIDATES = [
-  'pdfjs-dist/legacy/build/pdf.mjs',
-  'pdfjs-dist'
-];
-
-const WORKER_IMPORT_CANDIDATES = [
-  'pdfjs-dist/legacy/build/pdf.worker.mjs?url',
-  'pdfjs-dist/build/pdf.worker.mjs?url'
-];
-
-async function importFirst(candidates = []) {
-  let lastError = null;
-
-  for (const candidate of candidates) {
-    try {
-      return await import(candidate);
-    } catch (error) {
-      lastError = error;
-      console.warn(`[Playback Cifras IA] Falha ao carregar ${candidate}`, error);
-    }
-  }
-
-  throw lastError || new Error('Nenhuma opção de importação do PDF.js funcionou.');
-}
-
-function getModuleNamespace(module) {
-  return module?.default?.getDocument ? module.default : module;
-}
-
-function getWorkerUrl(module) {
-  return module?.default || module;
-}
-
-function buildLoadingConfig(source) {
-  if (source instanceof ArrayBuffer || source instanceof Uint8Array) {
-    return {
-      data: source,
-      isEvalSupported: false,
-      useSystemFonts: true,
-    };
-  }
+function normalizePdfSource(source) {
+  if (!source) return null;
 
   if (typeof source === 'string') {
     return {
       url: source,
-      isEvalSupported: false,
-      useSystemFonts: true,
       withCredentials: false,
     };
+  }
+
+  if (source instanceof Uint8Array) {
+    return { data: source };
+  }
+
+  if (source instanceof ArrayBuffer) {
+    return { data: new Uint8Array(source) };
   }
 
   return source;
 }
 
-async function fetchPdfAsArrayBuffer(source) {
-  if (typeof source !== 'string') return null;
+function getReadablePdfError(error) {
+  const message = error?.message || String(error || 'Erro desconhecido ao carregar PDF.');
 
-  const response = await fetch(source);
-
-  if (!response.ok) {
-    throw new Error(`Falha ao validar PDF (${response.status}).`);
+  if (/worker/i.test(message)) {
+    return 'Falha ao inicializar o leitor de PDF. Recarregue a página e tente novamente.';
   }
 
-  const blob = await response.blob();
-  const type = String(blob.type || response.headers.get('content-type') || '').toLowerCase();
-
-  if (type && !type.includes('pdf') && blob.size < 1024) {
-    throw new Error(`Arquivo recebido não parece ser PDF (${type}).`);
+  if (/not a pdf|invalid|corrupt|damaged|pdf/i.test(message)) {
+    return 'O arquivo carregado não pôde ser lido como PDF válido.';
   }
 
-  return blob.arrayBuffer();
+  if (/network|fetch|cors|403|401|permission|permissão/i.test(message)) {
+    return 'Não foi possível acessar o PDF. Verifique a permissão do arquivo no Google Drive.';
+  }
+
+  return message;
+}
+
+async function importPdfJsLib() {
+  try {
+    return await import('pdfjs-dist/legacy/build/pdf.mjs');
+  } catch (legacyError) {
+    console.warn('[Playback Cifras IA] PDF.js legacy build indisponível. Usando build padrão.', legacyError);
+    return import('pdfjs-dist');
+  }
+}
+
+async function getPdfWorkerSrc() {
+  if (!pdfWorkerSrcPromise) {
+    pdfWorkerSrcPromise = import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')
+      .catch(() => import('pdfjs-dist/build/pdf.worker.min.mjs?url'))
+      .then((worker) => worker.default || worker);
+  }
+
+  return pdfWorkerSrcPromise;
 }
 
 export async function getPdfJs() {
   if (!pdfjsLibPromise) {
     pdfjsLibPromise = Promise.all([
-      importFirst(PDF_IMPORT_CANDIDATES),
-      importFirst(WORKER_IMPORT_CANDIDATES)
-    ]).then(([pdfjsModule, workerModule]) => {
-      const pdfjs = getModuleNamespace(pdfjsModule);
-      const workerUrl = getWorkerUrl(workerModule);
-
-      if (pdfjs?.GlobalWorkerOptions && workerUrl) {
-        pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
-      }
-
+      importPdfJsLib(),
+      getPdfWorkerSrc(),
+    ]).then(([pdfjs, workerSrc]) => {
+      pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
       return pdfjs;
-    }).catch((error) => {
-      pdfjsLibPromise = null;
-      throw error;
     });
   }
 
@@ -99,22 +76,20 @@ export async function getPdfJs() {
 export async function loadPdfDocument(source) {
   if (!source) return null;
 
-  const pdfjs = await getPdfJs();
-  const config = buildLoadingConfig(source);
-
   try {
-    const loadingTask = pdfjs.getDocument(config);
+    const pdfjs = await getPdfJs();
+    const normalizedSource = normalizePdfSource(source);
+
+    const loadingTask = pdfjs.getDocument({
+      ...normalizedSource,
+      disableAutoFetch: false,
+      disableStream: false,
+      isEvalSupported: false,
+    });
+
     return await loadingTask.promise;
-  } catch (primaryError) {
-    console.warn('[Playback Cifras IA] Falha no carregamento direto do PDF. Tentando fallback por ArrayBuffer.', primaryError);
-
-    const arrayBuffer = await fetchPdfAsArrayBuffer(source);
-
-    if (!arrayBuffer) {
-      throw primaryError;
-    }
-
-    const fallbackTask = pdfjs.getDocument(buildLoadingConfig(arrayBuffer));
-    return fallbackTask.promise;
+  } catch (error) {
+    console.error('[Playback Cifras IA] PDF load failed:', error);
+    throw new Error(getReadablePdfError(error));
   }
 }

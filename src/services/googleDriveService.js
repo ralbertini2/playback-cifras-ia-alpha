@@ -141,6 +141,45 @@ export async function fetchDriveBlobUrl(fileId, token = accessToken) {
   return getAuthorizedMediaUrl(fileId, token);
 }
 
+function arrayBufferStartsWithPdf(arrayBuffer) {
+  if (!arrayBuffer || arrayBuffer.byteLength < 5) return false;
+
+  const bytes = new Uint8Array(arrayBuffer.slice(0, Math.min(arrayBuffer.byteLength, 1024)));
+  const signature = [0x25, 0x50, 0x44, 0x46, 0x2d]; // %PDF-
+
+  for (let index = 0; index <= bytes.length - signature.length; index += 1) {
+    if (signature.every((value, offset) => bytes[index + offset] === value)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export async function fetchDriveArrayBuffer(fileId, token = accessToken) {
+  if (!fileId || !token) return null;
+
+  const response = await fetch(buildDriveDownloadUrl(fileId), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Falha ao carregar arquivo do Google Drive (${response.status})`);
+  }
+
+  return response.arrayBuffer();
+}
+
+export async function fetchDrivePdfData(fileId, token = accessToken) {
+  const arrayBuffer = await fetchDriveArrayBuffer(fileId, token);
+
+  if (!arrayBufferStartsWithPdf(arrayBuffer)) {
+    throw new Error('O arquivo retornado pelo Google Drive não parece ser um PDF válido.');
+  }
+
+  return new Uint8Array(arrayBuffer);
+}
+
 function stripExtension(name = '') {
   return name.replace(/\.[^/.]+$/, '').trim();
 }
