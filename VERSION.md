@@ -1,7 +1,15 @@
-# Playback Cifras IA
+# Playback Cifras IA v3.0.4.1-build-fix
 
-Versão atual: v3.0.3-drive-styles-flow
+Correção pontual de build da v3.0.4.
 
-Base: v2.9.0 estável.
+## Alteração
 
-Correção: fluxo Google Drive, estilos por subpastas e remoção visual de Recentes.
+- Restaura o export `APP_NAME` em `src/config/appVersion.js`.
+
+## Escopo
+
+- Não altera PDF.
+- Não altera MP3.
+- Não altera Google Drive.
+- Não altera layout.
+- Não altera package.json, Vite ou GitHub Actions.
