@@ -3,7 +3,7 @@
 ## Versão Atual
 
 ```text
-v3.0.0-pdf-audit-from-v2.9
+v3.0.0
 ```
 
 ## Nome da versão
