@@ -1,0 +1,18 @@
+Branch:
+feature/v2-9-drive-library-source-fix
+
+Arquivos a revisar:
+- src/hooks/useGoogleDrive.js
+- src/services/googleDriveService.js
+- src/app/App.jsx
+
+Lógica:
+1. Ler arquivos da pasta selecionada.
+2. Agrupar por nome sem extensão.
+3. Gerar:
+   {
+     title,
+     pdfFileId,
+     audioFileId
+   }
+4. Exibir apenas músicas do Drive quando conectado.

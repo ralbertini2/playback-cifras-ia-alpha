@@ -1,0 +1,9 @@
+.viewer { width:100%; height:100%; overflow:auto; padding:18px; display:flex; justify-content:center; }
+.frame { width:min(100%, 980px); height:calc(100dvh - 184px); border:0; border-radius:18px; background:#fff; box-shadow:0 24px 80px rgba(0,0,0,.32); }
+.emptyState { min-height:100%; display:grid; place-items:center; padding:24px; }
+.emptyCard { width:min(560px, 100%); border:1px solid rgba(255,255,255,.1); border-radius:28px; background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035)); padding:34px; text-align:center; box-shadow:0 28px 90px rgba(0,0,0,.3); }
+.emptyCard svg { color:var(--accent); }
+.emptyCard h1 { margin:16px 0 8px; font-size:28px; letter-spacing:-.04em; }
+.emptyCard p { margin:0 auto 14px; color:var(--muted); line-height:1.55; }
+.emptyCard small { color:rgba(255,255,255,.55); font-weight:700; }
+@media (max-width: 700px) { .viewer { padding:10px; } .emptyCard { padding:24px; border-radius:22px; } .emptyCard h1 { font-size:23px; } }

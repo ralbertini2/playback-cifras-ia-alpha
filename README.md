@@ -1,32 +1,28 @@
-# Playback Cifras IA v1.3 — Base Enxuta
+# Playback Cifras IA
 
-Versão de estabilização da linha v1 do Playback Cifras IA.
+## v2.9.0 — Drive Library Source Fix
 
-## Foco da versão
+Correção funcional para a biblioteca real do Google Drive.
 
-- Manter a base estável.
-- Priorizar Tablet/iPad Vertical.
-- Preservar Google Drive.
-- Preservar PDF + MP3.
-- Preservar favoritos e playlists/eventos.
-- Remover módulos futuros que ainda não fazem parte da v1.
+### Corrige
 
-## Arquivos principais
+- Montagem de músicas a partir dos arquivos reais da pasta selecionada.
+- Associação de PDF e MP3 por nome base.
+- Envio do PDF selecionado para o PdfViewer.
+- Envio do MP3 selecionado para o PlayerBar.
+- Integração correta entre `useGoogleDrive.js`, `App.jsx`, `PdfViewer` e `PlayerBar`.
 
-- `index.html` — landing page.
-- `player.html` — app principal.
-- `app.js` — lógica principal do app.
-- `styles.css` — estilos do app.
-- `landing.css` — estilos da landing page.
-- `VERSION.md` — versão atual.
-- `CHANGELOG.md` — histórico de alterações.
+### Estrutura suportada
 
-## Áreas removidas temporariamente
+```text
+ROCK/
+├── So Far Away.pdf
+├── So Far Away.mp3
+```
 
-- Planos / Assinatura.
-- Biblioteca própria Playback Cifras.
-- IA Lab.
-- Editor de cifras.
-- Adicionar música.
+### Resultado esperado
 
-Essas áreas serão reconstruídas futuramente quando fizerem parte do roadmap ativo.
+- A biblioteca exibe `So Far Away`.
+- Ao selecionar a música, o PDF abre.
+- O MP3 é carregado no player.
+- O botão Tocar fica habilitado.

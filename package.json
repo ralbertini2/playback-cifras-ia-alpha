@@ -1,0 +1,24 @@
+{
+  "name": "playback-cifras-ia",
+  "private": true,
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "validate": "npm run build"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "lucide-react": "latest",
+    "pdfjs-dist": "4.10.38"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=20"
+  }
+}

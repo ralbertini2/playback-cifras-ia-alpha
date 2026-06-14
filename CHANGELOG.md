@@ -1,107 +1,22 @@
 # Changelog
 
-Todas as mudanças relevantes do Playback Cifras IA serão documentadas neste arquivo.
-
-O projeto segue versionamento incremental simples.
-
----
-
-
-
-## [v1.4] - 2026-06-11
+## [v3.0.0] - 2026-06-14
 
 ### Fixed
 
-- Corrigido comportamento do menu lateral em tablet/iPad vertical e mobile.
-- Corrigida rolagem do menu quando os painéis ocupam mais altura que a tela.
-- Corrigido acesso à lista de músicas dentro do menu em telas menores.
-- Corrigido overflow horizontal dos controles superiores em telas estreitas.
+- Estabilizado o carregamento do PDF.js usando build legacy compatível com Vite/Safari.
+- Fixada a versão do `pdfjs-dist` para evitar regressões por instalação com `latest`.
+- Ajustado o carregamento do worker do PDF.js via `pdf.worker.min.mjs?url`.
+- Adicionado tratamento de erro mais claro para falhas de PDF, worker, permissão e arquivo inválido.
+- Mantido o escopo restrito ao PDF Viewer, sem alterar MP3, Google Picker ou layout.
 
-### Changed
-
-- Menu lateral passa a ter rolagem total em telas até 900px.
-- Cabeçalho do menu permanece fixo durante a rolagem em tablet/mobile.
-- Lista de músicas deixa de criar uma segunda rolagem interna em telas menores.
-
-## [v1.3] - 2026-06-11
-
-### Removed
-
-- Tela `add-music.html`.
-- Tela `subscription.html`.
-- Tela `editor.html`.
-- Tela `ai-lab.html`.
-- Serviços mockados de IA.
-- Serviços mockados de billing/planos.
-- Serviço estrutural de biblioteca própria.
-- Schema estrutural de entidades futuras.
-- Link `Planos` da landing page.
-- Seção pública de planos/teste gratuito da landing page.
-
-### Changed
-
-- Footer de versão atualizado para `Playback Cifras IA v1.3`.
-- Base do projeto reduzida para manter apenas recursos essenciais da v1.
-- Landing page simplificada para evitar promessas de módulos ainda adiados.
+## [v2.9.0] - 2026-06-13
 
 ### Fixed
 
-- Redução de rotas e arquivos sem uso que poderiam gerar confusão no desenvolvimento.
-
-## [v1.2] - 2026-06-11
-
-### Added
-
-- Footer discreto com a versão atual do sistema em todas as páginas HTML.
-- Identificação visual pequena e não intrusiva: `Playback Cifras IA v1.2`.
-- Arquivo de release `docs/releases/v1.2.md`.
-
-### Changed
-
-- Padronização para que todas as próximas versões exibam a versão atual na interface.
-
----
-
-## [v1.1] - 2026-06-11
-
-### Removed
-
-- Removido o botão Modo Palco da interface principal.
-- Removido o botão Tela Cheia da interface principal.
-- Removido código JavaScript associado ao modo palco e tela cheia.
-- Removidas regras CSS associadas ao estado `body.stage`.
-
-### Changed
-
-- Simplificada a barra superior da tela principal.
-- Mantidos os controles de favoritos, zoom, rolagem automática e velocidade de rolagem.
-
----
-
-## [v1] - 2026-06-11
-
-### Added
-
-- Definição da versão base segura para retomada do desenvolvimento.
-- Estrutura inicial do Playback Cifras IA preservada a partir da versão estável.
-- Estratégia de evolução baseada em branches de feature.
-
----
-
-## [Unreleased]
-
-### Added
-
--
-
-### Changed
-
--
-
-### Fixed
-
--
-
-### Removed
-
--
+- Corrigido fluxo Google Drive → Biblioteca → PDF Viewer → Player.
+- `useGoogleDrive.js` passa a manter `pdfUrl` e `audioUrl` da música selecionada.
+- `selectSong` carrega blobs autorizados de PDF e áudio usando `pdfFileId` e `audioFileId`.
+- `App.jsx` passa a enviar o objeto `audio` correto para `PlayerBar`.
+- `PlayerBar` volta a reconhecer fonte válida e habilitar o botão Tocar.
+- `PdfViewer` passa a receber `drive.pdfUrl` válido.
