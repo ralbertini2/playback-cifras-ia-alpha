@@ -1,4 +1,5 @@
 .appShell {
+  height: 100dvh;
   min-height: 100dvh;
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
@@ -16,10 +17,12 @@
 
 .mainArea {
   min-width: 0;
-  min-height: 100dvh;
+  height: 100dvh;
+  min-height: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   padding-bottom: 26px;
+  overflow: hidden;
 }
 
 .toolbarSlot {
@@ -36,6 +39,9 @@
 }
 
 .playerSlot {
+  min-height: 0;
+  position: relative;
+  z-index: 15;
   border-top: 1px solid rgba(255,255,255,.08);
   background: rgba(11, 17, 28, .92);
   backdrop-filter: blur(18px);
@@ -59,6 +65,8 @@
   }
 
   .mainArea {
-    min-height: 100dvh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
   }
 }

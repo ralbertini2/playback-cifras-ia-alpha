@@ -200,6 +200,76 @@ function isAudio(file) {
     || name.endsWith('.ogg');
 }
 
+
+function isDriveFolder(file) {
+  return file?.mimeType === 'application/vnd.google-apps.folder';
+}
+
+function normalizeStylePath(pathParts = []) {
+  const cleanParts = pathParts.filter(Boolean);
+  if (!cleanParts.length) return 'Google Drive';
+  return cleanParts.join(' / ');
+}
+
+async function listDriveChildren(folderId, token = accessToken) {
+  if (!folderId || !token) return [];
+
+  const query = encodeURIComponent(`'${folderId}' in parents and trashed = false`);
+  const fields = encodeURIComponent('nextPageToken,files(id,name,mimeType,modifiedTime,size,webViewLink)');
+  const orderBy = encodeURIComponent('folder,name');
+  const files = [];
+  let pageToken = '';
+
+  do {
+    const pageTokenParam = pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : '';
+    const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=${fields}&orderBy=${orderBy}&pageSize=1000${pageTokenParam}`;
+
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Falha ao listar arquivos do Google Drive (${response.status})`);
+    }
+
+    const data = await response.json();
+    files.push(...(Array.isArray(data.files) ? data.files : []));
+    pageToken = data.nextPageToken || '';
+  } while (pageToken);
+
+  return files;
+}
+
+async function collectDriveFilesRecursively({ folderId, token = accessToken, pathParts = [], depth = 0, maxDepth = 6 } = {}) {
+  const children = await listDriveChildren(folderId, token);
+  const files = [];
+
+  for (const child of children) {
+    if (isDriveFolder(child)) {
+      if (depth < maxDepth) {
+        const nestedFiles = await collectDriveFilesRecursively({
+          folderId: child.id,
+          token,
+          pathParts: [...pathParts, child.name],
+          depth: depth + 1,
+          maxDepth,
+        });
+        files.push(...nestedFiles);
+      }
+      continue;
+    }
+
+    files.push({
+      ...child,
+      style: normalizeStylePath(pathParts),
+      folderPath: normalizeStylePath(pathParts),
+      folderParts: pathParts,
+    });
+  }
+
+  return files;
+}
+
 export function normalizeDriveSong(file) {
   if (!file) return null;
 
@@ -225,14 +295,19 @@ function groupDriveFilesAsSongs(files = []) {
   files.forEach((file) => {
     if (!isPdf(file) && !isAudio(file)) return;
 
-    const key = stripExtension(file.name || file.title || file.id || safeRandomId()).toLowerCase();
+    const baseTitle = stripExtension(file.name || file.title || file.id || safeRandomId());
+    const style = file.style || file.folderPath || 'Google Drive';
+    const key = `${style}|${baseTitle}`.toLowerCase();
 
     if (!groups.has(key)) {
       groups.set(key, {
         id: key || safeRandomId(),
-        title: stripExtension(file.name || file.title || 'Música sem título'),
+        title: baseTitle || 'Música sem título',
         artist: '',
-        style: 'Google Drive',
+        style,
+        styleId: style,
+        folderPath: file.folderPath || style,
+        folderParts: file.folderParts || [],
         pdfFileId: '',
         audioFileId: '',
         pdfUrl: '',
@@ -255,7 +330,11 @@ function groupDriveFilesAsSongs(files = []) {
     }
   });
 
-  return Array.from(groups.values());
+  return Array.from(groups.values()).sort((a, b) => {
+    const styleCompare = String(a.style || '').localeCompare(String(b.style || ''), 'pt-BR');
+    if (styleCompare !== 0) return styleCompare;
+    return String(a.title || '').localeCompare(String(b.title || ''), 'pt-BR');
+  });
 }
 
 export async function loadDriveLibrary({ folderId, token = accessToken } = {}) {
@@ -263,20 +342,11 @@ export async function loadDriveLibrary({ folderId, token = accessToken } = {}) {
 
   if (!targetFolderId || !token) return [];
 
-  const query = encodeURIComponent(`'${targetFolderId}' in parents and trashed = false`);
-  const fields = encodeURIComponent('files(id,name,mimeType,modifiedTime,size,webViewLink)');
-  const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=${fields}&pageSize=1000`;
-
-  const response = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` },
+  const files = await collectDriveFilesRecursively({
+    folderId: targetFolderId,
+    token,
+    pathParts: [],
   });
-
-  if (!response.ok) {
-    throw new Error(`Falha ao listar arquivos do Google Drive (${response.status})`);
-  }
-
-  const data = await response.json();
-  const files = Array.isArray(data.files) ? data.files : [];
 
   return groupDriveFilesAsSongs(files);
 }
