@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSelectedDriveFolder,
   fetchDriveBlobUrl,
+  fetchDrivePdfData,
   getAccessToken,
   getDriveConfig,
   getEffectiveFolderId,
@@ -50,6 +51,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
   const [loadingSong, setLoadingSong] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const selectionRequestRef = useRef(0);
 
   const config = useMemo(() => getDriveConfig(), []);
   const isConfigured = isGoogleConfigured();
@@ -68,7 +70,15 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
   const clearCurrentMedia = useCallback(() => {
     setPdfUrl('');
     setAudioUrl('');
-  }, []);
+
+    if (typeof onSongPdfReady === 'function') {
+      onSongPdfReady('', null);
+    }
+
+    if (typeof onSongAudioReady === 'function') {
+      onSongAudioReady('', null, false);
+    }
+  }, [onSongAudioReady, onSongPdfReady]);
 
   useEffect(() => {
     let cancelled = false;
@@ -157,6 +167,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       if (!songs.length) {
         setCurrentSong(null);
         setCurrentIndex(-1);
+        clearCurrentMedia();
       } else if (currentIndex >= songs.length) {
         setCurrentIndex(0);
         setCurrentSong(songs[0]);
@@ -250,7 +261,16 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     return fetchDriveBlobUrl(fileId, token);
   }, [accessToken]);
 
+  const getPdfSource = useCallback(async (fileId) => {
+    const token = accessToken || getAccessToken();
+    if (!fileId || !token) return '';
+    return fetchDrivePdfData(fileId, token);
+  }, [accessToken]);
+
   const selectSong = useCallback(async (indexOrSong, autoplay = false) => {
+    const requestId = selectionRequestRef.current + 1;
+    selectionRequestRef.current = requestId;
+
     const songs = asArray(filteredSongs);
     const nextIndex = typeof indexOrSong === 'object'
       ? songs.findIndex((song) => song?.id === indexOrSong?.id)
@@ -263,31 +283,35 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       return null;
     }
 
+    const isCurrentRequest = () => selectionRequestRef.current === requestId;
     const song = songs[nextIndex];
 
     setCurrentIndex(nextIndex);
     setCurrentSong(song);
     setLoadingSong(true);
     setError('');
-    setPdfUrl('');
-    setAudioUrl('');
+    clearCurrentMedia();
 
     try {
-      let nextPdfUrl = song.pdfUrl || '';
+      let nextPdfSource = song.pdfUrl || '';
 
-      if (!nextPdfUrl && song.pdfFileId) {
-        nextPdfUrl = await getMediaUrl(song.pdfFileId);
+      if (!nextPdfSource && song.pdfFileId) {
+        nextPdfSource = await getPdfSource(song.pdfFileId);
       }
 
-      if (nextPdfUrl) {
-        setPdfUrl(nextPdfUrl);
+      if (!isCurrentRequest()) return null;
+
+      if (nextPdfSource) {
+        setPdfUrl(nextPdfSource);
 
         if (typeof onSongPdfReady === 'function') {
-          onSongPdfReady(nextPdfUrl, song);
+          onSongPdfReady(nextPdfSource, song);
         }
       }
     } catch (err) {
-      setError(err?.message || 'Erro ao carregar PDF da música.');
+      if (isCurrentRequest()) {
+        setError(err?.message || 'Erro ao carregar PDF da música.');
+      }
     }
 
     try {
@@ -297,6 +321,8 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
         nextAudioUrl = await getMediaUrl(song.audioFileId);
       }
 
+      if (!isCurrentRequest()) return null;
+
       if (nextAudioUrl) {
         setAudioUrl(nextAudioUrl);
 
@@ -305,13 +331,17 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
         }
       }
     } catch (err) {
-      setError(err?.message || 'Erro ao carregar áudio da música.');
+      if (isCurrentRequest()) {
+        setError(err?.message || 'Erro ao carregar áudio da música.');
+      }
     } finally {
-      setLoadingSong(false);
+      if (isCurrentRequest()) {
+        setLoadingSong(false);
+      }
     }
 
     return song;
-  }, [clearCurrentMedia, filteredSongs, getMediaUrl, onSongAudioReady, onSongPdfReady]);
+  }, [clearCurrentMedia, filteredSongs, getMediaUrl, getPdfSource, onSongAudioReady, onSongPdfReady]);
 
   const selectNext = useCallback((autoplay = false) => {
     const songs = asArray(filteredSongs);
