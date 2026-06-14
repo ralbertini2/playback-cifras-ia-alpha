@@ -1,5 +1,16 @@
 # Changelog
 
+## [v3.0.1] - 2026-06-14
+
+### Fixed
+
+- Corrigido o ambiente de build React/Vite no GitHub Actions.
+- Substituídas dependências `latest` por versões fixas e previsíveis.
+- Movidos `vite` e `@vitejs/plugin-react` para `devDependencies`.
+- Adicionado `package-lock.json` para builds reproduzíveis.
+- Atualizados workflows para usar `npm ci` com cache npm.
+- Mantido o escopo restrito ao build; não altera PDF, MP3, Google Picker ou layout.
+
 ## [v3.0.0] - 2026-06-14
 
 ### Fixed

@@ -3,13 +3,13 @@
 ## Versão Atual
 
 ```text
-v3.0.0
+v3.0.1
 ```
 
 ## Nome da versão
 
 ```text
-Core Stabilization — PDF Viewer Fix
+Core Stabilization — Build Recovery
 ```
 
 ## Branch
