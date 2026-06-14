@@ -44,6 +44,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
   const [accessToken, setAccessToken] = useState(() => getAccessToken());
   const [selectedFolder, setSelectedFolder] = useState(() => getStoredDriveFolder());
   const [library, setLibrary] = useState([]);
+  const [selectedStyle, setSelectedStyle] = useState('');
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [currentSong, setCurrentSong] = useState(null);
   const [pdfUrl, setPdfUrl] = useState('');
@@ -52,13 +53,19 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const selectionRequestRef = useRef(0);
+  const autoRefreshKeyRef = useRef('');
 
   const config = useMemo(() => getDriveConfig(), []);
   const isConfigured = isGoogleConfigured();
   const pickerConfigured = isGooglePickerConfigured();
   const hasToken = Boolean(accessToken);
   const folderId = selectedFolder?.id || config.rootFolderId || '';
-  const filteredSongs = useMemo(() => asArray(library), [library]);
+  const styleList = useMemo(() => Array.from(new Set(asArray(library).map((song) => song?.style).filter(Boolean))).sort((a, b) => String(a).localeCompare(String(b), 'pt-BR')), [library]);
+  const filteredSongs = useMemo(() => {
+    const songs = asArray(library);
+    if (!selectedStyle) return songs;
+    return songs.filter((song) => song?.style === selectedStyle);
+  }, [library, selectedStyle]);
   const isConnected = Boolean(hasToken && folderId && status === STATUS.CONNECTED);
 
   const notify = useCallback((text) => {
@@ -132,6 +139,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       setStatus(STATUS.NOT_CONFIGURED);
       notify('Google Drive não configurado.');
       setLibrary([]);
+      setSelectedStyle('');
       setCurrentSong(null);
       setCurrentIndex(-1);
       clearCurrentMedia();
@@ -142,6 +150,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       setStatus(STATUS.READY);
       notify('Faça login no Google Drive para carregar músicas.');
       setLibrary([]);
+      setSelectedStyle('');
       setCurrentSong(null);
       setCurrentIndex(-1);
       clearCurrentMedia();
@@ -152,6 +161,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       setStatus(STATUS.NEED_FOLDER);
       notify('Escolha uma pasta do Google Drive.');
       setLibrary([]);
+      setSelectedStyle('');
       setCurrentSong(null);
       setCurrentIndex(-1);
       clearCurrentMedia();
@@ -164,6 +174,10 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       notify('Carregando biblioteca do Google Drive...');
       const songs = asArray(await loadDriveLibrary({ folderId: effectiveFolderId, token }));
       setLibrary(songs);
+      setSelectedStyle((currentStyle) => {
+        if (!currentStyle) return '';
+        return songs.some((song) => song?.style === currentStyle) ? currentStyle : '';
+      });
       if (!songs.length) {
         setCurrentSong(null);
         setCurrentIndex(-1);
@@ -179,6 +193,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       return songs;
     } catch (err) {
       setLibrary([]);
+      setSelectedStyle('');
       setCurrentSong(null);
       setCurrentIndex(-1);
       setStatus(STATUS.ERROR);
@@ -186,6 +201,20 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       return [];
     }
   }, [accessToken, clearCurrentMedia, config.rootFolderId, currentIndex, isConfigured, notify, selectedFolder?.id]);
+
+
+  useEffect(() => {
+    const token = accessToken || getAccessToken();
+    const effectiveFolderId = selectedFolder?.id || config.rootFolderId || '';
+
+    if (!token || !effectiveFolderId || status === STATUS.LOADING || status === STATUS.CONNECTED) return;
+
+    const refreshKey = `${token.slice(0, 12)}:${effectiveFolderId}`;
+    if (autoRefreshKeyRef.current === refreshKey) return;
+
+    autoRefreshKeyRef.current = refreshKey;
+    refreshLibrary({ nextFolderId: effectiveFolderId });
+  }, [accessToken, config.rootFolderId, refreshLibrary, selectedFolder?.id, status]);
 
   const connect = useCallback(async () => {
     if (!isConfigured) {
@@ -239,6 +268,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     await logoutGoogle();
     setAccessToken('');
     setLibrary([]);
+    setSelectedStyle('');
     setCurrentSong(null);
     setCurrentIndex(-1);
     setStatus(isConfigured ? STATUS.READY : STATUS.NOT_CONFIGURED);
@@ -249,6 +279,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     clearSelectedDriveFolder();
     setSelectedFolder(null);
     setLibrary([]);
+    setSelectedStyle('');
     setCurrentSong(null);
     setCurrentIndex(-1);
     setStatus(hasToken ? STATUS.NEED_FOLDER : STATUS.READY);
@@ -369,6 +400,9 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     selectedFolder,
     folderId,
     library: filteredSongs,
+    styleList,
+    selectedStyle,
+    setSelectedStyle,
     songs: filteredSongs,
     files: filteredSongs,
     musicLibrary: filteredSongs,

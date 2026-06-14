@@ -3,17 +3,17 @@
 ## Versão Atual
 
 ```text
-v3.0.1-pdf-audio-sync
+v3.0.2-fixed-player-drive-flow
 ```
 
 ## Nome da versão
 
 ```text
-PDF Drive Buffer + Audio Sync Fix
+Player Fixo + Fluxo Drive Direto
 ```
 
 ## Branch
 
 ```text
-feature/v3-pdf-fix-from-v2-9
+feature/v3-0-2-fixed-player-drive-flow
 ```

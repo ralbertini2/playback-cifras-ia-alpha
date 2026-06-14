@@ -160,7 +160,7 @@ export default function App() {
           clearSearch={libraryView.clearSearch}
           isFavorite={libraryView.isFavorite}
           onToggleFavorite={toggleSongFavorite}
-          loading={drive.loadingLibrary || drive.loadingSong}
+          loading={drive.loadingLibrary}
           onClose={() => setSidebarOpen(false)}
           onLogin={drive.login}
           onLogout={drive.logout}

@@ -1,5 +1,17 @@
 # Changelog
 
+## [v3.0.2] - 2026-06-14
+
+### Fixed
+
+- Mantém o player fixo no rodapé da área principal quando o PDF renderiza páginas grandes.
+- Define altura fixa da aplicação em `100dvh`, evitando que o PDF empurre os controles para baixo.
+- Remove o carregamento de música como bloqueio do menu lateral, mantendo o fluxo de pasta independente do PDF/MP3.
+- Carrega automaticamente a biblioteca quando o usuário já está autenticado e há pasta selecionada.
+- Após escolher uma pasta no Google Drive, a biblioteca é carregada automaticamente sem exigir clique manual em Atualizar.
+- Lista arquivos em pastas e subpastas do Google Drive, usando o caminho da pasta como estilo.
+- Adiciona filtro real por estilo/pasta no seletor de Estilo.
+
 ## [v3.0.1] - 2026-06-14
 
 ### Fixed
