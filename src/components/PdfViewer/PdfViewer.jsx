@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, FileText, Maximize2, Minus, Plus, RotateCcw } from 'lucide-react';
+import { FileText, Maximize2, Minus, Plus, RotateCcw } from 'lucide-react';
 import { usePdfViewer } from '../../hooks/usePdfViewer.js';
 import styles from './PdfViewer.module.css';
 
@@ -48,12 +48,6 @@ export default function PdfViewer({ source, title }) {
             {isBusy && <div className={styles.loadingPill}>Carregando PDF...</div>}
           </div>
         )}
-      </div>
-
-      <div className={styles.pageControls} aria-label="Controles de página do PDF">
-        <button onClick={pdf.previousPage} disabled={!pdf.canGoPrevious}><ChevronLeft size={20} />Anterior</button>
-        <span>{pdf.totalPages ? `${pdf.pageNumber} / ${pdf.totalPages}` : '—'}</span>
-        <button onClick={pdf.nextPage} disabled={!pdf.canGoNext}>Próxima<ChevronRight size={20} /></button>
       </div>
     </div>
   );

@@ -1,2 +1,2 @@
-export const APP_VERSION = 'v3.0.3-drive-styles-flow';
-export const APP_NAME = 'Playback Cifras IA';
+export const APP_VERSION = 'v3.0.4-musician-flow';
+export const APP_VERSION_LABEL = `Playback Cifras IA ${APP_VERSION}`;

@@ -1,4 +1,4 @@
-import { FolderOpen, LogIn, LogOut, RefreshCw, X } from 'lucide-react';
+import { FolderOpen, LogIn, LogOut, X } from 'lucide-react';
 import Library from '../Library/Library.jsx';
 import Setlists from '../Setlists/Setlists.jsx';
 import styles from './Sidebar.module.css';
@@ -8,8 +8,6 @@ export default function Sidebar({
   connected,
   isAuthenticated = false,
   status,
-  folderId,
-  setFolderId,
   styleList = [],
   selectedStyle,
   setSelectedStyle,
@@ -23,7 +21,6 @@ export default function Sidebar({
   collectionFilter,
   setCollectionFilter,
   favoriteCount = 0,
-  recentCount = 0,
   totalSongs = 0,
   clearSearch,
   isFavorite,
@@ -32,7 +29,6 @@ export default function Sidebar({
   onLogin,
   onLogout,
   onPickFolder,
-  onRefresh,
   onSelectSong,
   onCreatePlaylist,
   onAddToPlaylist,
@@ -50,12 +46,6 @@ export default function Sidebar({
 
   const canPickFolder = Boolean(!loading && isLoggedIn);
 
-  const folderLabel = folderId
-    ? 'Pasta selecionada'
-    : isLoggedIn
-      ? 'Escolha a pasta raiz do repertório'
-      : 'Entre no Google para escolher a pasta';
-
   const headerStatus = connected
     ? 'Google Drive conectado'
     : isLoggedIn
@@ -67,8 +57,8 @@ export default function Sidebar({
       <div className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`} onClick={onClose} />
       <nav className={`${styles.sidebar} ${open ? styles.open : ''}`} aria-label="Biblioteca musical">
         <div className={styles.header}>
-          <div>
-            <strong>Playback Cifras IA</strong>
+          <div className={styles.brandBlock}>
+            <img className={styles.logo} src={`${import.meta.env.BASE_URL}logo-playback-cifras.jpg`} alt="Playback Cifras" />
             <span>{headerStatus}</span>
           </div>
 
@@ -80,26 +70,7 @@ export default function Sidebar({
         <div className={styles.status}>{status}</div>
 
         <section className={styles.section}>
-          <label>Pasta Google Drive</label>
-
-          <div className={styles.folderCard}>
-            <div className={styles.folderInfo}>
-              <strong>{folderLabel}</strong>
-              <span>{folderId || 'Nenhuma pasta selecionada'}</span>
-            </div>
-
-            <button
-              type="button"
-              className={styles.folderButton}
-              onClick={onPickFolder}
-              disabled={loading || !canPickFolder}
-              aria-label="Escolher pasta do Google Drive"
-              title={!isLoggedIn ? 'Entre no Google antes de escolher a pasta' : 'Escolher pasta'}
-            >
-              <FolderOpen size={18} />
-              <span>Escolher</span>
-            </button>
-          </div>
+          <label>Google Drive</label>
 
           <div className={styles.actionsGrid}>
             <button onClick={connected ? onLogout : onLogin} disabled={loading}>
@@ -107,9 +78,15 @@ export default function Sidebar({
               {connected ? 'Sair' : 'Entrar'}
             </button>
 
-            <button onClick={onRefresh} disabled={loading}>
-              <RefreshCw size={17} />
-              Atualizar
+            <button
+              type="button"
+              onClick={onPickFolder}
+              disabled={!canPickFolder}
+              aria-label="Escolher pasta do Google Drive"
+              title={!isLoggedIn ? 'Entre no Google antes de escolher a pasta' : 'Escolher pasta'}
+            >
+              <FolderOpen size={17} />
+              Escolher
             </button>
           </div>
         </section>
@@ -140,7 +117,6 @@ export default function Sidebar({
           collectionFilter={collectionFilter}
           setCollectionFilter={setCollectionFilter}
           favoriteCount={favoriteCount}
-          recentCount={recentCount}
           totalSongs={totalSongs}
           clearSearch={clearSearch}
           isFavorite={isFavorite}

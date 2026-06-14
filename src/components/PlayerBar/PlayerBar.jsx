@@ -1,4 +1,4 @@
-import { Pause, Play, RotateCcw, RotateCw, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
+import { Pause, Play, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
 import styles from './PlayerBar.module.css';
 
 function formatTime(value) {
@@ -15,10 +15,27 @@ export default function PlayerBar({ audio, title = 'Nenhum áudio selecionado', 
 
   return (
     <section className={styles.player} aria-label="Player de playback">
-      <div className={styles.meta}>
-        <span>Playback</span>
-        <strong>{hasAudio ? title : 'Nenhum áudio selecionado'}</strong>
-        {audio?.error && <small className={styles.error}>{audio.error}</small>}
+      <div className={styles.topRow}>
+        <div className={styles.meta}>
+          <span>Playback</span>
+          <strong>{hasAudio ? title : 'Nenhum áudio selecionado'}</strong>
+          {audio?.error && <small className={styles.error}>{audio.error}</small>}
+        </div>
+
+        <div className={styles.volume} aria-label="Controle de volume">
+          <button type="button" onClick={() => audio?.toggleMute?.()} aria-label="Ativar ou desativar som">
+            {audio?.muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={audio?.volume ?? 0.8}
+            onChange={(event) => audio?.setVolume?.(Number(event.target.value))}
+            aria-label="Volume"
+          />
+        </div>
       </div>
 
       <div className={styles.timeline}>
@@ -42,11 +59,6 @@ export default function PlayerBar({ audio, title = 'Nenhum áudio selecionado', 
           <span>Voltar</span>
         </button>
 
-        <button type="button" onClick={() => audio?.skip?.(-10)} disabled={!hasAudio} aria-label="Voltar 10 segundos">
-          <RotateCcw size={22} />
-          <span>10s</span>
-        </button>
-
         <button
           type="button"
           className={styles.play}
@@ -59,30 +71,10 @@ export default function PlayerBar({ audio, title = 'Nenhum áudio selecionado', 
           <span>{audio?.isPlaying ? 'Pausar' : 'Tocar'}</span>
         </button>
 
-        <button type="button" onClick={() => audio?.skip?.(10)} disabled={!hasAudio} aria-label="Avançar 10 segundos">
-          <RotateCw size={22} />
-          <span>10s</span>
-        </button>
-
         <button type="button" onClick={onNext} aria-label="Próxima música">
           <SkipForward size={22} />
           <span>Próxima</span>
         </button>
-
-        <div className={styles.volume}>
-          <button type="button" onClick={() => audio?.toggleMute?.()} aria-label="Ativar ou desativar som">
-            {audio?.muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={audio?.volume ?? 0.8}
-            onChange={(event) => audio?.setVolume?.(Number(event.target.value))}
-            aria-label="Volume"
-          />
-        </div>
       </div>
     </section>
   );

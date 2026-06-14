@@ -54,6 +54,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
   const [message, setMessage] = useState('');
   const selectionRequestRef = useRef(0);
   const autoRefreshKeyRef = useRef('');
+  const autoOpenPickerAfterLoginRef = useRef(false);
 
   const config = useMemo(() => getDriveConfig(), []);
   const isConfigured = isGoogleConfigured();
@@ -235,6 +236,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       notify('Configure GOOGLE_CLIENT_ID em public/config.js.');
       return false;
     }
+    autoOpenPickerAfterLoginRef.current = true;
     setStatus(STATUS.AUTHENTICATING);
     notify('Aguardando login do Google...');
     return requestAccessToken({ prompt: 'consent' });
@@ -276,6 +278,21 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       return false;
     }
   }, [accessToken, pickerConfigured, notify, refreshLibrary]);
+
+
+
+  useEffect(() => {
+    const token = accessToken || getAccessToken();
+    const effectiveFolderId = selectedFolder?.id || config.rootFolderId || '';
+
+    if (!token || effectiveFolderId || !autoOpenPickerAfterLoginRef.current) return;
+    if (status === STATUS.LOADING || status === STATUS.AUTHENTICATING) return;
+
+    autoOpenPickerAfterLoginRef.current = false;
+    window.setTimeout(() => {
+      chooseFolder();
+    }, 250);
+  }, [accessToken, chooseFolder, config.rootFolderId, selectedFolder?.id, status]);
 
   const disconnect = useCallback(async () => {
     await logoutGoogle();

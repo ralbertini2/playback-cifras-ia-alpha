@@ -9,7 +9,8 @@
 }
 
 .header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.header strong { display:block; font-size:16px; letter-spacing:-.02em; }
+.brandBlock { min-width:0; display:grid; gap:5px; }
+.logo { display:block; width:168px; max-width:100%; height:auto; object-fit:contain; }
 .header span { display:block; color:var(--muted); font-size:12px; margin-top:3px; }
 
 .iconButton, .inputRow button, .miniActions button, .folderButton {

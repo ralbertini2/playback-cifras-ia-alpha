@@ -1,10 +1,25 @@
 # Changelog
 
-## v3.0.3-drive-styles-flow
+## v3.0.4-musician-flow
 
-- Habilita o botão Escolher imediatamente após autenticação Google.
-- Evita exigir clique em Atualizar antes de escolher a pasta.
-- Melhora leitura recursiva de pastas/subpastas do Google Drive, incluindo Shared Drives e atalhos para pastas.
-- Mantém estilos baseados nos caminhos de pastas/subpastas do usuário.
-- Remove a interface de Recentes da biblioteca para evitar confusão com limpeza de histórico.
-- Não altera package.json, Vite, GitHub Actions, PDF.js ou player de áudio.
+### Corrigido
+
+- Zoom inicial do PDF agora começa em 100%.
+- Controles do player permanecem mais limpos para uso em iPad/tablet.
+- Controle de volume reposicionado para o topo direito do player.
+- Menu lateral simplificado com logo no lugar do nome textual.
+- Removido o bloco visual de pasta selecionada, mantendo apenas ações essenciais do Google Drive.
+
+### Melhorado
+
+- Fluxo de uso do Google Drive simplificado para Entrar → Escolher → Carregar.
+- Após login, o sistema tenta abrir automaticamente o seletor de pasta quando ainda não existe pasta salva.
+- Interface mais próxima do uso real por músicos em estudo, ensaio e apresentação.
+
+### Não alterado
+
+- package.json.
+- Vite.
+- GitHub Actions.
+- PDF.js.
+- Google Picker API.

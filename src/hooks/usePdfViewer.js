@@ -31,7 +31,7 @@ export function usePdfViewer(source) {
   const [documentProxy, setDocumentProxy] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [scale, setScale] = useState(1.15);
+  const [scale, setScale] = useState(1);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
 
@@ -152,7 +152,7 @@ export function usePdfViewer(source) {
   }, []);
 
   const resetZoom = useCallback(() => {
-    setScale(1.15);
+    setScale(1);
   }, []);
 
   const fitWidth = useCallback(async () => {
