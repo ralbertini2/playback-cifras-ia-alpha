@@ -1,19 +1,5 @@
 # Playback Cifras IA
 
-## Versão Atual
+Versão atual: **v3.0.2 — Build Recovery sem lockfile**
 
-```text
-v3.0.1
-```
-
-## Nome da versão
-
-```text
-Core Stabilization — Build Recovery
-```
-
-## Branch
-
-```text
-feature/v3-core-stabilization
-```
+Objetivo: estabilizar o build React/Vite antes de retomar a correção do PDF Viewer.

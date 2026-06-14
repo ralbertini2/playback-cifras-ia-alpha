@@ -1,2 +1,2 @@
-export const APP_VERSION = 'v3.0.1';
-export const APP_NAME = 'Playback Cifras IA';
+export const APP_VERSION = 'v3.0.2';
+export const APP_VERSION_LABEL = 'Playback Cifras IA v3.0.2';
