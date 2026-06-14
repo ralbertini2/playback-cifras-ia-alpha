@@ -6,6 +6,7 @@ import styles from './Sidebar.module.css';
 export default function Sidebar({
   open,
   connected,
+  isAuthenticated = false,
   status,
   folderId,
   setFolderId,
@@ -40,18 +41,14 @@ export default function Sidebar({
 }) {
   const normalizedStatus = String(status || '').toLowerCase();
 
-  const canPickFolder = !loading && [
-    'need-folder',
-    'authenticated',
-    'connected',
-  ].includes(normalizedStatus);
-
-  const isLoggedIn = connected || [
+  const isLoggedIn = Boolean(isAuthenticated || connected || [
     'need-folder',
     'authenticated',
     'connected',
     'loading',
-  ].includes(normalizedStatus);
+  ].includes(normalizedStatus));
+
+  const canPickFolder = Boolean(!loading && isLoggedIn);
 
   const folderLabel = folderId
     ? 'Pasta selecionada'

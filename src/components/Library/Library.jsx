@@ -1,4 +1,4 @@
-import { Clock3, Search, Star, X } from 'lucide-react';
+import { Search, Star, X } from 'lucide-react';
 import styles from './Library.module.css';
 
 export default function Library({
@@ -11,7 +11,6 @@ export default function Library({
   collectionFilter,
   setCollectionFilter,
   favoriteCount = 0,
-  recentCount = 0,
   totalSongs = 0,
   isFavorite,
   onToggleFavorite,
@@ -30,11 +29,6 @@ export default function Library({
           <label>Biblioteca</label>
           <span>{visibleLabel}</span>
         </div>
-        {(searchQuery || collectionFilter !== 'all') ? (
-          <button className={styles.resetButton} onClick={() => { setCollectionFilter('all'); clearSearch?.(); }}>
-            Limpar
-          </button>
-        ) : null}
       </div>
 
       <div className={styles.quickStats} aria-label="Resumo da biblioteca">
@@ -45,10 +39,6 @@ export default function Library({
         <button className={collectionFilter === 'favorites' ? styles.activeStat : ''} onClick={() => changeFilter('favorites')}>
           <strong>{favoriteCount}</strong>
           <span>Favoritas</span>
-        </button>
-        <button className={collectionFilter === 'recent' ? styles.activeStat : ''} onClick={() => changeFilter('recent')}>
-          <strong>{recentCount}</strong>
-          <span>Recentes</span>
         </button>
       </div>
 
@@ -68,7 +58,6 @@ export default function Library({
       <div className={styles.filters} role="tablist" aria-label="Filtros da biblioteca">
         <button className={collectionFilter === 'all' ? styles.activeFilter : ''} onClick={() => changeFilter('all')}>Todas</button>
         <button className={collectionFilter === 'favorites' ? styles.activeFilter : ''} onClick={() => changeFilter('favorites')}><Star size={14} /> Favoritas {favoriteCount ? `(${favoriteCount})` : ''}</button>
-        <button className={collectionFilter === 'recent' ? styles.activeFilter : ''} onClick={() => changeFilter('recent')}><Clock3 size={14} /> Recentes {recentCount ? `(${recentCount})` : ''}</button>
       </div>
 
       <div className={styles.songList}>

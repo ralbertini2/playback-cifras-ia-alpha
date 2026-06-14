@@ -115,7 +115,20 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
         notify('Google Identity Services ainda não está disponível.');
         return;
       }
-      if (!getEffectiveFolderId()) {
+
+      const token = getAccessToken();
+      const effectiveFolderId = getEffectiveFolderId();
+
+      if (token) {
+        setAccessToken(token);
+        setStatus(effectiveFolderId ? STATUS.AUTHENTICATED : STATUS.NEED_FOLDER);
+        notify(effectiveFolderId
+          ? 'Google autenticado. Carregando biblioteca...'
+          : 'Google autenticado. Escolha uma pasta do Drive.');
+        return;
+      }
+
+      if (!effectiveFolderId) {
         setStatus(STATUS.NEED_FOLDER);
         notify('Escolha uma pasta do Google Drive para carregar as músicas.');
       } else {

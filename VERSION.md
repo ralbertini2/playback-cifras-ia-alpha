@@ -1,19 +1,7 @@
 # Playback Cifras IA
 
-## Versão Atual
+Versão atual: v3.0.3-drive-styles-flow
 
-```text
-v3.0.2-fixed-player-drive-flow
-```
+Base: v2.9.0 estável.
 
-## Nome da versão
-
-```text
-Player Fixo + Fluxo Drive Direto
-```
-
-## Branch
-
-```text
-feature/v3-0-2-fixed-player-drive-flow
-```
+Correção: fluxo Google Drive, estilos por subpastas e remoção visual de Recentes.
