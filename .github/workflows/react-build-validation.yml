@@ -2,16 +2,10 @@ name: React Build Validation
 
 on:
   pull_request:
-    branches:
-      - develop-react
   push:
-    branches:
-      - develop-react
-      - feature/v2-3-1-react-runtime-validation
 
 jobs:
-  build:
-    name: Validate React/Vite build
+  validate-build:
     runs-on: ubuntu-latest
 
     steps:
