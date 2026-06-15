@@ -1,19 +1,20 @@
 # Changelog
 
-## v4.0.3-stage-parser
+## v4.0.4-stage-parser-ipad
 
 ### Corrigido
-- Padroniza o export `extractStagePages` usado pelo hook do Modo Palco.
+- Corrige falha do Modo Palco no iPad/Safari durante a leitura do texto do PDF.
+- Remove dependência direta de `pdfjs.Util.transform` no parser do Modo Palco.
+- Adiciona transformação matricial local para calcular posições X/Y do texto.
+- Torna a finalização do documento PDF segura quando `destroy()` não retorna Promise.
 
-### Adicionado
-- Implementa primeira etapa do parser do Modo Palco.
-- Lê texto do PDF com PDF.js.
-- Separa o conteúdo por páginas.
-- Renderiza texto bruto em tela para validação da extração.
+### Melhorado
+- Ajusta a primeira identidade visual do texto bruto do Modo Palco.
+- Melhora contraste, espaçamento e leitura no desktop e iPad.
 
-### Não incluído nesta etapa
-- Tema final do Modo Palco.
-- Zoom do Modo Palco.
-- Estilização avançada.
-- Auto-scroll.
-- Sincronização com MP3.
+### Escopo
+- Não altera Google Drive.
+- Não altera MP3.
+- Não altera player.
+- Não altera sidebar.
+- Não altera package.json.

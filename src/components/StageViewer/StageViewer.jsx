@@ -13,7 +13,7 @@ export default function StageViewer({ source }) {
           <FileText size={44} />
           <h1>Modo Palco</h1>
           <p>Selecione uma música para gerar a leitura textual da cifra.</p>
-          <small>V4.0.3 — Stage Parser</small>
+          <small>V4.0.4 — Stage Parser</small>
         </div>
       </div>
     );
@@ -35,9 +35,16 @@ export default function StageViewer({ source }) {
         {!stage.error && stage.pages.map((page) => (
           <section key={page.pageNumber} className={styles.stagePage} aria-label={`Página ${page.pageNumber}`}>
             <div className={styles.pageLabel}>Página {page.pageNumber}</div>
-            <pre className={styles.rawText}>
-              {page.lines.map((line) => line.text).join('\n')}
-            </pre>
+            <div className={styles.rawText}>
+              {page.lines.map((line) => (
+                <div
+                  key={line.id}
+                  className={line.isChord ? styles.chordLine : styles.lyricLine}
+                >
+                  {line.text}
+                </div>
+              ))}
+            </div>
           </section>
         ))}
 
