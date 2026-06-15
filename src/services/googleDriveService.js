@@ -2,6 +2,7 @@ import { forceLoadGooglePicker } from './googlePickerService.js';
 
 const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
 const SELECTED_FOLDER_STORAGE_KEY = 'playback-cifras:selected-google-drive-folder';
+const DRIVE_SESSION_STORAGE_KEY = 'playback-cifras:google-drive-session-active';
 
 let tokenClient = null;
 let accessToken = '';
@@ -15,6 +16,21 @@ function notifyTokenListeners(token) {
       console.warn('[Playback Cifras IA] Erro em listener OAuth.', error);
     }
   });
+}
+
+function setStoredDriveSession(active) {
+  try {
+    if (active) window.localStorage.setItem(DRIVE_SESSION_STORAGE_KEY, '1');
+    else window.localStorage.removeItem(DRIVE_SESSION_STORAGE_KEY);
+  } catch (_) {}
+}
+
+export function hasStoredDriveSession() {
+  try {
+    return window.localStorage.getItem(DRIVE_SESSION_STORAGE_KEY) === '1';
+  } catch {
+    return false;
+  }
 }
 
 function addTokenListener(listener) {
@@ -105,6 +121,7 @@ export async function initGoogleAuth({ onToken } = {}) {
     scope: config.scope,
     callback: (response) => {
       accessToken = response?.access_token || '';
+      setStoredDriveSession(Boolean(accessToken));
       notifyTokenListeners(accessToken);
     },
   });
@@ -141,6 +158,7 @@ export async function logoutGoogle() {
   }
 
   accessToken = '';
+  setStoredDriveSession(false);
   tokenClient = null;
   return true;
 }

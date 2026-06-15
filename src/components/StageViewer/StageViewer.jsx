@@ -13,7 +13,7 @@ export default function StageViewer({ source }) {
           <FileText size={44} />
           <h1>Modo Palco</h1>
           <p>Selecione uma música para gerar a leitura textual da cifra.</p>
-          <small>V4.0.4 — Stage Parser</small>
+          <small>V4.0.5 — Stage Parser</small>
         </div>
       </div>
     );
