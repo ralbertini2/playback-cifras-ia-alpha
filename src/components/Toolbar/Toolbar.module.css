@@ -53,12 +53,16 @@
 
 @media (min-width: 901px) { .menuButton { display:none; } }
 @media (max-width: 700px) {
-  .toolbar { grid-template-columns:auto minmax(0,1fr); }
-  .controls {
-    grid-column:1 / -1;
-    justify-content:flex-end;
-  }
-  .volume { width:min(200px, 62vw); }
+  .toolbar { grid-template-columns:auto minmax(0,1fr) auto; }
+  .songInfo strong { font-size:15px; }
+  .songInfo span { font-size:12px; }
+  .volume { width:min(190px, 36vw); min-width:128px; }
+}
+
+@media (max-width: 480px) {
+  .toolbar { gap:10px; padding:10px 12px; }
+  .volume { width:min(150px, 34vw); min-width:96px; gap:0.35rem; }
+  .volume input { min-width:0; }
 }
 
 .spinner {
