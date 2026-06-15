@@ -11,6 +11,7 @@ import {
   isGoogleConfigured,
   isGooglePickerConfigured,
   loadDriveLibrary,
+  ensureGooglePickerReady,
   logoutGoogle,
   openFolderPicker,
   requestAccessToken,
@@ -230,6 +231,27 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     refreshLibrary({ nextFolderId: effectiveFolderId });
   }, [accessToken, config.rootFolderId, refreshLibrary, selectedFolder?.id, status]);
 
+  const handleTokenReady = useCallback((token) => {
+    const nextToken = token || getAccessToken();
+    const effectiveFolderId = selectedFolder?.id || config.rootFolderId || '';
+
+    if (!nextToken) {
+      setStatus(STATUS.READY);
+      notify('Não foi possível autenticar no Google.');
+      return;
+    }
+
+    setAccessToken(nextToken);
+    setStatus(effectiveFolderId ? STATUS.AUTHENTICATED : STATUS.NEED_FOLDER);
+    notify(effectiveFolderId
+      ? 'Google autenticado. Carregando biblioteca...'
+      : 'Google autenticado. Escolha uma pasta do Drive.');
+
+    ensureGooglePickerReady().catch((err) => {
+      console.warn('[Playback Cifras IA] Picker ainda não disponível.', err);
+    });
+  }, [config.rootFolderId, notify, selectedFolder?.id]);
+
   const connect = useCallback(async () => {
     if (!isConfigured) {
       setStatus(STATUS.NOT_CONFIGURED);
@@ -239,11 +261,13 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     autoOpenPickerAfterLoginRef.current = true;
     setStatus(STATUS.AUTHENTICATING);
     notify('Aguardando login do Google...');
-    return requestAccessToken({ prompt: 'consent' });
-  }, [isConfigured, notify]);
+    return requestAccessToken({ prompt: 'consent', onToken: handleTokenReady });
+  }, [handleTokenReady, isConfigured, notify]);
 
   const chooseFolder = useCallback(async () => {
-    if (!accessToken && !getAccessToken()) {
+    const token = accessToken || getAccessToken();
+
+    if (!token) {
       setStatus(STATUS.READY);
       notify('Faça login antes de escolher uma pasta.');
       return false;
@@ -256,7 +280,9 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     }
 
     try {
+      setStatus((currentStatus) => (currentStatus === STATUS.AUTHENTICATING ? STATUS.NEED_FOLDER : currentStatus));
       notify('Abrindo seletor de pasta do Google Drive...');
+      await ensureGooglePickerReady();
 
       const opened = await openFolderPicker({
         onPicked: async (folder) => {
