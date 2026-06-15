@@ -32,19 +32,16 @@ export default function PdfViewer({ source }) {
       </div>
 
       <div className={styles.canvasViewport} ref={pdf.containerRef}>
-        {pdf.error ? (
+        {pdf.error && (
           <div className={styles.errorCard}>
             <FileText size={36} />
             <strong>Não foi possível abrir este PDF.</strong>
             <span>{pdf.error}</span>
           </div>
-        ) : (
-          <div className={styles.pageSurface} data-busy={isBusy ? 'true' : 'false'}>
-            <canvas ref={pdf.canvasRef} className={styles.canvas} />
-            {isBusy && <div className={styles.loadingPill}>Carregando PDF...</div>}
-          </div>
         )}
       </div>
+
+      {isBusy && <div className={styles.loadingPill}>Carregando PDF...</div>}
     </div>
   );
 }

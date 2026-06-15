@@ -6,7 +6,9 @@
   gap: 14px;
   background: linear-gradient(180deg, rgba(11,17,28,.98), rgba(5,8,13,.98));
   overflow: hidden;
+  overscroll-behavior: contain;
 }
+
 
 .header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .brandBlock { min-width:0; display:grid; gap:5px; }
@@ -130,7 +132,7 @@
 
 .songSection { min-height:0; flex:1; display:flex; flex-direction:column; gap:8px; }
 .songHeader { color:var(--muted); font-size:12px; font-weight:700; }
-.songList { min-height:0; overflow:auto; display:flex; flex-direction:column; gap:8px; padding-right:4px; }
+.songList { min-height:0; overflow:auto; display:flex; flex-direction:column; gap:8px; padding-right:4px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
 .songItem {
   text-align:left;
   border:1px solid rgba(255,255,255,.08);
@@ -157,6 +159,7 @@
     box-shadow: 22px 0 70px rgba(0,0,0,.45);
     pointer-events: auto;
     touch-action: pan-y;
+    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
