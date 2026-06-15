@@ -1,31 +1,23 @@
 # Changelog
 
-## v3.0.12-pdf-pages-touch
+## v4.0.0-stage-mode-v1
 
-### Corrigido
-- Renderização sequencial vertical de todas as páginas do PDF.
-- Zoom por pinça aplicado somente na área do PDF.
-- Scroll/touch da sidebar isolado para não afetar a interface abaixo.
+### Adicionado
+- Modo Palco V1 sem IA.
+- Alternância Modo Estudo | Modo Palco na área do PDF.
+- Novo StageViewer para teleprompter cifrado.
+- Extração de texto com coordenadas do PDF.js.
+- Renderização em fundo escuro com acordes destacados.
+- Controle de tamanho de fonte no Modo Palco.
 
-### Mantido
-- Controles de paginação continuam removidos.
-- Desktop preservado.
-- Google Drive, MP3 e player não foram alterados.
-
-## v3.0.11-header-actions-cleanup
-
-### Corrigido
-- Remove definitivamente os botões de busca e favorito do topo principal.
-- Mantém somente informações da música, botão de menu mobile/tablet e volume no topo.
-- Garante o volume alinhado à direita sem afetar o desktop.
+### Preservado
+- Modo Estudo mantém o PDF original.
+- Sidebar, player, Google Drive e MP3 permanecem visíveis.
+- Posição horizontal dos acordes é preservada a partir do PDF.
 
 ### Não alterado
-- package.json
-- Vite
-- GitHub Actions
-- PDF.js
-- Google Drive
-- Player inferior
-- Sidebar
-
-### Preparação da V4
+- package.json.
+- Vite.
+- GitHub Actions.
+- Google Drive.
+- Player de áudio.
