@@ -1,10 +1,3 @@
-Aplicar estes arquivos na branch feature/v4-0-2-stage-mode-v1.
-
-Commit:
-fix: export stage pages
-
-Arquivos alterados:
-- src/services/stageTextService.js
-- src/config/appVersion.js
-- VERSION.md
-- CHANGELOG.md
+Aplicar estes arquivos na branch feature/v4-0-3-stage-parser.
+Base do PR: develop-react-palco.
+Commit: feat: add stage parser

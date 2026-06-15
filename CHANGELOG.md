@@ -1,15 +1,19 @@
 # Changelog
 
-## v4.0.2.1
+## v4.0.3-stage-parser
 
 ### Corrigido
-- Restaura export `extractStagePages` esperado por `useStageText.js`.
-- Mantém compatibilidade com a função `extractStagePagesFromPdf`.
-- Corrige falha de build da v4.0.2.
+- Padroniza o export `extractStagePages` usado pelo hook do Modo Palco.
 
-### Não alterado
-- Google Drive.
-- MP3.
-- Player.
-- Sidebar.
-- package.json.
+### Adicionado
+- Implementa primeira etapa do parser do Modo Palco.
+- Lê texto do PDF com PDF.js.
+- Separa o conteúdo por páginas.
+- Renderiza texto bruto em tela para validação da extração.
+
+### Não incluído nesta etapa
+- Tema final do Modo Palco.
+- Zoom do Modo Palco.
+- Estilização avançada.
+- Auto-scroll.
+- Sincronização com MP3.

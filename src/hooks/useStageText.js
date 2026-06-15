@@ -21,10 +21,10 @@ export function useStageText(source) {
         setPages(nextPages);
         setStatus('ready');
       })
-      .catch((stageError) => {
+      .catch((err) => {
         if (cancelled) return;
-        console.error('[Playback Cifras IA] Erro no Modo Palco:', stageError);
-        setError(stageError?.message || 'Não foi possível montar o Modo Palco.');
+        console.error('[Playback Cifras IA] Erro ao ler texto do PDF para Modo Palco:', err);
+        setError(err?.message || 'Não foi possível ler o texto deste PDF.');
         setStatus('error');
       });
 
@@ -37,6 +37,5 @@ export function useStageText(source) {
     pages,
     status,
     error,
-    loading: status === 'loading',
   };
 }
