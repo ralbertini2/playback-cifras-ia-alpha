@@ -1,3 +1,13 @@
+# v4.0.0 - Modo Palco V1
+
+- Adiciona alternância Modo Estudo / Modo Palco na área de visualização.
+- Mantém o Modo Estudo com o PDF original.
+- Adiciona StageViewer para teleprompter cifrado sem IA.
+- Extrai texto do PDF preservando coordenadas X/Y.
+- Destaca acordes e mantém posição horizontal em relação à letra.
+- Mantém sidebar, player e layout principal visíveis.
+- Não altera Google Drive, MP3, package.json, Vite ou GitHub Actions.
+
 # Changelog
 
 ## v3.0.12-pdf-pages-touch

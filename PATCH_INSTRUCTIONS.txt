@@ -1,18 +1,25 @@
-Branch:
-feature/v2-9-drive-library-source-fix
+Playback Cifras Beta v4.0.0 - Modo Palco V1
 
-Arquivos a revisar:
-- src/hooks/useGoogleDrive.js
-- src/services/googleDriveService.js
-- src/app/App.jsx
+Branch base:
+develop-react-palco
 
-Lógica:
-1. Ler arquivos da pasta selecionada.
-2. Agrupar por nome sem extensão.
-3. Gerar:
-   {
-     title,
-     pdfFileId,
-     audioFileId
-   }
-4. Exibir apenas músicas do Drive quando conectado.
+Feature branch:
+feature/v4-0-0-stage-mode-v1
+
+Aplicação:
+1. Envie os arquivos deste ZIP para a branch feature/v4-0-0-stage-mode-v1.
+2. Mantenha a estrutura de pastas exatamente como está no ZIP.
+3. Não altere package.json, vite.config.js ou GitHub Actions.
+4. Abra PR para base develop-react-palco.
+
+Commit:
+feat: add stage mode v1
+
+Teste obrigatório:
+- npm run build
+- Abrir uma música com PDF e MP3
+- Validar Modo Estudo com PDF original
+- Alternar para Modo Palco
+- Conferir se os acordes preservam posição horizontal em relação à letra
+- Voltar para Modo Estudo
+- Validar que sidebar/player continuam visíveis

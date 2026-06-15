@@ -2,7 +2,28 @@ import { FileText, Maximize2, Minus, Plus, RotateCcw } from 'lucide-react';
 import { usePdfViewer } from '../../hooks/usePdfViewer.js';
 import styles from './PdfViewer.module.css';
 
-export default function PdfViewer({ source }) {
+function ModeToggle({ mode, onModeChange }) {
+  return (
+    <div className={styles.modeToggle} aria-label="Modo de visualização">
+      <button
+        type="button"
+        className={mode === 'study' ? styles.activeMode : ''}
+        onClick={() => onModeChange?.('study')}
+      >
+        Modo Estudo
+      </button>
+      <button
+        type="button"
+        className={mode === 'stage' ? styles.activeMode : ''}
+        onClick={() => onModeChange?.('stage')}
+      >
+        Modo Palco
+      </button>
+    </div>
+  );
+}
+
+export default function PdfViewer({ source, mode = 'study', onModeChange }) {
   const pdf = usePdfViewer(source);
   const isBusy = pdf.status === 'loading' || pdf.status === 'rendering';
 
@@ -22,6 +43,8 @@ export default function PdfViewer({ source }) {
   return (
     <div className={styles.viewerShell}>
       <div className={styles.viewerTopbar}>
+        <ModeToggle mode={mode} onModeChange={onModeChange} />
+
         <div className={styles.zoomControls} aria-label="Controles de zoom do PDF">
           <button onClick={pdf.zoomOut} aria-label="Reduzir zoom"><Minus size={17} /></button>
           <span>{Math.round(pdf.scale * 100)}%</span>

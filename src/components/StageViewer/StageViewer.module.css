@@ -1,24 +1,23 @@
-.viewerShell {
+.stageShell {
   position: relative;
   height: 100%;
   min-height: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  background: radial-gradient(circle at top, rgba(34, 197, 94, .07), transparent 35%);
+  background: #05080d;
   overflow: hidden;
 }
 
-.viewerTopbar {
+.stageTopbar {
   min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 10px 16px;
   border-bottom: 1px solid rgba(255,255,255,.08);
-  background: rgba(5, 8, 13, .46);
+  background: rgba(5, 8, 13, .72);
 }
-
 
 .modeToggle {
   display: inline-flex;
@@ -31,19 +30,23 @@
   background: rgba(255,255,255,.06);
 }
 
-.modeToggle button {
+.modeToggle button,
+.fontControls button {
   appearance: none;
   border: 0;
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.modeToggle button {
   min-height: 36px;
   padding: 0 14px;
   border-radius: 999px;
   background: transparent;
-  color: var(--text);
   font-weight: 900;
   font-size: 12px;
   white-space: nowrap;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .modeToggle .activeMode {
@@ -52,30 +55,26 @@
   box-shadow: 0 8px 24px rgba(34,197,94,.22);
 }
 
-.zoomControls {
+.fontControls {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  overflow: auto;
-  padding-bottom: 2px;
+  min-width: 0;
 }
 
-.zoomControls button {
+.fontControls button {
   border: 1px solid rgba(255,255,255,.1);
   background: rgba(255,255,255,.06);
-  color: var(--text);
   border-radius: 13px;
   min-width: 40px;
   min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  font-weight: 800;
 }
 
-.zoomControls span {
+.fontControls span {
   color: var(--muted);
   font-size: 13px;
   font-weight: 900;
@@ -84,7 +83,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.canvasViewport {
+.stageViewport {
   min-width: 0;
   min-height: 0;
   overflow: auto;
@@ -96,18 +95,40 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   touch-action: pan-x pan-y;
+  background:
+    radial-gradient(circle at top, rgba(34,197,94,.08), transparent 34%),
+    #05080d;
 }
 
-:global(.pdf-rendered-page) {
+.stagePage {
   position: relative;
   flex: 0 0 auto;
-  background: #fff;
-  box-shadow: 0 20px 72px rgba(0,0,0,.34);
+  overflow: hidden;
+  border-radius: 12px;
+  background: #020617;
+  box-shadow: 0 20px 72px rgba(0,0,0,.46);
+  border: 1px solid rgba(255,255,255,.08);
 }
 
-:global(.pdf-rendered-canvas) {
-  display: block;
-  background: #fff;
+.lyricText,
+.chordText {
+  position: absolute;
+  display: inline-block;
+  white-space: pre;
+  line-height: 1;
+  font-family: Arial, Helvetica, sans-serif;
+  transform-origin: left top;
+}
+
+.lyricText {
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+.chordText {
+  color: #facc15;
+  font-weight: 950;
+  text-shadow: 0 0 18px rgba(250,204,21,.22);
 }
 
 .loadingPill {
@@ -149,49 +170,16 @@
 .errorCard span { color: var(--muted); font-size: 13px; }
 
 @media (max-width: 900px) {
-  .viewerTopbar { padding: 9px 12px; grid-template-columns: 1fr; }
-  
-.modeToggle {
-  display: inline-flex;
-  align-items: center;
-  justify-self: start;
-  gap: 0;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 999px;
-  padding: 3px;
-  background: rgba(255,255,255,.06);
-}
-
-.modeToggle button {
-  appearance: none;
-  border: 0;
-  min-height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--text);
-  font-weight: 900;
-  font-size: 12px;
-  white-space: nowrap;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.modeToggle .activeMode {
-  background: linear-gradient(135deg, #16a34a, #22c55e);
-  color: #f8fafc;
-  box-shadow: 0 8px 24px rgba(34,197,94,.22);
-}
-
-.zoomControls { justify-content: flex-end; }
-  .canvasViewport { padding: 12px; gap: 14px; }
+  .stageTopbar { padding: 9px 12px; grid-template-columns: 1fr; }
+  .fontControls { justify-content: flex-end; }
+  .stageViewport { padding: 12px; gap: 14px; }
 }
 
 @media (max-width: 560px) {
-  .viewerTopbar { padding: 10px; }
+  .stageTopbar { padding: 10px; }
   .modeToggle { width: 100%; }
   .modeToggle button { flex: 1 1 0; padding: 0 10px; }
-  .zoomControls button { min-width: 38px; min-height: 38px; }
+  .fontControls button { min-width: 38px; min-height: 38px; }
   .emptyCard { padding:24px; border-radius:22px; }
   .emptyCard h1 { font-size:23px; }
 }
