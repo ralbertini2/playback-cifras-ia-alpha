@@ -1,11 +1,11 @@
 # Changelog
 
-## v3.0.8-header-volume-footer
+## v3.0.9-header-volume-cleanup
 
 ### Corrigido
-- Controle de volume movido do player inferior para o topo principal.
-- Player inferior simplificado para reduzir altura visual.
-- Footer simplificado para o padrão `Playback Cifras Beta | v3.0.8`.
+- Botões de busca e favorito removidos do topo principal.
+- Controle de volume alinhado à direita no topo.
+- Topo principal simplificado para priorizar leitura do PDF.
 
 ### Não alterado
 - package.json
@@ -13,3 +13,4 @@
 - GitHub Actions
 - PDF.js
 - Google Drive
+- Player inferior
