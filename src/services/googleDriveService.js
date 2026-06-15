@@ -5,6 +5,23 @@ const SELECTED_FOLDER_STORAGE_KEY = 'playback-cifras:selected-google-drive-folde
 
 let tokenClient = null;
 let accessToken = '';
+const tokenListeners = new Set();
+
+function notifyTokenListeners(token) {
+  tokenListeners.forEach((listener) => {
+    try {
+      listener(token);
+    } catch (error) {
+      console.warn('[Playback Cifras IA] Erro em listener OAuth.', error);
+    }
+  });
+}
+
+function addTokenListener(listener) {
+  if (typeof listener !== 'function') return () => {};
+  tokenListeners.add(listener);
+  return () => tokenListeners.delete(listener);
+}
 
 function getConfig() {
   return window.PLAYBACK_CIFRAS_CONFIG || window.APP_CONFIG || {};
@@ -79,27 +96,38 @@ export async function initGoogleAuth({ onToken } = {}) {
     return null;
   }
 
+  if (typeof onToken === 'function') {
+    addTokenListener(onToken);
+  }
+
   tokenClient = window.google.accounts.oauth2.initTokenClient({
     client_id: config.clientId,
     scope: config.scope,
     callback: (response) => {
       accessToken = response?.access_token || '';
-
-      if (typeof onToken === 'function') {
-        onToken(accessToken);
-      }
+      notifyTokenListeners(accessToken);
     },
   });
 
   return tokenClient;
 }
 
-export async function requestAccessToken({ prompt = '' } = {}) {
+export async function requestAccessToken({ prompt = '', onToken } = {}) {
+  let removeOnceListener = null;
+
+  if (typeof onToken === 'function') {
+    removeOnceListener = addTokenListener((token) => {
+      removeOnceListener?.();
+      onToken(token);
+    });
+  }
+
   if (!tokenClient) {
     await initGoogleAuth();
   }
 
   if (!tokenClient) {
+    removeOnceListener?.();
     return false;
   }
 
