@@ -1,4 +1,4 @@
-Playback Cifras Beta | v3.0.12
+Playback Cifras Beta | v4.0.0-pre
 
 ## v3.0.12-pdf-pages-touch
 
