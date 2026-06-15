@@ -138,3 +138,5 @@ export async function extractStagePagesFromPdf(source) {
 
   return pages;
 }
+
+export const extractStagePages = extractStagePagesFromPdf;

@@ -1,7 +1,10 @@
-Playback Cifras Beta v4.0.2
+Aplicar estes arquivos na branch feature/v4-0-2-stage-mode-v1.
 
-Branch: feature/v4-0-2-stage-mode-v1
-Base: develop-react-palco
-Commit: fix: stage mode visual identity
+Commit:
+fix: export stage pages
 
-Substitua os arquivos mantendo a mesma estrutura de pastas.
+Arquivos alterados:
+- src/services/stageTextService.js
+- src/config/appVersion.js
+- VERSION.md
+- CHANGELOG.md
