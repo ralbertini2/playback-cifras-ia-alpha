@@ -35,6 +35,45 @@ function getTextHeight(transform, item) {
   return Number.isFinite(height) && height > 0 ? height : 10;
 }
 
+
+function multiplyTransforms(a, b) {
+  if (!Array.isArray(a) && !(a instanceof Float32Array) && !(a instanceof Float64Array)) return b;
+  if (!Array.isArray(b) && !(b instanceof Float32Array) && !(b instanceof Float64Array)) return a;
+
+  return [
+    a[0] * b[0] + a[2] * b[1],
+    a[1] * b[0] + a[3] * b[1],
+    a[0] * b[2] + a[2] * b[3],
+    a[1] * b[2] + a[3] * b[3],
+    a[0] * b[4] + a[2] * b[5] + a[4],
+    a[1] * b[4] + a[3] * b[5] + a[5],
+  ];
+}
+
+function getPdfTransform(pdfjs, viewport, item) {
+  const viewportTransform = viewport?.transform || [1, 0, 0, 1, 0, 0];
+  const itemTransform = item?.transform || [1, 0, 0, 1, 0, 0];
+
+  if (pdfjs?.Util?.transform && typeof pdfjs.Util.transform === 'function') {
+    return pdfjs.Util.transform(viewportTransform, itemTransform);
+  }
+
+  return multiplyTransforms(viewportTransform, itemTransform);
+}
+
+function safelyDestroyPdf(pdf) {
+  if (!pdf?.destroy || typeof pdf.destroy !== 'function') return;
+
+  try {
+    const result = pdf.destroy();
+    if (result?.catch && typeof result.catch === 'function') {
+      result.catch(() => {});
+    }
+  } catch (_) {
+    // PDF.js cleanup must never break the Stage parser.
+  }
+}
+
 function isChordLike(text) {
   const clean = normalizeText(text);
   if (!clean) return false;
@@ -123,7 +162,7 @@ export async function extractStagePages(source) {
         const text = normalizeText(item.str);
         if (!text) return;
 
-        const transform = pdfjs.Util.transform(viewport.transform, item.transform);
+        const transform = getPdfTransform(pdfjs, viewport, item);
         const fontSize = getTextHeight(transform, item);
         const left = transform[4];
         const baseline = transform[5];
@@ -149,9 +188,7 @@ export async function extractStagePages(source) {
       });
     }
   } finally {
-    if (pdf?.destroy) {
-      pdf.destroy().catch(() => {});
-    }
+    safelyDestroyPdf(pdf);
   }
 
   return pages;

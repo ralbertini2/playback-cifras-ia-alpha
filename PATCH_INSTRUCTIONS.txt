@@ -1,3 +1,15 @@
-Aplicar estes arquivos na branch feature/v4-0-3-stage-parser.
-Base do PR: develop-react-palco.
-Commit: feat: add stage parser
+Playback Cifras IA - v4.0.4 Stage Parser iPad
+
+Aplicar na branch: feature/v4-0-4-stage-parser-ipad
+Base: develop-react-palco
+
+Arquivos alterados:
+- src/services/stageTextService.js
+- src/components/StageViewer/StageViewer.jsx
+- src/components/StageViewer/StageViewer.module.css
+- src/config/appVersion.js
+- VERSION.md
+- CHANGELOG.md
+
+Commit:
+fix: stage parser on ipad
