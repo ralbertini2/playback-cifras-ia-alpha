@@ -46,7 +46,7 @@ export default function Sidebar({
 
   const canPickFolder = Boolean(!loading && isLoggedIn);
 
-  const headerStatus = connected
+  const connectionLabel = connected
     ? 'Google Drive conectado'
     : isLoggedIn
       ? 'Google autenticado'
@@ -58,16 +58,20 @@ export default function Sidebar({
       <nav className={`${styles.sidebar} ${open ? styles.open : ''}`} aria-label="Biblioteca musical">
         <div className={styles.header}>
           <div className={styles.brandBlock}>
-            <img className={styles.logo} src={`${import.meta.env.BASE_URL}logo-playback-cifras.jpg`} alt="Playback Cifras" />
-            <span>{headerStatus}</span>
+            <div className={styles.logoWrap}>
+              <img className={styles.logo} src={`${import.meta.env.BASE_URL}logo-playback-cifras.jpg`} alt="Playback Cifras" />
+              <span
+                className={`${styles.connectionDot} ${connected ? styles.connectionOn : ''}`}
+                aria-label={connectionLabel}
+                title={connectionLabel}
+              />
+            </div>
           </div>
 
           <button className={styles.iconButton} onClick={onClose} aria-label="Fechar menu">
             <X size={20} />
           </button>
         </div>
-
-        <div className={styles.status}>{status}</div>
 
         <section className={styles.section}>
           <label>Google Drive</label>

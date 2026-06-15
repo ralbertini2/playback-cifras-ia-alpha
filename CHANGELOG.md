@@ -1,20 +1,18 @@
 # Changelog
 
-## v3.0.4-musician-flow
+## v3.0.5-drive-style-sidebar-fix
 
 ### Corrigido
 
-- Zoom inicial do PDF agora começa em 100%.
-- Controles do player permanecem mais limpos para uso em iPad/tablet.
-- Controle de volume reposicionado para o topo direito do player.
-- Menu lateral simplificado com logo no lugar do nome textual.
-- Removido o bloco visual de pasta selecionada, mantendo apenas ações essenciais do Google Drive.
+- Corrigido o nome da prop enviada para a Sidebar: `stylesList` foi ajustado para `styleList`.
+- O seletor de estilos agora recebe corretamente as pastas/subpastas detectadas na biblioteca do Drive.
+- Removida duplicidade visual entre `Google Drive conectado` e `connected`.
+- Adicionado indicador visual de conexão ao lado do logo.
 
 ### Melhorado
 
-- Fluxo de uso do Google Drive simplificado para Entrar → Escolher → Carregar.
-- Após login, o sistema tenta abrir automaticamente o seletor de pasta quando ainda não existe pasta salva.
-- Interface mais próxima do uso real por músicos em estudo, ensaio e apresentação.
+- Google Picker configurado para abrir em modo lista e com título mais claro para seleção da pasta Playback Cifras.
+- Lateral ficou mais limpa para uso em iPad/tablet.
 
 ### Não alterado
 
@@ -22,13 +20,4 @@
 - Vite.
 - GitHub Actions.
 - PDF.js.
-- Google Picker API.
-## v3.0.4.1-build-fix
-
-### Corrigido
-
-- Corrigido erro de build causado pela ausência do export `APP_NAME` em `src/config/appVersion.js`.
-
-### Escopo
-
-- Correção técnica mínima para permitir o build da v3.0.4.
+- Player de áudio.

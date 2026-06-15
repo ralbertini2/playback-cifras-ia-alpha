@@ -385,9 +385,23 @@ export async function openFolderPicker({ onPicked } = {}) {
     .setIncludeFolders(true)
     .setSelectFolderEnabled(true);
 
-  const picker = new pickerApi.PickerBuilder()
+  if (typeof view.setParent === 'function') {
+    view.setParent('root');
+  }
+
+  if (typeof view.setMode === 'function' && pickerApi.DocsViewMode?.LIST) {
+    view.setMode(pickerApi.DocsViewMode.LIST);
+  }
+
+  const pickerBuilder = new pickerApi.PickerBuilder()
     .setDeveloperKey(config.apiKey)
-    .setOAuthToken(accessToken)
+    .setOAuthToken(accessToken);
+
+  if (typeof pickerBuilder.setTitle === 'function') {
+    pickerBuilder.setTitle('Selecione a pasta Playback Cifras');
+  }
+
+  const picker = pickerBuilder
     .addView(view)
     .setCallback((data) => {
       if (data?.action === pickerApi.Action.PICKED) {
