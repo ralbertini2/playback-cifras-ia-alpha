@@ -1,14 +1,11 @@
-import { Loader2, Menu, Search, Star, Volume2, VolumeX } from 'lucide-react';
+import { Loader2, Menu, Volume2, VolumeX } from 'lucide-react';
 import styles from './Toolbar.module.css';
 
 export default function Toolbar({
   song,
   meta,
   onOpenMenu,
-  onOpenSearch,
   loading = false,
-  favoriteActive = false,
-  onToggleFavorite,
   audio,
 }) {
   return (
@@ -34,8 +31,6 @@ export default function Toolbar({
             aria-label="Volume"
           />
         </div>
-        <button onClick={onOpenSearch || onOpenMenu} aria-label="Buscar"><Search size={19} /></button>
-        <button className={favoriteActive ? styles.favoriteActive : ''} onClick={onToggleFavorite} aria-label="Favoritar música atual"><Star size={19} /></button>
       </div>
     </div>
   );

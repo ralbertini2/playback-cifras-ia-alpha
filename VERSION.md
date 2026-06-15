@@ -1,13 +1,13 @@
-# Playback Cifras Beta | v3.0.8
+# Playback Cifras Beta | v3.0.9
 
 ## Objetivo
-Refinar a interface principal após a estabilização do PDF, MP3 e Google Drive.
+Limpar o topo principal e alinhar o volume à direita.
 
 ## Alterações
-- Move o controle de volume para o topo principal.
-- Remove o controle de volume do player inferior.
-- Reduz a altura visual do player.
-- Simplifica o footer para `Playback Cifras Beta | v3.0.8`.
+- Remove os botões de buscar e favoritar do topo principal.
+- Mantém somente o controle de volume no lado direito do topo.
+- Alinha o volume à direita para reduzir poluição visual.
+- Mantém o footer no padrão `Playback Cifras Beta | v3.0.9`.
 
 ## Escopo não alterado
 - package.json
@@ -15,3 +15,4 @@ Refinar a interface principal após a estabilização do PDF, MP3 e Google Drive
 - GitHub Actions
 - PDF.js
 - Google Drive
+- Player inferior
