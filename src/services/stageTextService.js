@@ -38,10 +38,10 @@ function getTextHeight(transform, item) {
 function isChordLike(text) {
   const clean = normalizeText(text);
   if (!clean) return false;
-  if (clean.length > 32) return false;
+  if (clean.length > 42) return false;
 
   const tokens = clean.split(/\s+/).filter(Boolean);
-  if (!tokens.length || tokens.length > 10) return false;
+  if (!tokens.length || tokens.length > 14) return false;
 
   const chordTokens = tokens.filter((token) => CHORD_TOKEN_PATTERN.test(token));
   if (chordTokens.length === tokens.length) return true;
@@ -49,45 +49,63 @@ function isChordLike(text) {
   return CHORD_LINE_PATTERN.test(clean) && chordTokens.length >= Math.max(1, Math.ceil(tokens.length * 0.45));
 }
 
-function buildLines(items) {
+function createSpacedLine(items) {
+  const sortedItems = [...items].sort((a, b) => a.left - b.left);
+  const minLeft = Math.min(...sortedItems.map((item) => item.left));
+  const averageWidth = Math.max(
+    4,
+    sortedItems.reduce((total, item) => total + item.width / Math.max(1, item.text.length), 0) / sortedItems.length,
+  );
+
+  let output = '';
+  let cursor = 0;
+
+  sortedItems.forEach((item) => {
+    const targetColumn = Math.max(0, Math.round((item.left - minLeft) / averageWidth));
+    const spaces = Math.max(1, targetColumn - cursor);
+    output += ' '.repeat(spaces) + item.text;
+    cursor = output.length;
+  });
+
+  return output.trimEnd();
+}
+
+function buildRawLines(items) {
   const sorted = [...items].sort((a, b) => {
     const yDiff = a.top - b.top;
     if (Math.abs(yDiff) > 4) return yDiff;
     return a.left - b.left;
   });
 
-  const lines = [];
+  const lineGroups = [];
 
   sorted.forEach((item) => {
-    const tolerance = Math.max(5, item.fontSize * 0.45);
-    let line = lines.find((candidate) => Math.abs(candidate.top - item.top) <= tolerance);
+    const tolerance = Math.max(5, item.fontSize * 0.5);
+    let line = lineGroups.find((candidate) => Math.abs(candidate.top - item.top) <= tolerance);
 
     if (!line) {
       line = { top: item.top, items: [] };
-      lines.push(line);
+      lineGroups.push(line);
     }
 
     line.items.push(item);
     line.top = (line.top + item.top) / 2;
   });
 
-  return lines.map((line) => {
-    const lineText = line.items
-      .sort((a, b) => a.left - b.left)
-      .map((item) => item.text)
-      .join(' ')
-      .trim();
-
-    const lineIsChord = isChordLike(lineText);
-
-    return line.items.map((item) => ({
-      ...item,
-      isChord: lineIsChord || isChordLike(item.text),
-    }));
-  }).flat();
+  return lineGroups
+    .sort((a, b) => a.top - b.top)
+    .map((line, index) => {
+      const text = createSpacedLine(line.items);
+      return {
+        id: `line-${index}`,
+        text,
+        isChord: isChordLike(text),
+      };
+    })
+    .filter((line) => line.text.trim());
 }
 
-export async function extractStagePagesFromPdf(source) {
+export async function extractStagePages(source) {
   if (!source) return [];
 
   const pdfjs = await getPdfJs();
@@ -98,7 +116,7 @@ export async function extractStagePagesFromPdf(source) {
     for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
       const page = await pdf.getPage(pageNumber);
       const viewport = page.getViewport({ scale: 1 });
-      const textContent = await page.getTextContent();
+      const textContent = await page.getTextContent({ normalizeWhitespace: false, disableCombineTextItems: false });
       const rawItems = [];
 
       textContent.items.forEach((item, index) => {
@@ -118,7 +136,7 @@ export async function extractStagePagesFromPdf(source) {
           text,
           left,
           top,
-          width: Math.max(1, item.width || 1),
+          width: Math.max(1, item.width || text.length * Math.max(4, fontSize * 0.45)),
           fontSize: Math.max(8, fontSize),
         });
       });
@@ -127,7 +145,7 @@ export async function extractStagePagesFromPdf(source) {
         pageNumber,
         width: viewport.width,
         height: viewport.height,
-        items: buildLines(rawItems),
+        lines: buildRawLines(rawItems),
       });
     }
   } finally {
@@ -139,4 +157,6 @@ export async function extractStagePagesFromPdf(source) {
   return pages;
 }
 
-export const extractStagePages = extractStagePagesFromPdf;
+export async function extractStagePagesFromPdf(source) {
+  return extractStagePages(source);
+}
