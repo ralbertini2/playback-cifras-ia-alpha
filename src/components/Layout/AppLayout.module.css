@@ -55,16 +55,19 @@
 
   .sidebarSlot {
     position: fixed;
-    inset: 0 auto 0 0;
-    width: min(86vw, 360px);
-    z-index: 40;
-    border-right: 1px solid rgba(255,255,255,.12);
-    transform: translateX(0);
+    inset: 0;
+    width: 100vw;
+    min-height: 100dvh;
+    z-index: 1000;
+    border-right: 0;
+    transform: none;
     pointer-events: none;
     background: transparent;
   }
 
   .mainArea {
+    position: relative;
+    z-index: 1;
     height: 100dvh;
     min-height: 0;
     overflow: hidden;
