@@ -8,20 +8,15 @@ function formatTime(value) {
   return `${minutes}:${String(rest).padStart(2, '0')}`;
 }
 
-export default function PlayerBar({ audio, title = 'Nenhum áudio selecionado', onPrevious, onNext }) {
+export default function PlayerBar({ audio, onPrevious, onNext }) {
   const duration = audio?.duration || 0;
   const currentTime = audio?.currentTime || 0;
   const hasAudio = Boolean(audio?.hasValidSource || audio?.source);
 
   return (
     <section className={styles.player} aria-label="Player de playback">
-      <div className={styles.topRow}>
-        <div className={styles.meta}>
-          <span>Playback</span>
-          <strong>{hasAudio ? title : 'Nenhum áudio selecionado'}</strong>
-          {audio?.error && <small className={styles.error}>{audio.error}</small>}
-        </div>
-
+      <div className={styles.volumeRow}>
+        {audio?.error && <small className={styles.error}>{audio.error}</small>}
         <div className={styles.volume} aria-label="Controle de volume">
           <button type="button" onClick={() => audio?.toggleMute?.()} aria-label="Ativar ou desativar som">
             {audio?.muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
@@ -56,7 +51,6 @@ export default function PlayerBar({ audio, title = 'Nenhum áudio selecionado', 
       <div className={styles.controls}>
         <button type="button" onClick={onPrevious} aria-label="Música anterior">
           <SkipBack size={22} />
-          <span>Voltar</span>
         </button>
 
         <button
@@ -68,12 +62,10 @@ export default function PlayerBar({ audio, title = 'Nenhum áudio selecionado', 
           title={!hasAudio ? 'Nenhum áudio válido selecionado' : undefined}
         >
           {audio?.isPlaying ? <Pause size={30} /> : <Play size={30} />}
-          <span>{audio?.isPlaying ? 'Pausar' : 'Tocar'}</span>
         </button>
 
         <button type="button" onClick={onNext} aria-label="Próxima música">
           <SkipForward size={22} />
-          <span>Próxima</span>
         </button>
       </div>
     </section>

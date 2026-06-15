@@ -9,21 +9,18 @@
 .viewerTopbar {
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 1fr;
   align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
+  gap: 10px;
+  padding: 10px 16px;
   border-bottom: 1px solid rgba(255,255,255,.08);
   background: rgba(5, 8, 13, .46);
 }
 
-.documentTitle { min-width: 0; }
-.documentTitle strong { display:block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.documentTitle span { display:block; margin-top: 3px; color: var(--muted); font-size: 12px; }
-
 .zoomControls {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
 }
 
@@ -116,10 +113,9 @@
 
 @media (max-width: 900px) {
   .viewerTopbar {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
+    padding: 9px 12px;
   }
-  .zoomControls { justify-content: flex-start; }
+  .zoomControls { justify-content: flex-end; }
   .canvasViewport { padding: 12px; }
 }
 
