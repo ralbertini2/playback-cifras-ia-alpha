@@ -1,17 +1,16 @@
 # Changelog
 
-## v4.0.5
+## v4.0.6
 
 ### Corrigido
-- Melhora compatibilidade do parser do Modo Palco com iPad/Safari.
-- Remove dependência de funções internas do PDF.js no parser do Modo Palco.
-- Adiciona fallback textual para PDFs que falham na extração posicionada.
-- Reduz duplicidade de acordes extraídos do PDF.
-- Mantém sessão Google Drive ativa após atualizar ou fechar o sistema, até o usuário clicar em Sair.
+- Ajusta parser do Modo Palco para usar PDF.js sem worker no iPad/Safari.
+- Evita uso de ArrayBuffer transferido entre Modo Estudo e Modo Palco.
+- Persiste token OAuth temporário em localStorage até expirar ou o usuário clicar em Sair.
+- Mantém sessão Google após refresh quando o token ainda é válido.
 
-### Escopo
-- Não altera MP3.
-- Não altera player.
-- Não altera Sidebar.
-- Não altera package.json.
-- Não altera GitHub Actions.
+### Não alterado
+- MP3.
+- Player.
+- Sidebar.
+- package.json.
+- GitHub Actions.

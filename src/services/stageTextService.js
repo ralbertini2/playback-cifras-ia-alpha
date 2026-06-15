@@ -1,21 +1,35 @@
-import { getPdfJs, loadPdfDocument } from './pdfService.js';
+import { getPdfJs } from './pdfService.js';
 
 const CHORD_TOKEN_PATTERN = /^([A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*(?:\([^)]*\))?(?:\/[A-G](?:#|b)?)?|N\.?C\.?|NC|%|\||\(|\)|:|-)(?:[,;.]?)$/i;
 const CHORD_LINE_PATTERN = /^(\s*(?:[A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*(?:\([^)]*\))?(?:\/[A-G](?:#|b)?)?|N\.?C\.?|NC|%|\||\(|\)|:|-)+\s*)+$/i;
 
-function clonePdfData(data) {
-  if (data instanceof Uint8Array) return data.slice();
-  if (data instanceof ArrayBuffer) return new Uint8Array(data.slice(0));
-  if (ArrayBuffer.isView(data)) {
-    return new Uint8Array(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
+function copyBytes(view) {
+  const next = new Uint8Array(view.byteLength || view.length || 0);
+  for (let index = 0; index < next.length; index += 1) {
+    next[index] = view[index];
   }
+  return next;
+}
+
+function clonePdfData(data) {
+  try {
+    if (data instanceof Uint8Array) return copyBytes(data);
+    if (data instanceof ArrayBuffer) return copyBytes(new Uint8Array(data));
+    if (ArrayBuffer.isView(data)) {
+      return copyBytes(new Uint8Array(data.buffer, data.byteOffset, data.byteLength));
+    }
+  } catch (error) {
+    console.warn('[Playback Cifras IA] Falha ao clonar dados do PDF para o Modo Palco.', error);
+  }
+
   return data;
 }
 
 function clonePdfSource(source) {
   if (!source) return source;
-  if (source instanceof Uint8Array) return source.slice();
-  if (source instanceof ArrayBuffer) return new Uint8Array(source.slice(0));
+  if (typeof source === 'string') return { url: source, withCredentials: false };
+  if (source instanceof Uint8Array) return { data: clonePdfData(source) };
+  if (source instanceof ArrayBuffer) return { data: clonePdfData(source) };
   if (typeof source === 'object' && source.data) {
     return {
       ...source,
@@ -23,6 +37,21 @@ function clonePdfSource(source) {
     };
   }
   return source;
+}
+
+async function loadStagePdfDocument(source) {
+  const pdfjs = await getPdfJs();
+  const normalizedSource = clonePdfSource(source);
+
+  const loadingTask = pdfjs.getDocument({
+    ...normalizedSource,
+    disableWorker: true,
+    disableAutoFetch: true,
+    disableStream: true,
+    isEvalSupported: false,
+  });
+
+  return loadingTask.promise;
 }
 
 function normalizeText(value) {
@@ -260,7 +289,7 @@ function buildPositionedItems(textContent, viewport) {
 export async function extractStagePages(source) {
   if (!source) return [];
 
-  const pdf = await loadPdfDocument(clonePdfSource(source));
+  const pdf = await loadStagePdfDocument(source);
   const pages = [];
 
   try {

@@ -1,14 +1,3 @@
-Aplicar estes arquivos na branch feature/v4-0-5-stage-ipad-login.
-
-Commit:
-fix: stage ipad and login
-
-Arquivos alterados:
-- CHANGELOG.md
-- VERSION.md
-- src/config/appVersion.js
-- src/components/StageViewer/StageViewer.jsx
-- src/components/StageViewer/StageViewer.module.css
-- src/services/stageTextService.js
-- src/services/googleDriveService.js
-- src/hooks/useGoogleDrive.js
+Aplicar na branch feature/v4-0-6-stage-ipad-session.
+Commit: fix: stage ipad session
+Base do PR: develop-react-palco

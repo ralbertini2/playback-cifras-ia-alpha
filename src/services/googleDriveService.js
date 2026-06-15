@@ -3,10 +3,48 @@ import { forceLoadGooglePicker } from './googlePickerService.js';
 const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
 const SELECTED_FOLDER_STORAGE_KEY = 'playback-cifras:selected-google-drive-folder';
 const DRIVE_SESSION_STORAGE_KEY = 'playback-cifras:google-drive-session-active';
+const DRIVE_TOKEN_STORAGE_KEY = 'playback-cifras:google-drive-token';
 
 let tokenClient = null;
 let accessToken = '';
 const tokenListeners = new Set();
+
+function saveStoredAccessToken(token, expiresIn = 3600) {
+  try {
+    if (!token) {
+      window.localStorage.removeItem(DRIVE_TOKEN_STORAGE_KEY);
+      return;
+    }
+
+    const ttl = Math.max(60, Number(expiresIn) || 3600);
+    const expiresAt = Date.now() + ttl * 1000 - 60000;
+    window.localStorage.setItem(DRIVE_TOKEN_STORAGE_KEY, JSON.stringify({ token, expiresAt }));
+  } catch (_) {}
+}
+
+function clearStoredAccessToken() {
+  try {
+    window.localStorage.removeItem(DRIVE_TOKEN_STORAGE_KEY);
+  } catch (_) {}
+}
+
+function getStoredAccessToken() {
+  try {
+    const raw = window.localStorage.getItem(DRIVE_TOKEN_STORAGE_KEY);
+    if (!raw) return '';
+
+    const data = JSON.parse(raw);
+    if (!data?.token || !data?.expiresAt || Number(data.expiresAt) <= Date.now()) {
+      clearStoredAccessToken();
+      return '';
+    }
+
+    return data.token;
+  } catch {
+    clearStoredAccessToken();
+    return '';
+  }
+}
 
 function notifyTokenListeners(token) {
   tokenListeners.forEach((listener) => {
@@ -27,7 +65,7 @@ function setStoredDriveSession(active) {
 
 export function hasStoredDriveSession() {
   try {
-    return window.localStorage.getItem(DRIVE_SESSION_STORAGE_KEY) === '1';
+    return window.localStorage.getItem(DRIVE_SESSION_STORAGE_KEY) === '1' || Boolean(getStoredAccessToken());
   } catch {
     return false;
   }
@@ -70,7 +108,16 @@ export function isGooglePickerConfigured() {
 }
 
 export function getAccessToken() {
-  return accessToken;
+  if (accessToken) return accessToken;
+
+  const storedToken = getStoredAccessToken();
+  if (storedToken) {
+    accessToken = storedToken;
+    setStoredDriveSession(true);
+    return accessToken;
+  }
+
+  return '';
 }
 
 export function getStoredDriveFolder() {
@@ -121,6 +168,11 @@ export async function initGoogleAuth({ onToken } = {}) {
     scope: config.scope,
     callback: (response) => {
       accessToken = response?.access_token || '';
+      if (accessToken) {
+        saveStoredAccessToken(accessToken, response?.expires_in);
+      } else {
+        clearStoredAccessToken();
+      }
       setStoredDriveSession(Boolean(accessToken));
       notifyTokenListeners(accessToken);
     },
@@ -130,6 +182,16 @@ export async function initGoogleAuth({ onToken } = {}) {
 }
 
 export async function requestAccessToken({ prompt = '', onToken } = {}) {
+  const storedToken = prompt !== 'consent' ? getStoredAccessToken() : '';
+
+  if (storedToken) {
+    accessToken = storedToken;
+    setStoredDriveSession(true);
+    if (typeof onToken === 'function') onToken(storedToken);
+    notifyTokenListeners(storedToken);
+    return true;
+  }
+
   let removeOnceListener = null;
 
   if (typeof onToken === 'function') {
@@ -158,6 +220,7 @@ export async function logoutGoogle() {
   }
 
   accessToken = '';
+  clearStoredAccessToken();
   setStoredDriveSession(false);
   tokenClient = null;
   return true;
