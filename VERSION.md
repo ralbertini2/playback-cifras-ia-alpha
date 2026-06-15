@@ -1,10 +1,17 @@
-# Playback Cifras IA
+# Playback Cifras Beta | v3.0.8
 
-Versão atual: v3.0.7-layout-dedupe
+## Objetivo
+Refinar a interface principal após a estabilização do PDF, MP3 e Google Drive.
 
-Base: v3.0.6-drive-login-fix
+## Alterações
+- Move o controle de volume para o topo principal.
+- Remove o controle de volume do player inferior.
+- Reduz a altura visual do player.
+- Simplifica o footer para `Playback Cifras Beta | v3.0.8`.
 
-Resumo:
-- Remove textos repetidos do player.
-- Remove título duplicado do topo interno do PDF.
-- Mantém o título da música somente na barra superior principal.
+## Escopo não alterado
+- package.json
+- Vite
+- GitHub Actions
+- PDF.js
+- Google Drive
