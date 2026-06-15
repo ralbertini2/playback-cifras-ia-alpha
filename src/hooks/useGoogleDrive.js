@@ -7,6 +7,7 @@ import {
   getDriveConfig,
   getEffectiveFolderId,
   getStoredDriveFolder,
+  hasStoredDriveSession,
   initGoogleAuth,
   isGoogleConfigured,
   isGooglePickerConfigured,
@@ -127,6 +128,28 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
         notify(effectiveFolderId
           ? 'Google autenticado. Carregando biblioteca...'
           : 'Google autenticado. Escolha uma pasta do Drive.');
+        return;
+      }
+
+      if (hasStoredDriveSession()) {
+        setStatus(STATUS.AUTHENTICATING);
+        notify('Restaurando conexão com o Google Drive...');
+        requestAccessToken({
+          prompt: '',
+          onToken: (restoredToken) => {
+            if (cancelled) return;
+            setAccessToken(restoredToken || '');
+            if (restoredToken) {
+              setStatus(effectiveFolderId ? STATUS.AUTHENTICATED : STATUS.NEED_FOLDER);
+              notify(effectiveFolderId
+                ? 'Google Drive reconectado. Carregando biblioteca...'
+                : 'Google Drive reconectado. Escolha uma pasta.');
+            } else {
+              setStatus(STATUS.READY);
+              notify('Faça login no Google Drive para carregar músicas.');
+            }
+          },
+        });
         return;
       }
 

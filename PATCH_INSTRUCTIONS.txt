@@ -1,15 +1,14 @@
-Playback Cifras IA - v4.0.4 Stage Parser iPad
-
-Aplicar na branch: feature/v4-0-4-stage-parser-ipad
-Base: develop-react-palco
-
-Arquivos alterados:
-- src/services/stageTextService.js
-- src/components/StageViewer/StageViewer.jsx
-- src/components/StageViewer/StageViewer.module.css
-- src/config/appVersion.js
-- VERSION.md
-- CHANGELOG.md
+Aplicar estes arquivos na branch feature/v4-0-5-stage-ipad-login.
 
 Commit:
-fix: stage parser on ipad
+fix: stage ipad and login
+
+Arquivos alterados:
+- CHANGELOG.md
+- VERSION.md
+- src/config/appVersion.js
+- src/components/StageViewer/StageViewer.jsx
+- src/components/StageViewer/StageViewer.module.css
+- src/services/stageTextService.js
+- src/services/googleDriveService.js
+- src/hooks/useGoogleDrive.js
