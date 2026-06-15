@@ -2,7 +2,7 @@ import { FileText, Maximize2, Minus, Plus, RotateCcw } from 'lucide-react';
 import { usePdfViewer } from '../../hooks/usePdfViewer.js';
 import styles from './PdfViewer.module.css';
 
-export default function PdfViewer({ source, title }) {
+export default function PdfViewer({ source }) {
   const pdf = usePdfViewer(source);
   const isBusy = pdf.status === 'loading' || pdf.status === 'rendering';
 
@@ -22,10 +22,6 @@ export default function PdfViewer({ source, title }) {
   return (
     <div className={styles.viewerShell}>
       <div className={styles.viewerTopbar}>
-        <div className={styles.documentTitle}>
-          <strong>{title || 'PDF / Cifra'}</strong>
-          <span>{pdf.totalPages ? `Página ${pdf.pageNumber} de ${pdf.totalPages}` : 'Carregando documento...'}</span>
-        </div>
         <div className={styles.zoomControls} aria-label="Controles de zoom do PDF">
           <button onClick={pdf.zoomOut} aria-label="Reduzir zoom"><Minus size={17} /></button>
           <span>{Math.round(pdf.scale * 100)}%</span>

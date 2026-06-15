@@ -1,17 +1,16 @@
 # Changelog
 
-## v3.0.6-drive-login-fix
+## v3.0.7-layout-dedupe
 
 ### Corrigido
-- Habilita o botão Escolher após o primeiro login Google.
-- Atualiza o estado de autenticação assim que o token OAuth é recebido.
-- Pré-carrega o Google Picker depois da autenticação.
-- Evita a necessidade de realizar login duas vezes para escolher a pasta.
+- Reduz duplicidade visual do nome da música na interface.
+- Remove metadados repetidos dentro do player.
+- Remove o título interno do PDF Viewer, mantendo somente controles de zoom.
+- Mantém o topo principal como ponto único de identificação da música.
 
-### Não alterado
-- package.json.
-- Vite.
-- GitHub Actions.
-- PDF.js.
-- Player de áudio.
-- Layout principal.
+### Escopo
+- Não altera package.json.
+- Não altera Vite.
+- Não altera GitHub Actions.
+- Não altera PDF.js.
+- Não altera Google Drive.

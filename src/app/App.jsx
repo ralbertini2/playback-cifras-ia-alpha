@@ -178,7 +178,6 @@ export default function App() {
       player={(
         <PlayerBar
           audio={audio}
-          title={currentSong?.title || 'Nenhum áudio selecionado'}
           onPrevious={previousSong}
           onNext={nextSong}
         />
