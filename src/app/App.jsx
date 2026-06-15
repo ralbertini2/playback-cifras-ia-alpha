@@ -173,7 +173,7 @@ export default function App() {
           onDeletePlaylist={deletePlaylist}
         />
       )}
-      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} onOpenSearch={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} favoriteActive={libraryView.isFavorite(currentSong)} onToggleFavorite={toggleCurrentFavorite} />}
+      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} onOpenSearch={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} favoriteActive={libraryView.isFavorite(currentSong)} onToggleFavorite={toggleCurrentFavorite} audio={audio} />}
       viewer={<PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />}
       player={(
         <PlayerBar

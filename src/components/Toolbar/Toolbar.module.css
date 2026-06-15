@@ -23,10 +23,31 @@
 .controls { display:flex; align-items:center; gap:8px; overflow:auto; padding-bottom:2px; }
 .controls span { color:var(--muted); font-size:13px; font-weight:800; min-width:45px; text-align:center; }
 
+.volume {
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+  width:min(190px, 24vw);
+  min-width:132px;
+}
+
+.volume input {
+  width:100%;
+  accent-color:#22c55e;
+  min-height:2rem;
+  touch-action:manipulation;
+}
+
+.volume button {
+  min-width:44px;
+  flex:0 0 auto;
+}
+
 @media (min-width: 901px) { .menuButton { display:none; } }
 @media (max-width: 700px) {
   .toolbar { grid-template-columns:auto minmax(0,1fr); }
   .controls { grid-column:1 / -1; }
+  .volume { width:min(180px, 48vw); }
 }
 
 .spinner {

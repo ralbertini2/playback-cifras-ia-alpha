@@ -1,4 +1,4 @@
-import { Pause, Play, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
+import { Pause, Play, SkipBack, SkipForward } from 'lucide-react';
 import styles from './PlayerBar.module.css';
 
 function formatTime(value) {
@@ -15,23 +15,7 @@ export default function PlayerBar({ audio, onPrevious, onNext }) {
 
   return (
     <section className={styles.player} aria-label="Player de playback">
-      <div className={styles.volumeRow}>
-        {audio?.error && <small className={styles.error}>{audio.error}</small>}
-        <div className={styles.volume} aria-label="Controle de volume">
-          <button type="button" onClick={() => audio?.toggleMute?.()} aria-label="Ativar ou desativar som">
-            {audio?.muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={audio?.volume ?? 0.8}
-            onChange={(event) => audio?.setVolume?.(Number(event.target.value))}
-            aria-label="Volume"
-          />
-        </div>
-      </div>
+      {audio?.error && <small className={styles.error}>{audio.error}</small>}
 
       <div className={styles.timeline}>
         <span>{formatTime(currentTime)}</span>
