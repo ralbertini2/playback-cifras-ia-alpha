@@ -1,14 +1,10 @@
-Playback Cifras Beta v4.0.1
-
-Aplicar na branch:
-feature/v4-0-0-stage-mode-v1
+Aplicar estes arquivos na branch feature/v4-0-2-stage-mode-v1.
 
 Commit:
-fix: stage toggle and pdf reload
+fix: export stage pages
 
-Resumo:
-- Move Modo Estudo / Modo Palco para o topo principal.
-- Mantém o volume alinhado à direita.
-- Remove alternância da área do PDF e do Modo Palco.
-- Corrige erro de ArrayBuffer destacado ao alternar entre Modo Palco e Modo Estudo.
-- Melhora o zoom por pinça do PDF.
+Arquivos alterados:
+- src/services/stageTextService.js
+- src/config/appVersion.js
+- VERSION.md
+- CHANGELOG.md
