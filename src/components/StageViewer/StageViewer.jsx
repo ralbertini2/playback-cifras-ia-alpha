@@ -1,66 +1,81 @@
-import { FileText, Minus, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { FileText, Minus, Plus, RotateCcw } from 'lucide-react';
 import { useStageText } from '../../hooks/useStageText.js';
 import styles from './StageViewer.module.css';
 
-const MIN_FONT = 18;
-const MAX_FONT = 42;
-const FONT_STEP = 2;
-
-function clampFont(value) {
-  return Math.min(MAX_FONT, Math.max(MIN_FONT, value));
-}
-
 export default function StageViewer({ source }) {
   const stage = useStageText(source);
-  const [fontSize, setFontSize] = useState(24);
+  const isBusy = stage.status === 'loading';
 
-  const decreaseFont = () => setFontSize((current) => clampFont(current - FONT_STEP));
-  const increaseFont = () => setFontSize((current) => clampFont(current + FONT_STEP));
+  if (!source) {
+    return (
+      <div className={styles.emptyState}>
+        <div className={styles.emptyCard}>
+          <FileText size={44} />
+          <h1>Modo Palco</h1>
+          <p>Selecione uma música para gerar uma visualização cifrada com texto maior.</p>
+          <small>V4.0.0 — Modo Palco V1</small>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.stageShell}>
       <div className={styles.stageTopbar}>
-        <span>Modo Palco</span>
-        <div className={styles.fontControls} aria-label="Tamanho da fonte do Modo Palco">
-          <button type="button" onClick={decreaseFont} aria-label="Diminuir fonte"><Minus size={16} /></button>
-          <strong>{fontSize}px</strong>
-          <button type="button" onClick={increaseFont} aria-label="Aumentar fonte"><Plus size={16} /></button>
+        <div className={styles.fontControls} aria-label="Controles do Modo Palco">
+          <button type="button" onClick={stage.decreaseScale} aria-label="Diminuir fonte"><Minus size={17} /></button>
+          <span>{Math.round(stage.scale * 100)}%</span>
+          <button type="button" onClick={stage.increaseScale} aria-label="Aumentar fonte"><Plus size={17} /></button>
+          <button type="button" onClick={stage.resetScale} aria-label="Redefinir fonte"><RotateCcw size={17} /></button>
         </div>
       </div>
 
       <div className={styles.stageViewport}>
-        {stage.loading && <div className={styles.stageStatus}>Preparando Modo Palco...</div>}
-
         {stage.error && (
           <div className={styles.errorCard}>
             <FileText size={36} />
-            <strong>Não foi possível abrir o Modo Palco.</strong>
+            <strong>Não foi possível gerar o Modo Palco.</strong>
             <span>{stage.error}</span>
           </div>
         )}
 
-        {!stage.loading && !stage.error && !stage.pages.length && (
+        {!stage.error && stage.pages.map((page) => (
+          <section
+            key={page.pageNumber}
+            className={styles.stagePage}
+            style={{
+              width: `${Math.round(page.width * stage.scale)}px`,
+              height: `${Math.round(page.height * stage.scale)}px`,
+            }}
+            aria-label={`Página ${page.pageNumber}`}
+          >
+            {page.items.map((item) => (
+              <span
+                key={item.id}
+                className={item.isChord ? styles.chordText : styles.lyricText}
+                style={{
+                  left: `${item.left * stage.scale}px`,
+                  top: `${item.top * stage.scale}px`,
+                  fontSize: `${item.fontSize * stage.scale}px`,
+                  maxWidth: `${Math.max(12, item.width * stage.scale * 1.7)}px`,
+                }}
+              >
+                {item.text}
+              </span>
+            ))}
+          </section>
+        ))}
+
+        {!stage.error && !isBusy && !stage.pages.length && (
           <div className={styles.errorCard}>
             <FileText size={36} />
-            <strong>Nenhum texto encontrado no PDF.</strong>
+            <strong>Nenhum texto foi encontrado neste PDF.</strong>
             <span>Use o Modo Estudo para visualizar o PDF original.</span>
           </div>
         )}
-
-        <div className={styles.stagePages} style={{ '--stage-font-size': `${fontSize}px` }}>
-          {stage.pages.map((page) => (
-            <section className={styles.stagePage} key={page.pageNumber} aria-label={`Página ${page.pageNumber}`}>
-              {page.lines.map((line, index) => (
-                <pre
-                  className={line.isChord ? styles.chordLine : styles.lyricLine}
-                  key={`${page.pageNumber}-${index}`}
-                >{line.text}</pre>
-              ))}
-            </section>
-          ))}
-        </div>
       </div>
+
+      {isBusy && <div className={styles.loadingPill}>Gerando Modo Palco...</div>}
     </div>
   );
 }

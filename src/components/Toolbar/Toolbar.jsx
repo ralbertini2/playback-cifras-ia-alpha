@@ -7,6 +7,8 @@ export default function Toolbar({
   onOpenMenu,
   loading = false,
   audio,
+  viewerMode = 'study',
+  onViewerModeChange,
 }) {
   return (
     <div className={styles.toolbar}>
@@ -16,6 +18,23 @@ export default function Toolbar({
         <span>{meta || 'Google Drive • PDFs • Playbacks'}</span>
       </div>
       <div className={styles.controls}>
+        <div className={styles.modeGroup} aria-label="Modo de visualização">
+          <button
+            type="button"
+            className={viewerMode === 'study' ? styles.activeMode : ''}
+            onClick={() => onViewerModeChange?.('study')}
+          >
+            Modo Estudo
+          </button>
+          <span aria-hidden="true" />
+          <button
+            type="button"
+            className={viewerMode === 'stage' ? styles.activeMode : ''}
+            onClick={() => onViewerModeChange?.('stage')}
+          >
+            Modo Palco
+          </button>
+        </div>
         {loading ? <Loader2 className={styles.spinner} size={19} aria-label="Carregando" /> : null}
         <div className={styles.volume} aria-label="Controle de volume">
           <button type="button" onClick={() => audio?.toggleMute?.()} aria-label="Ativar ou desativar som">

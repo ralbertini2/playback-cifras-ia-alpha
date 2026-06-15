@@ -12,11 +12,11 @@ function normalizePdfSource(source) {
   }
 
   if (source instanceof Uint8Array) {
-    return { data: source };
+    return { data: source.slice() };
   }
 
   if (source instanceof ArrayBuffer) {
-    return { data: new Uint8Array(source) };
+    return { data: new Uint8Array(source.slice(0)) };
   }
 
   return source;
