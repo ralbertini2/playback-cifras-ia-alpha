@@ -1,3 +1,3 @@
-# Playback Cifras Beta | v4.0.5
+# Playback Cifras Beta | v4.0.6
 
-Correção do parser do Modo Palco e persistência de sessão Google Drive.
+Correção de leitura do Modo Palco no iPad e persistência de sessão Google.
