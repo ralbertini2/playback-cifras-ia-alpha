@@ -289,12 +289,106 @@ export async function fetchDrivePdfData(fileId, token = accessToken) {
   return new Uint8Array(arrayBuffer);
 }
 
+
+export function isSupportedDriveDocument(file) {
+  const name = String(file?.name || '').toLowerCase();
+  const mime = String(file?.mimeType || '').toLowerCase();
+
+  return mime === 'application/vnd.google-apps.document'
+    || mime === 'text/plain'
+    || mime === 'text/html'
+    || mime === 'application/rtf'
+    || mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    || mime === 'application/msword'
+    || name.endsWith('.docx')
+    || name.endsWith('.doc')
+    || name.endsWith('.txt')
+    || name.endsWith('.rtf')
+    || name.endsWith('.html')
+    || name.endsWith('.htm');
+}
+
+function stripHtmlToText(html = '') {
+  return String(html || '')
+    .replace(/<\s*br\s*\/?\s*>/gi, '\n')
+    .replace(/<\/(p|div|h[1-6]|li|tr)>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function stripRtfToText(rtf = '') {
+  return String(rtf || '')
+    .replace(/\\par[d]?/g, '\n')
+    .replace(/\\'[0-9a-fA-F]{2}/g, ' ')
+    .replace(/\\[a-zA-Z]+-?\d* ?/g, '')
+    .replace(/[{}]/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+export async function fetchDriveTextDocument(fileId, mimeType = '', token = accessToken) {
+  if (!fileId || !token) return null;
+
+  const mime = String(mimeType || '').toLowerCase();
+
+  if (mime === 'application/vnd.google-apps.document') {
+    const exportUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=${encodeURIComponent('text/plain')}`;
+    const response = await fetch(exportUrl, { headers: { Authorization: `Bearer ${token}` } });
+    if (!response.ok) throw new Error(`Falha ao exportar documento do Google Drive (${response.status})`);
+    const text = await response.text();
+    return { type: 'text-document', format: 'google-doc', text, mimeType };
+  }
+
+  const response = await fetch(buildDriveDownloadUrl(fileId), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Falha ao carregar documento do Google Drive (${response.status})`);
+  }
+
+  if (mime === 'text/html' || mime.includes('html')) {
+    return { type: 'text-document', format: 'html', text: stripHtmlToText(await response.text()), mimeType };
+  }
+
+  if (mime === 'application/rtf') {
+    return { type: 'text-document', format: 'rtf', text: stripRtfToText(await response.text()), mimeType };
+  }
+
+  if (mime === 'text/plain' || mime.startsWith('text/')) {
+    return { type: 'text-document', format: 'text', text: await response.text(), mimeType };
+  }
+
+  if (mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || mime === 'application/msword') {
+    return {
+      type: 'text-document',
+      format: 'word-fallback',
+      text: 'Este arquivo Word foi localizado, mas precisa estar convertido para Google Docs ou TXT/HTML para ser renderizado no Modo Palco sem backend.\n\nSugestão: no Google Drive, abra o .docx e salve como Google Docs na mesma pasta da música.',
+      mimeType,
+    };
+  }
+
+  return { type: 'text-document', format: 'unknown', text: '', mimeType };
+}
+
 function stripExtension(name = '') {
   return name.replace(/\.[^/.]+$/, '').trim();
 }
 
 function isPdf(file) {
   return file?.mimeType === 'application/pdf' || String(file?.name || '').toLowerCase().endsWith('.pdf');
+}
+
+function isDocument(file) {
+  return isPdf(file) || isSupportedDriveDocument(file);
 }
 
 function isAudio(file) {
@@ -396,6 +490,9 @@ export function normalizeDriveSong(file) {
     style: file.style || file.category || 'Google Drive',
     mimeType: file.mimeType || '',
     pdfFileId: file.pdfFileId || file.pdfId || (isPdf(file) ? file.id : ''),
+    documentFileId: file.documentFileId || (isSupportedDriveDocument(file) ? file.id : ''),
+    documentMimeType: file.documentMimeType || file.mimeType || '',
+    documentName: file.documentName || file.name || file.title || '',
     audioFileId: file.audioFileId || file.audioId || (isAudio(file) ? file.id : ''),
     pdfUrl: file.pdfUrl || '',
     audioUrl: file.audioUrl || '',
@@ -408,7 +505,7 @@ function groupDriveFilesAsSongs(files = []) {
   const groups = new Map();
 
   files.forEach((file) => {
-    if (!isPdf(file) && !isAudio(file)) return;
+    if (!isDocument(file) && !isAudio(file)) return;
 
     const baseTitle = stripExtension(file.name || file.title || file.id || safeRandomId());
     const style = file.style || file.folderPath || 'Google Drive';
@@ -424,6 +521,9 @@ function groupDriveFilesAsSongs(files = []) {
         folderPath: file.folderPath || style,
         folderParts: file.folderParts || [],
         pdfFileId: '',
+        documentFileId: '',
+        documentMimeType: '',
+        documentName: '',
         audioFileId: '',
         pdfUrl: '',
         audioUrl: '',
@@ -436,7 +536,14 @@ function groupDriveFilesAsSongs(files = []) {
 
     if (isPdf(file)) {
       song.pdfFileId = file.id;
+      song.documentFileId = file.id;
+      song.documentMimeType = file.mimeType;
+      song.documentName = file.name;
       song.pdfName = file.name;
+    } else if (isSupportedDriveDocument(file)) {
+      song.documentFileId = file.id;
+      song.documentMimeType = file.mimeType;
+      song.documentName = file.name;
     }
 
     if (isAudio(file)) {

@@ -1,9 +1,8 @@
-Branch: feature/v4-0-8-stage-ios-text
-Base: develop-react-palco
-Commit: fix: stage text on ios
+Playback Cifras IA v4.0.14 - Stage Doc Scroll
 
-Arquivos alterados:
-- src/services/stageTextService.js
-- src/config/appVersion.js
-- VERSION.md
-- CHANGELOG.md
+Subir os arquivos deste ZIP na branch indicada, preservando a estrutura de pastas.
+
+Observação sobre Word:
+- Google Docs renderiza no Modo Palco via export text/plain do Google Drive.
+- Arquivos .txt/.html/.rtf também recebem fallback textual.
+- Arquivos .doc/.docx binários são detectados, mas sem backend/biblioteca de conversão eles exibem orientação para converter para Google Docs.

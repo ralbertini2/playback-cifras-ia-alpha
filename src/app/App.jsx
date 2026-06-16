@@ -135,6 +135,8 @@ export default function App() {
     notify(becameFavorite ? 'Música adicionada aos favoritos.' : 'Música removida dos favoritos.');
   }
 
+  const isPdfDocument = !drive.pdfUrl || drive.pdfUrl instanceof Uint8Array || drive.pdfUrl instanceof ArrayBuffer || typeof drive.pdfUrl === 'string';
+
   return (
     <AppLayout
       sidebar={(
@@ -176,7 +178,7 @@ export default function App() {
         />
       )}
       toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} audio={audio} viewerMode={viewerMode} onViewerModeChange={setViewerMode} />}
-      viewer={viewerMode === 'stage'
+      viewer={viewerMode === 'stage' || !isPdfDocument
         ? <StageViewer source={drive.pdfUrl} audio={audio} />
         : <PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />
       }
