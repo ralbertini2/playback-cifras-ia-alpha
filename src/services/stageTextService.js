@@ -150,22 +150,36 @@ function averageCharWidth(items) {
   return Math.max(5, sorted[Math.floor(sorted.length / 2)] || 7);
 }
 
+function shouldJoinChordFragments(previous, text, item) {
+  if (!previous || !text) return false;
+  const closeToPrevious = item.left - previous.right <= Math.max(6, item.fontSize * 0.9);
+  if (!closeToPrevious) return false;
+
+  const previousText = String(previous.text || '');
+  if (/^[A-G](#|b)?$/i.test(previousText) && /^(m|maj|min|dim|aug|sus|add)\d*$/i.test(text)) return true;
+  if (/^[A-G](#|b)?m?$/i.test(previousText) && /^\d+$/i.test(text)) return true;
+  if (/^[A-G](#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*$/i.test(previousText) && /^\([^)]*\)$/i.test(text)) return true;
+
+  return false;
+}
+
 function cleanupChordItems(items) {
   const sortedItems = removeDuplicateFragments(items).sort((a, b) => a.left - b.left);
   const chordItems = [];
 
   sortedItems.forEach((item) => {
     const text = normalizeText(item.text).replace(/[,:;]/g, '');
-    if (!text || !isChordToken(text)) return;
+    if (!text) return;
 
     const previous = chordItems[chordItems.length - 1];
-    const closeToPrevious = previous && item.left - previous.right <= Math.max(4, item.fontSize * 0.8);
-    if (previous && closeToPrevious && /^[A-G](#|b)?$/i.test(previous.text) && /^(m|maj|min|dim|aug|sus|add)\d*$/i.test(text)) {
+    if (shouldJoinChordFragments(previous, text, item)) {
       previous.text = `${previous.text}${text}`;
       previous.right = Math.max(previous.right, item.right);
       previous.width = previous.right - previous.left;
       return;
     }
+
+    if (!isChordToken(text)) return;
 
     const duplicated = chordItems.some((candidate) => (
       candidate.text.toLowerCase() === text.toLowerCase()
@@ -237,6 +251,22 @@ function buildPositionedItems(textContent, viewport) {
   return rawItems;
 }
 
+
+function isChordLineFromItems(items, sourceText) {
+  const clean = normalizeText(sourceText);
+  if (!clean || clean.length > 90) return false;
+
+  const tokenCount = clean.split(/\s+/).filter(Boolean).length;
+  const chordItems = cleanupChordItems(items);
+  if (!chordItems.length) return false;
+
+  if (isChordLike(clean)) return true;
+  if (tokenCount <= 10 && chordItems.length >= Math.max(1, Math.ceil(tokenCount * 0.45))) return true;
+  if (chordItems.length >= 2 && clean.length <= 42) return true;
+
+  return false;
+}
+
 function attachPercentPositions(lineItems, pageLeft, pageWidth) {
   const width = Math.max(1, Number(pageWidth) || 1);
   return lineItems.map((item, index) => ({
@@ -264,7 +294,7 @@ function buildRawLines(items, viewport) {
   const groups = [];
 
   sorted.forEach((item) => {
-    const tolerance = Math.max(5, item.fontSize * 0.48);
+    const tolerance = Math.max(4, item.fontSize * 0.34);
     let line = groups.find((candidate) => Math.abs(candidate.top - item.top) <= tolerance);
     if (!line) {
       line = { top: item.top, items: [] };
@@ -278,7 +308,7 @@ function buildRawLines(items, viewport) {
     .sort((a, b) => a.top - b.top)
     .map((line, index) => {
       const sourceText = line.items.map((item) => item.text).join(' ');
-      const chord = isChordLike(sourceText);
+      const chord = isChordLineFromItems(line.items, sourceText);
       const cleanItems = chord ? cleanupChordItems(line.items) : removeDuplicateFragments(line.items).sort((a, b) => a.left - b.left);
       const text = chord ? cleanItems.map((item) => item.text).join(' ') : createPlainTextFromItems(cleanItems);
 
@@ -286,7 +316,7 @@ function buildRawLines(items, viewport) {
         id: `line-${index}`,
         text,
         isChord: chord || isChordLike(text),
-        items: attachPercentPositions(cleanItems, pageLeft, pageWidth),
+        items: chord ? attachPercentPositions(cleanItems, pageLeft, pageWidth) : [],
       };
     })
     .filter((line) => line.text.trim() || line.items.length);

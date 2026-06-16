@@ -150,18 +150,19 @@
 .lyricLine {
   color: #f8fafc;
   font-weight: 900;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .chordLine {
-  margin-top: .42em;
-  margin-bottom: -.02em;
+  margin-top: .48em;
+  margin-bottom: -.04em;
   color: #fbbf24;
   font-weight: 950;
-  min-height: 1.18em;
-  line-height: 1.1;
+  min-height: 1.22em;
+  line-height: 1.08;
 }
 
-.lyricToken,
 .chordToken {
   position: absolute;
   top: 0;
@@ -173,10 +174,6 @@
   text-shadow:
     0 1px 0 rgba(0,0,0,.65),
     0 0 18px rgba(251, 191, 36, .30);
-}
-
-.lyricToken {
-  color: #f8fafc;
 }
 
 .loadingPill {
