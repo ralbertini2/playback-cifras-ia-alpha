@@ -1,16 +1,12 @@
 # Changelog
 
-## v4.0.6
+## v4.0.7
 
 ### Corrigido
-- Ajusta parser do Modo Palco para usar PDF.js sem worker no iPad/Safari.
-- Evita uso de ArrayBuffer transferido entre Modo Estudo e Modo Palco.
-- Persiste token OAuth temporário em localStorage até expirar ou o usuário clicar em Sair.
-- Mantém sessão Google após refresh quando o token ainda é válido.
+- Parser do Modo Palco passa a usar o carregamento de PDF já validado no Modo Estudo.
+- Compatibilidade melhorada com iPad/Safari.
+- Redução de acordes duplicados em linhas cifradas.
 
-### Não alterado
-- MP3.
-- Player.
-- Sidebar.
-- package.json.
-- GitHub Actions.
+### Mantido
+- Login persistente da v4.0.6.
+- Sem alterações em MP3, player, sidebar, package.json ou GitHub Actions.
