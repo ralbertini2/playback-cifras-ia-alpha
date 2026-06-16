@@ -1,10 +1,11 @@
-import { loadPdfDocument } from './pdfService.js';
+import { getPdfJs } from './pdfService.js';
 
 const CHORD_TOKEN_PATTERN = /^([A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*(?:\([^)]*\))?(?:\/[A-G](?:#|b)?)?|N\.?C\.?|NC|%|\||\(|\)|:|-)(?:[,;.]?)$/i;
 const CHORD_LINE_PATTERN = /^(\s*(?:[A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*(?:\([^)]*\))?(?:\/[A-G](?:#|b)?)?|N\.?C\.?|NC|%|\||\(|\)|:|-)+\s*)+$/i;
 
 function copyBytes(view) {
-  const next = new Uint8Array(view.byteLength || view.length || 0);
+  const length = Number(view?.byteLength ?? view?.length ?? 0);
+  const next = new Uint8Array(Math.max(0, length));
   for (let index = 0; index < next.length; index += 1) next[index] = view[index];
   return next;
 }
@@ -15,49 +16,37 @@ function clonePdfData(data) {
     if (data instanceof ArrayBuffer) return copyBytes(new Uint8Array(data));
     if (ArrayBuffer.isView(data)) return copyBytes(new Uint8Array(data.buffer, data.byteOffset, data.byteLength));
   } catch (error) {
-    console.warn('[Playback Cifras IA] Falha ao clonar dados do PDF para o Modo Palco.', error);
+    console.warn('[Playback Cifras IA] Falha ao clonar PDF para o Modo Palco.', error);
   }
   return data;
 }
 
 function clonePdfSource(source) {
   if (!source) return source;
-  if (typeof source === 'string') return source;
-  if (source instanceof Uint8Array) return clonePdfData(source);
-  if (source instanceof ArrayBuffer) return clonePdfData(source);
+  if (typeof source === 'string') return { url: source, withCredentials: false };
+  if (source instanceof Uint8Array) return { data: clonePdfData(source) };
+  if (source instanceof ArrayBuffer) return { data: clonePdfData(source) };
   if (typeof source === 'object' && source.data) return { ...source, data: clonePdfData(source.data) };
   return source;
 }
 
+async function loadStagePdfDocument(source) {
+  const pdfjs = await getPdfJs();
+  const normalizedSource = clonePdfSource(source);
+
+  const loadingTask = pdfjs.getDocument({
+    ...normalizedSource,
+    disableWorker: true,
+    disableAutoFetch: true,
+    disableStream: true,
+    isEvalSupported: false,
+  });
+
+  return loadingTask.promise;
+}
+
 function normalizeText(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
-}
-
-function safeDestroyPdf(pdf) {
-  if (!pdf?.destroy || typeof pdf.destroy !== 'function') return;
-  try {
-    const result = pdf.destroy();
-    if (result?.catch && typeof result.catch === 'function') result.catch(() => {});
-  } catch (_) {
-    // Cleanup cannot break the Stage parser.
-  }
-}
-
-function isChordToken(token) {
-  return CHORD_TOKEN_PATTERN.test(String(token || '').trim());
-}
-
-function isChordLike(text) {
-  const clean = normalizeText(text);
-  if (!clean || clean.length > 52) return false;
-
-  const tokens = clean.split(/\s+/).filter(Boolean);
-  if (!tokens.length || tokens.length > 18) return false;
-
-  const chordTokens = tokens.filter((token) => isChordToken(token.replace(/[,:;]/g, '')));
-  if (chordTokens.length === tokens.length) return true;
-
-  return CHORD_LINE_PATTERN.test(clean) && chordTokens.length >= Math.max(1, Math.ceil(tokens.length * 0.5));
 }
 
 function multiplyTransforms(a = [1, 0, 0, 1, 0, 0], b = [1, 0, 0, 1, 0, 0]) {
@@ -79,6 +68,33 @@ function getFontSize(transform, item) {
   const [, b, , d] = transform;
   const size = Math.max(Math.abs(b), Math.abs(d), item?.height || 10);
   return Number.isFinite(size) && size > 0 ? size : 10;
+}
+
+function safeDestroyPdf(pdf) {
+  try {
+    if (!pdf || typeof pdf.destroy !== 'function') return;
+    const result = pdf.destroy();
+    if (result && typeof result.catch === 'function') result.catch(() => {});
+  } catch (_) {
+    // Cleanup must not break Stage rendering.
+  }
+}
+
+function isChordToken(token) {
+  return CHORD_TOKEN_PATTERN.test(String(token || '').trim());
+}
+
+function isChordLike(text) {
+  const clean = normalizeText(text);
+  if (!clean || clean.length > 52) return false;
+
+  const tokens = clean.split(/\s+/).filter(Boolean);
+  if (!tokens.length || tokens.length > 18) return false;
+
+  const chordTokens = tokens.filter((token) => isChordToken(token.replace(/[,:;]/g, '')));
+  if (chordTokens.length === tokens.length) return true;
+
+  return CHORD_LINE_PATTERN.test(clean) && chordTokens.length >= Math.max(1, Math.ceil(tokens.length * 0.5));
 }
 
 function horizontalOverlap(a, b) {
@@ -259,9 +275,36 @@ function extractPlainLines(textContent) {
   return lines.filter((line) => line.text.trim());
 }
 
+async function readTextContentWithFallback(page) {
+  if (page && typeof page.getTextContent === 'function') {
+    try {
+      return await page.getTextContent();
+    } catch (primaryError) {
+      console.warn('[Playback Cifras IA] getTextContent falhou. Tentando streamTextContent.', primaryError);
+    }
+  }
+
+  if (page && typeof page.streamTextContent === 'function') {
+    const stream = page.streamTextContent();
+    const reader = stream && typeof stream.getReader === 'function' ? stream.getReader() : null;
+    if (!reader) throw new Error('PDF text stream indisponível neste navegador.');
+
+    const textContent = { items: [], styles: {} };
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value?.items?.length) textContent.items.push(...value.items);
+      if (value?.styles) textContent.styles = { ...textContent.styles, ...value.styles };
+    }
+    return textContent;
+  }
+
+  throw new Error('PDF.js não disponibilizou extração de texto neste navegador.');
+}
+
 async function getPageStageLines(page) {
   const viewport = page.getViewport({ scale: 1 });
-  const textContent = await page.getTextContent({ normalizeWhitespace: false, disableCombineTextItems: false });
+  const textContent = await readTextContentWithFallback(page);
 
   try {
     const positioned = buildPositionedItems(textContent, viewport);
@@ -277,7 +320,7 @@ async function getPageStageLines(page) {
 export async function extractStagePages(source) {
   if (!source) return [];
 
-  const pdf = await loadPdfDocument(clonePdfSource(source));
+  const pdf = await loadStagePdfDocument(source);
   const pages = [];
 
   try {

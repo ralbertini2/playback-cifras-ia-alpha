@@ -1,3 +1,9 @@
-Aplicar na branch: feature/v4-0-7-stage-ipad-parser
-Base do PR: develop-react-palco
-Commit: fix: stage parser on ipad
+Branch: feature/v4-0-8-stage-ios-text
+Base: develop-react-palco
+Commit: fix: stage text on ios
+
+Arquivos alterados:
+- src/services/stageTextService.js
+- src/config/appVersion.js
+- VERSION.md
+- CHANGELOG.md
