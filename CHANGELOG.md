@@ -1,12 +1,16 @@
 # Changelog
 
-## v4.0.8 - Stage iOS Text Fallback
+## v4.0.9 - Stage alinhamento e scroll
 
 ### Corrigido
-- Reforça o carregamento do PDF do Modo Palco sem worker no iPad/iPhone.
-- Adiciona fallback por streamTextContent quando getTextContent falhar no Safari.
-- Mantém o parser posicionado quando disponível.
-- Mantém fallback textual quando a leitura posicionada não estiver disponível.
+- Preserva espaços das linhas de acordes para manter alinhamento horizontal com a letra.
+- Usa referência horizontal única por página para aproximar acordes da posição original do PDF.
+- Reduz duplicação de acordes extraídos pelo PDF.js.
+
+### Adicionado
+- Controle de tamanho de fonte no Modo Palco.
+- Auto-scroll com opções Parado, Lento, Médio e Rápido.
+- Visual inicial de palco com fundo escuro, acordes destacados e cartões por página.
 
 ### Não alterado
 - Google Drive.

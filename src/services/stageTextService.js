@@ -166,23 +166,37 @@ function averageCharWidth(items) {
   return Math.max(5, sorted[Math.floor(sorted.length / 2)] || 7);
 }
 
-function createSpacedLine(items) {
+function isDuplicateChordItem(item, previousItems) {
+  if (!isChordToken(item.text)) return false;
+
+  return previousItems.some((candidate) => (
+    isChordToken(candidate.text)
+    && normalizeText(candidate.text).toLowerCase() === normalizeText(item.text).toLowerCase()
+    && Math.abs(candidate.left - item.left) <= Math.max(10, item.fontSize * 1.1)
+    && Math.abs(candidate.top - item.top) <= Math.max(5, item.fontSize * 0.55)
+  ));
+}
+
+function createSpacedLine(items, pageLeft, pageCharWidth) {
   const sortedItems = removeDuplicateFragments(items).sort((a, b) => a.left - b.left);
   if (!sortedItems.length) return '';
 
-  const minLeft = Math.min(...sortedItems.map((item) => item.left));
-  const charWidth = averageCharWidth(sortedItems);
+  const minLeft = Number.isFinite(pageLeft) ? pageLeft : Math.min(...sortedItems.map((item) => item.left));
+  const charWidth = Number.isFinite(pageCharWidth) && pageCharWidth > 0 ? pageCharWidth : averageCharWidth(sortedItems);
   const buffer = [];
+  const placedItems = [];
 
   sortedItems.forEach((item) => {
     const text = normalizeText(item.text);
     if (!text) return;
+    if (isDuplicateChordItem({ ...item, text }, placedItems)) return;
 
     const targetColumn = Math.max(0, Math.round((item.left - minLeft) / charWidth));
     let column = targetColumn;
 
     while (buffer[column] && column < targetColumn + text.length + 4) column += 1;
     for (let index = 0; index < text.length; index += 1) buffer[column + index] = text[index];
+    placedItems.push({ ...item, text });
   });
 
   return buffer.map((char) => char || ' ').join('').replace(/\s+$/g, '');
@@ -225,7 +239,10 @@ function buildRawLines(items) {
     return a.left - b.left;
   });
 
+  const pageLeft = sorted.length ? Math.min(...sorted.map((item) => item.left)) : 0;
+  const pageCharWidth = averageCharWidth(sorted);
   const groups = [];
+
   sorted.forEach((item) => {
     const tolerance = Math.max(5, item.fontSize * 0.5);
     let line = groups.find((candidate) => Math.abs(candidate.top - item.top) <= tolerance);
@@ -240,11 +257,11 @@ function buildRawLines(items) {
   return groups
     .sort((a, b) => a.top - b.top)
     .map((line, index) => {
-      const rawText = createSpacedLine(line.items);
+      const rawText = createSpacedLine(line.items, pageLeft, pageCharWidth);
       const chord = isChordLike(rawText);
       return {
         id: `line-${index}`,
-        text: chord ? normalizeChordLine(rawText) : rawText,
+        text: chord ? rawText : rawText,
         isChord: chord,
       };
     })

@@ -1,4 +1,4 @@
-# Playback Cifras Beta | v4.0.8
+# Playback Cifras Beta | v4.0.9
 
 ## Foco
-Correção do parser do Modo Palco no iPad/iPhone.
+Alinhamento inicial dos acordes, auto-scroll e visual do Modo Palco.
