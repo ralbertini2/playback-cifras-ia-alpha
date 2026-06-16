@@ -1,12 +1,17 @@
 # Changelog
 
-## v4.0.7
+## v4.0.8 - Stage iOS Text Fallback
 
 ### Corrigido
-- Parser do Modo Palco passa a usar o carregamento de PDF já validado no Modo Estudo.
-- Compatibilidade melhorada com iPad/Safari.
-- Redução de acordes duplicados em linhas cifradas.
+- Reforça o carregamento do PDF do Modo Palco sem worker no iPad/iPhone.
+- Adiciona fallback por streamTextContent quando getTextContent falhar no Safari.
+- Mantém o parser posicionado quando disponível.
+- Mantém fallback textual quando a leitura posicionada não estiver disponível.
 
-### Mantido
-- Login persistente da v4.0.6.
-- Sem alterações em MP3, player, sidebar, package.json ou GitHub Actions.
+### Não alterado
+- Google Drive.
+- MP3.
+- Player.
+- Sidebar.
+- package.json.
+- GitHub Actions.
