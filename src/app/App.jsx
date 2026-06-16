@@ -177,7 +177,7 @@ export default function App() {
       )}
       toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} audio={audio} viewerMode={viewerMode} onViewerModeChange={setViewerMode} />}
       viewer={viewerMode === 'stage'
-        ? <StageViewer source={drive.pdfUrl} />
+        ? <StageViewer source={drive.pdfUrl} audio={audio} />
         : <PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />
       }
       player={(

@@ -1,56 +1,51 @@
-import { FileText, Minus, Play, Plus, Square } from 'lucide-react';
+import { FileText, Minus, Plus } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useStageText } from '../../hooks/useStageText.js';
 import styles from './StageViewer.module.css';
 
-const SCROLL_SPEEDS = [
-  { id: 'stop', label: 'Parado', speed: 0 },
-  { id: 'slow', label: 'Lento', speed: 18 },
-  { id: 'medium', label: 'Médio', speed: 34 },
-  { id: 'fast', label: 'Rápido', speed: 54 },
-];
-
-export default function StageViewer({ source }) {
+export default function StageViewer({ source, audio }) {
   const stage = useStageText(source);
   const isBusy = stage.status === 'loading';
   const viewportRef = useRef(null);
   const frameRef = useRef(0);
-  const lastTickRef = useRef(0);
-  const [fontSize, setFontSize] = useState(28);
-  const [scrollMode, setScrollMode] = useState('stop');
-
-  const activeScroll = useMemo(
-    () => SCROLL_SPEEDS.find((option) => option.id === scrollMode) || SCROLL_SPEEDS[0],
-    [scrollMode],
-  );
+  const [fontSize, setFontSize] = useState(36);
+  const hasPages = useMemo(() => stage.pages.some((page) => page.lines.length), [stage.pages]);
 
   useEffect(() => {
     const viewport = viewportRef.current;
-    if (!viewport || !activeScroll.speed || stage.status !== 'ready') return undefined;
+    const duration = Number(audio?.duration || 0);
 
-    function tick(timestamp) {
-      if (!lastTickRef.current) lastTickRef.current = timestamp;
-      const elapsed = Math.min(64, timestamp - lastTickRef.current);
-      lastTickRef.current = timestamp;
-      viewport.scrollTop += (activeScroll.speed * elapsed) / 1000;
-      frameRef.current = window.requestAnimationFrame(tick);
+    if (!viewport || !duration || !hasPages) return undefined;
+
+    function syncToAudio() {
+      const nextViewport = viewportRef.current;
+      if (!nextViewport) return;
+
+      const maxScroll = Math.max(0, nextViewport.scrollHeight - nextViewport.clientHeight);
+      const progress = Math.max(0, Math.min(1, Number(audio?.currentTime || 0) / duration));
+      const target = maxScroll * progress;
+      const diff = target - nextViewport.scrollTop;
+
+      if (Math.abs(diff) > 1) {
+        nextViewport.scrollTop += diff * 0.18;
+      }
+
+      frameRef.current = window.requestAnimationFrame(syncToAudio);
     }
 
-    frameRef.current = window.requestAnimationFrame(tick);
+    frameRef.current = window.requestAnimationFrame(syncToAudio);
     return () => {
       window.cancelAnimationFrame(frameRef.current);
       frameRef.current = 0;
-      lastTickRef.current = 0;
     };
-  }, [activeScroll.speed, stage.status]);
+  }, [audio?.currentTime, audio?.duration, hasPages]);
 
   useEffect(() => {
-    setScrollMode('stop');
     if (viewportRef.current) viewportRef.current.scrollTop = 0;
   }, [source]);
 
   function changeFontSize(delta) {
-    setFontSize((current) => Math.max(18, Math.min(46, current + delta)));
+    setFontSize((current) => Math.max(24, Math.min(56, current + delta)));
   }
 
   if (!source) {
@@ -60,7 +55,7 @@ export default function StageViewer({ source }) {
           <FileText size={44} />
           <h1>Modo Palco</h1>
           <p>Selecione uma música para gerar a leitura textual da cifra.</p>
-          <small>V4.0.9 — Stage Parser</small>
+          <small>V4.0.10 — Stage Parser</small>
         </div>
       </div>
     );
@@ -71,29 +66,17 @@ export default function StageViewer({ source }) {
       <div className={styles.stageToolbar}>
         <div className={styles.stageTitle}>
           <strong>Modo Palco</strong>
-          <span>Texto extraído do PDF para apresentação</span>
+          <span>Scroll sincronizado com o MP3</span>
         </div>
 
         <div className={styles.stageControls}>
+          <div className={styles.syncBadge}>
+            {audio?.hasValidSource ? 'Sync MP3' : 'Sem MP3'}
+          </div>
           <div className={styles.fontControls} aria-label="Tamanho da letra do Modo Palco">
             <button type="button" onClick={() => changeFontSize(-2)} aria-label="Diminuir fonte"><Minus size={16} /></button>
             <span>{fontSize}px</span>
             <button type="button" onClick={() => changeFontSize(2)} aria-label="Aumentar fonte"><Plus size={16} /></button>
-          </div>
-
-          <div className={styles.scrollControls} aria-label="Rolagem automática do Modo Palco">
-            {SCROLL_SPEEDS.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                className={scrollMode === option.id ? styles.activeScroll : ''}
-                onClick={() => setScrollMode(option.id)}
-                aria-label={`Rolagem ${option.label}`}
-              >
-                {option.id === 'stop' ? <Square size={12} /> : <Play size={12} />}
-                <span>{option.label}</span>
-              </button>
-            ))}
           </div>
         </div>
       </div>
@@ -125,7 +108,7 @@ export default function StageViewer({ source }) {
           </section>
         ))}
 
-        {!stage.error && !isBusy && !stage.pages.some((page) => page.lines.length) && (
+        {!stage.error && !isBusy && !hasPages && (
           <div className={styles.errorCard}>
             <FileText size={36} />
             <strong>Nenhum texto foi encontrado neste PDF.</strong>
