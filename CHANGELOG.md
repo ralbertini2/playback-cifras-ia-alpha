@@ -1,21 +1,14 @@
-# v4.0.13.1 - Scroll, DOCX e offline
+# Changelog
 
-## Corrigido
-- Corrige velocidade do auto scroll abaixo de 32 px/s.
-- Altera incremento/decremento de velocidade para passos de 5 px/s.
-- Mantém auto scroll fluido com requestAnimationFrame.
-- Adiciona visualizador de documento para Modo Estudo.
-- Mantém documentos Word/Google Docs integrados ao fluxo Estudo/Palco.
-- Ao alternar para Modo Palco, documentos usam o parser textual do palco.
-- Pré-carrega arquivos da biblioteca para uso offline usando IndexedDB.
-- Limpa biblioteca, mídia carregada, pasta selecionada e dados offline no logout.
-- Reforça isolamento de touch/scroll da sidebar no iPhone.
+## v4.0.13.2-docx-native
 
-## Observação
-- Arquivos Google Docs são exportados como texto pelo Drive.
-- Arquivos .doc/.docx binários são detectados; para renderização direta completa sem backend, a melhor compatibilidade continua sendo converter para Google Docs no Drive.
+### Corrigido
+- Adiciona renderização nativa de DOCX no Modo Estudo usando conversor no navegador.
+- Remove a mensagem que exigia converter DOCX manualmente para Google Docs.
+- Mantém DOC legado detectado com orientação para salvar como DOCX.
+- Mantém PDF e Google Docs funcionando como antes.
 
-## Não alterado
-- MP3/player.
-- GitHub Actions.
-- package.json.
+### Escopo
+- Visualização DOCX disponível no Modo Estudo.
+- Modo Palco continua usando texto extraído para preservar identidade e fluxo já existentes.
+- Não altera MP3, player, Sidebar, GitHub Actions ou sincronismo IA.

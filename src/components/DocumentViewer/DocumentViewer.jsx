@@ -6,6 +6,25 @@ function getLines(source) {
   return text.replace(/\r\n?/g, '\n').split('\n');
 }
 
+function getFormatLabel(source) {
+  const format = String(source?.format || '').toLowerCase();
+  if (format === 'docx') return 'DOCX renderizado no Modo Estudo';
+  if (format === 'doc-legacy') return 'DOC legado detectado';
+  if (format === 'google-doc') return 'Google Docs renderizado no Modo Estudo';
+  if (format === 'html') return 'HTML renderizado no Modo Estudo';
+  if (format === 'rtf') return 'RTF renderizado no Modo Estudo';
+  return 'Modo Estudo — Documento';
+}
+
+function sanitizeHtml(html = '') {
+  return String(html || '')
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, '')
+    .replace(/\son\w+="[^"]*"/gi, '')
+    .replace(/\son\w+='[^']*'/gi, '')
+    .replace(/javascript:/gi, '');
+}
+
 export default function DocumentViewer({ source, title = 'Documento' }) {
   if (!source) {
     return (
@@ -17,7 +36,8 @@ export default function DocumentViewer({ source, title = 'Documento' }) {
   }
 
   const lines = getLines(source);
-  const isWordFallback = source?.format === 'word-fallback';
+  const html = sanitizeHtml(source?.html || '');
+  const hasHtml = Boolean(html.trim());
 
   return (
     <div className={styles.viewerShell}>
@@ -26,17 +46,24 @@ export default function DocumentViewer({ source, title = 'Documento' }) {
           <FileText size={22} />
           <div>
             <strong>{title || source?.title || 'Documento'}</strong>
-            <span>{isWordFallback ? 'Word detectado' : 'Modo Estudo — Documento'}</span>
+            <span>{getFormatLabel(source)}</span>
           </div>
         </header>
 
-        <div className={styles.documentBody}>
-          {lines.map((line, index) => (
-            <p key={`${index}-${line.slice(0, 12)}`} className={line.trim() ? styles.line : styles.blankLine}>
-              {line || '\u00a0'}
-            </p>
-          ))}
-        </div>
+        {hasHtml ? (
+          <div
+            className={styles.documentHtml}
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        ) : (
+          <div className={styles.documentBody}>
+            {lines.map((line, index) => (
+              <p key={`${index}-${line.slice(0, 12)}`} className={line.trim() ? styles.line : styles.blankLine}>
+                {line || '\u00a0'}
+              </p>
+            ))}
+          </div>
+        )}
       </article>
     </div>
   );

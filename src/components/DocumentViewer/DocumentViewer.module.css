@@ -44,6 +44,38 @@
   overflow-wrap: anywhere;
 }
 
+.documentHtml {
+  color: #f8fafc;
+  font-size: 22px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.documentHtml :is(h1, h2, h3) {
+  color: #f8fafc;
+  line-height: 1.15;
+  margin: 1.2em 0 .55em;
+}
+
+.documentHtml h1 { font-size: 1.55em; }
+.documentHtml h2 { font-size: 1.3em; }
+.documentHtml h3 { font-size: 1.12em; }
+.documentHtml p { margin: 0 0 .65em; }
+.documentHtml ul,
+.documentHtml ol { margin: .6em 0 .9em 1.35em; }
+.documentHtml table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+.documentHtml td,
+.documentHtml th {
+  border: 1px solid rgba(148, 163, 184, .22);
+  padding: .45em .55em;
+  vertical-align: top;
+}
+.documentHtml a { color: #60a5fa; }
+
 .line,
 .blankLine {
   margin: 0 0 .55em;
@@ -64,11 +96,11 @@
 @media (max-width: 900px) {
   .viewerShell { padding: 14px; }
   .documentPage { padding: 18px; border-radius: 18px; }
-  .documentBody { font-size: 20px; }
+  .documentBody, .documentHtml { font-size: 20px; }
 }
 
 @media (max-width: 560px) {
   .viewerShell { padding: 10px; }
   .documentPage { padding: 14px; border-radius: 14px; }
-  .documentBody { font-size: 18px; }
+  .documentBody, .documentHtml { font-size: 18px; }
 }

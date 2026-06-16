@@ -359,54 +359,140 @@ function stripRtfToText(rtf = '') {
     .trim();
 }
 
-export async function fetchDriveTextDocument(fileId, mimeType = '', token = accessToken) {
+
+function isDocxDocument(mime = '', fileName = '') {
+  const cleanMime = String(mime || '').toLowerCase();
+  const cleanName = String(fileName || '').toLowerCase();
+  return cleanMime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    || cleanName.endsWith('.docx');
+}
+
+function isLegacyDocDocument(mime = '', fileName = '') {
+  const cleanMime = String(mime || '').toLowerCase();
+  const cleanName = String(fileName || '').toLowerCase();
+  return cleanMime === 'application/msword' || cleanName.endsWith('.doc');
+}
+
+let mammothLoadPromise = null;
+
+function loadScriptOnce(src) {
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[data-playback-src="${src}"]`);
+    if (existing) {
+      if (window.mammoth) resolve(window.mammoth);
+      existing.addEventListener('load', () => resolve(window.mammoth), { once: true });
+      existing.addEventListener('error', reject, { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.defer = true;
+    script.dataset.playbackSrc = src;
+    script.onload = () => resolve(window.mammoth);
+    script.onerror = () => reject(new Error('Não foi possível carregar o conversor DOCX.'));
+    document.head.appendChild(script);
+  });
+}
+
+async function loadMammoth() {
+  if (window.mammoth?.convertToHtml) return window.mammoth;
+  if (!mammothLoadPromise) {
+    mammothLoadPromise = loadScriptOnce('https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js');
+  }
+  const mammoth = await mammothLoadPromise;
+  if (!mammoth?.convertToHtml) {
+    throw new Error('Conversor DOCX indisponível no navegador.');
+  }
+  return mammoth;
+}
+
+function htmlToPlainText(html = '') {
+  const stripped = stripHtmlToText(html);
+  return stripped || String(html || '').replace(/<[^>]+>/g, ' ').trim();
+}
+
+async function convertDocxToDocumentSource(arrayBuffer, mimeType = '') {
+  const mammoth = await loadMammoth();
+  const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer.slice(0) }, {
+    styleMap: [
+      "p[style-name='Title'] => h1:fresh",
+      "p[style-name='Heading 1'] => h2:fresh",
+      "p[style-name='Heading 2'] => h3:fresh",
+      "b => strong",
+      "i => em",
+    ],
+  });
+
+  const html = String(result?.value || '').trim();
+  const text = htmlToPlainText(html);
+
+  return {
+    type: 'text-document',
+    format: 'docx',
+    html,
+    text,
+    mimeType,
+    warnings: Array.isArray(result?.messages) ? result.messages.map((item) => item?.message).filter(Boolean) : [],
+  };
+}
+
+export async function fetchDriveTextDocument(fileId, mimeType = '', token = accessToken, fileName = '') {
   if (!fileId || !token) return null;
 
   const mime = String(mimeType || '').toLowerCase();
+  const name = String(fileName || '').toLowerCase();
 
   if (mime === 'application/vnd.google-apps.document') {
-    const exportUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=${encodeURIComponent('text/plain')}`;
+    const exportUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=${encodeURIComponent('text/html')}`;
     const offline = await getOfflineDriveFile(fileId);
     if (offline?.arrayBuffer) {
-      const text = new TextDecoder('utf-8').decode(offline.arrayBuffer.slice(0));
-      return { type: 'text-document', format: 'google-doc', text, mimeType };
+      const html = new TextDecoder('utf-8').decode(offline.arrayBuffer.slice(0));
+      return { type: 'text-document', format: 'google-doc', html, text: stripHtmlToText(html), mimeType };
     }
 
     const response = await fetch(exportUrl, { headers: { Authorization: `Bearer ${token}` } });
     if (!response.ok) throw new Error(`Falha ao exportar documento do Google Drive (${response.status})`);
-    const text = await response.text();
+    const html = await response.text();
     try {
       await saveOfflineDriveFile({
         id: fileId,
-        arrayBuffer: new TextEncoder().encode(text).buffer,
-        mimeType: 'text/plain',
+        arrayBuffer: new TextEncoder().encode(html).buffer,
+        mimeType: 'text/html',
+        name: fileName,
       });
     } catch (_) {}
-    return { type: 'text-document', format: 'google-doc', text, mimeType };
+    return { type: 'text-document', format: 'google-doc', html, text: stripHtmlToText(html), mimeType };
   }
 
-  const arrayBuffer = await fetchDriveArrayBuffer(fileId, token, mimeType);
+  const arrayBuffer = await fetchDriveArrayBuffer(fileId, token, mimeType, fileName);
+
+  if (isDocxDocument(mime, name)) {
+    return convertDocxToDocumentSource(arrayBuffer, mimeType);
+  }
+
+  if (isLegacyDocDocument(mime, name)) {
+    return {
+      type: 'text-document',
+      format: 'doc-legacy',
+      text: 'Formato DOC legado detectado. Para visualizar no Playback Cifras, salve este arquivo como DOCX e mantenha-o na mesma pasta da música.\n\nO suporte nativo desta versão é para PDF, Google Docs, TXT/HTML/RTF e DOCX.',
+      mimeType,
+    };
+  }
+
   const text = arrayBuffer ? new TextDecoder('utf-8').decode(arrayBuffer.slice(0)) : '';
 
-  if (mime === 'text/html' || mime.includes('html')) {
-    return { type: 'text-document', format: 'html', text: stripHtmlToText(text), mimeType };
+  if (mime === 'text/html' || mime.includes('html') || name.endsWith('.html') || name.endsWith('.htm')) {
+    return { type: 'text-document', format: 'html', html: text, text: stripHtmlToText(text), mimeType };
   }
 
-  if (mime === 'application/rtf') {
+  if (mime === 'application/rtf' || name.endsWith('.rtf')) {
     return { type: 'text-document', format: 'rtf', text: stripRtfToText(text), mimeType };
   }
 
-  if (mime === 'text/plain' || mime.startsWith('text/')) {
+  if (mime === 'text/plain' || mime.startsWith('text/') || name.endsWith('.txt')) {
     return { type: 'text-document', format: 'text', text, mimeType };
-  }
-
-  if (mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || mime === 'application/msword') {
-    return {
-      type: 'text-document',
-      format: 'word-fallback',
-      text: 'Este arquivo Word foi localizado, mas precisa estar convertido para Google Docs ou TXT/HTML para ser renderizado no Modo Palco sem backend.\n\nSugestão: no Google Drive, abra o .docx e salve como Google Docs na mesma pasta da música.',
-      mimeType,
-    };
   }
 
   return { type: 'text-document', format: 'unknown', text: '', mimeType };
