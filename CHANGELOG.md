@@ -1,27 +1,20 @@
 # Changelog
 
-## v4.0.8 - Stage iOS Text Fallback
+## v4.0.11 - Stage Sync Alignment
 
 ### Corrigido
-- Reforça o carregamento do PDF do Modo Palco sem worker no iPad/iPhone.
-- Adiciona fallback por streamTextContent quando getTextContent falhar no Safari.
-- Mantém o parser posicionado quando disponível.
-- Mantém fallback textual quando a leitura posicionada não estiver disponível.
 
-### Não alterado
-- Google Drive.
-- MP3.
-- Player.
-- Sidebar.
-- package.json.
-- GitHub Actions.
+- Melhora sincronização proporcional do Modo Palco com o tempo real do MP3.
+- Torna o scroll automático mais fluido usando requestAnimationFrame contínuo.
+- Melhora o alinhamento horizontal dos acordes usando coordenadas do PDF.
+- Renderiza linhas do Modo Palco com tokens posicionados, preservando melhor a posição original.
+- Reduz duplicação de acordes gerada pela extração do PDF.js.
+- Atualiza footer para Playback Cifras Beta | v4.0.11.
 
-## v4.0.10 - Stage Readability Sync
+### Escopo preservado
 
-- Sincroniza o scroll do Modo Palco com o tempo do MP3.
-- Remove controles manuais de velocidade do scroll.
-- Melhora reconstrução das linhas para reduzir palavras cortadas ou juntadas.
-- Melhora limpeza de acordes duplicados extraídos pelo PDF.js.
-- Reforça destaque visual das linhas de acordes.
-- Aplica visual de palco mais limpo e legível.
-
+- Google Drive não alterado.
+- MP3/player não alterado, exceto leitura do tempo atual pelo Modo Palco.
+- Sidebar não alterada.
+- package.json não alterado.
+- GitHub Actions não alterado.
