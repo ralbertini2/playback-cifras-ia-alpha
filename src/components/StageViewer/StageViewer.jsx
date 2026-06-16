@@ -1,100 +1,70 @@
-import { FileText, Minus, Plus } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { FileText, Gauge, Minus, Pause, Play, Plus } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useStageText } from '../../hooks/useStageText.js';
 import styles from './StageViewer.module.css';
 
-function getCurrentAudioTime(audio) {
-  if (audio && typeof audio.getCurrentTime === 'function') return audio.getCurrentTime();
-  return Number(audio?.currentTime || 0) || 0;
+const DEFAULT_SCROLL_SPEED = 0;
+const SPEED_STEP = 4;
+const MAX_SCROLL_SPEED = 120;
+
+function clampSpeed(value) {
+  const next = Number(value) || 0;
+  return Math.max(0, Math.min(MAX_SCROLL_SPEED, next));
 }
 
-function StageLine({ line }) {
-  const hasItems = Array.isArray(line.items) && line.items.length > 0;
-
-  if (!line.isChord) {
-    return <div className={styles.lyricLine}>{line.text || ' '}</div>;
-  }
-
-  if (!hasItems) {
-    return <div className={styles.chordLine}>{line.text || ' '}</div>;
-  }
-
-  return (
-    <div className={`${styles.positionedLine} ${styles.chordLine}`}>
-      {line.items.map((item) => (
-        <span
-          key={item.id}
-          className={styles.chordToken}
-          style={{ left: `${item.leftPct}%` }}
-        >
-          {item.text}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-export default function StageViewer({ source, audio }) {
+export default function StageViewer({ source }) {
   const stage = useStageText(source);
   const isBusy = stage.status === 'loading';
   const viewportRef = useRef(null);
   const frameRef = useRef(0);
-  const audioRef = useRef(audio);
-  const lastTargetRef = useRef(0);
-  const [fontSize, setFontSize] = useState(38);
-  const hasPages = useMemo(() => stage.pages.some((page) => page.lines.length), [stage.pages]);
+  const lastFrameRef = useRef(0);
+  const [scrollSpeed, setScrollSpeed] = useState(DEFAULT_SCROLL_SPEED);
+  const autoScrollActive = scrollSpeed > 0 && !stage.error && stage.pages.length > 0;
 
   useEffect(() => {
-    audioRef.current = audio;
-  }, [audio]);
-
-  useEffect(() => {
-    const viewport = viewportRef.current;
-    if (!viewport || !hasPages) return undefined;
-
-    function syncToAudio() {
-      const nextViewport = viewportRef.current;
-      const nextAudio = audioRef.current;
-
-      if (!nextViewport || !nextAudio) {
-        frameRef.current = window.requestAnimationFrame(syncToAudio);
-        return;
-      }
-
-      const duration = Number(nextAudio.duration || 0);
-      const maxScroll = Math.max(0, nextViewport.scrollHeight - nextViewport.clientHeight);
-
-      if (duration > 0 && maxScroll > 0) {
-        const currentTime = getCurrentAudioTime(nextAudio);
-        const progress = Math.max(0, Math.min(1, currentTime / duration));
-        const target = maxScroll * progress;
-        const current = nextViewport.scrollTop;
-        const diff = target - current;
-        const smoothing = nextAudio.isPlaying ? 0.075 : 0.28;
-
-        if (Math.abs(target - lastTargetRef.current) > 0.25 || Math.abs(diff) > 0.5) {
-          nextViewport.scrollTop = current + diff * smoothing;
-          lastTargetRef.current = target;
-        }
-      }
-
-      frameRef.current = window.requestAnimationFrame(syncToAudio);
+    if (!autoScrollActive) {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+      frameRef.current = 0;
+      lastFrameRef.current = 0;
+      return undefined;
     }
 
-    frameRef.current = window.requestAnimationFrame(syncToAudio);
+    function tick(timestamp) {
+      const viewport = viewportRef.current;
+      if (!viewport) return;
+
+      if (!lastFrameRef.current) lastFrameRef.current = timestamp;
+      const deltaSeconds = Math.min(0.08, Math.max(0, (timestamp - lastFrameRef.current) / 1000));
+      lastFrameRef.current = timestamp;
+
+      const maxScrollTop = Math.max(0, viewport.scrollHeight - viewport.clientHeight);
+      if (viewport.scrollTop < maxScrollTop) {
+        viewport.scrollTop = Math.min(maxScrollTop, viewport.scrollTop + scrollSpeed * deltaSeconds);
+        frameRef.current = requestAnimationFrame(tick);
+      } else {
+        setScrollSpeed(0);
+      }
+    }
+
+    frameRef.current = requestAnimationFrame(tick);
+
     return () => {
-      window.cancelAnimationFrame(frameRef.current);
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
       frameRef.current = 0;
+      lastFrameRef.current = 0;
     };
-  }, [hasPages, source]);
+  }, [autoScrollActive, scrollSpeed, stage.error, stage.pages.length]);
 
-  useEffect(() => {
-    if (viewportRef.current) viewportRef.current.scrollTop = 0;
-    lastTargetRef.current = 0;
-  }, [source]);
+  function decreaseSpeed() {
+    setScrollSpeed((current) => clampSpeed(current - SPEED_STEP));
+  }
 
-  function changeFontSize(delta) {
-    setFontSize((current) => Math.max(26, Math.min(64, current + delta)));
+  function increaseSpeed() {
+    setScrollSpeed((current) => clampSpeed(current + SPEED_STEP));
+  }
+
+  function toggleScroll() {
+    setScrollSpeed((current) => (current > 0 ? 0 : 28));
   }
 
   if (!source) {
@@ -104,7 +74,7 @@ export default function StageViewer({ source, audio }) {
           <FileText size={44} />
           <h1>Modo Palco</h1>
           <p>Selecione uma música para gerar a leitura textual da cifra.</p>
-          <small>V4.0.11 — Stage Sync</small>
+          <small>V4.0.14 — Stage Document Scroll</small>
         </div>
       </div>
     );
@@ -113,48 +83,52 @@ export default function StageViewer({ source, audio }) {
   return (
     <div className={styles.stageShell}>
       <div className={styles.stageToolbar}>
-        <div className={styles.stageTitle}>
-          <strong>Modo Palco</strong>
-          <span>Scroll fluido proporcional ao MP3</span>
+        <div className={styles.stageToolbarLabel}>
+          <Gauge size={16} />
+          <span>Auto scroll</span>
         </div>
-
-        <div className={styles.stageControls}>
-          <div className={styles.syncBadge}>
-            {audio?.hasValidSource ? 'Sync MP3' : 'Sem MP3'}
-          </div>
-          <div className={styles.fontControls} aria-label="Tamanho da letra do Modo Palco">
-            <button type="button" onClick={() => changeFontSize(-2)} aria-label="Diminuir fonte"><Minus size={16} /></button>
-            <span>{fontSize}px</span>
-            <button type="button" onClick={() => changeFontSize(2)} aria-label="Aumentar fonte"><Plus size={16} /></button>
-          </div>
+        <div className={styles.scrollControls}>
+          <button type="button" onClick={decreaseSpeed} aria-label="Diminuir velocidade"><Minus size={16} /></button>
+          <button type="button" onClick={toggleScroll} aria-label={autoScrollActive ? 'Pausar auto scroll' : 'Iniciar auto scroll'}>
+            {autoScrollActive ? <Pause size={16} /> : <Play size={16} />}
+          </button>
+          <button type="button" onClick={increaseSpeed} aria-label="Aumentar velocidade"><Plus size={16} /></button>
+          <strong>{Math.round(scrollSpeed)} px/s</strong>
         </div>
       </div>
 
       <div className={styles.stageViewport} ref={viewportRef}>
-        {isBusy && <div className={styles.loadingPill}>Lendo texto do PDF...</div>}
+        {isBusy && <div className={styles.loadingPill}>Lendo documento...</div>}
 
         {stage.error && (
           <div className={styles.errorCard}>
             <FileText size={36} />
-            <strong>Não foi possível ler o texto do PDF.</strong>
+            <strong>Não foi possível ler o documento.</strong>
             <span>{stage.error}</span>
           </div>
         )}
 
         {!stage.error && stage.pages.map((page) => (
           <section key={page.pageNumber} className={styles.stagePage} aria-label={`Página ${page.pageNumber}`}>
-            <div className={styles.pageLabel}>Página {page.pageNumber}</div>
-            <div className={styles.stageText} style={{ fontSize: `${fontSize}px` }}>
-              {page.lines.map((line) => <StageLine key={line.id} line={line} />)}
+            <div className={styles.pageLabel}>{page.sourceType ? 'Documento' : `Página ${page.pageNumber}`}</div>
+            <div className={styles.rawText}>
+              {page.lines.map((line) => (
+                <div
+                  key={line.id}
+                  className={line.isChord ? styles.chordLine : styles.lyricLine}
+                >
+                  {line.text}
+                </div>
+              ))}
             </div>
           </section>
         ))}
 
-        {!stage.error && !isBusy && !hasPages && (
+        {!stage.error && !isBusy && !stage.pages.some((page) => page.lines.length) && (
           <div className={styles.errorCard}>
             <FileText size={36} />
-            <strong>Nenhum texto foi encontrado neste PDF.</strong>
-            <span>Use o Modo Estudo para visualizar o PDF original.</span>
+            <strong>Nenhum texto foi encontrado neste documento.</strong>
+            <span>Use o Modo Estudo para visualizar o PDF original quando disponível.</span>
           </div>
         )}
       </div>

@@ -3,6 +3,7 @@ import {
   clearSelectedDriveFolder,
   fetchDriveBlobUrl,
   fetchDrivePdfData,
+  fetchDriveTextDocument,
   getAccessToken,
   getDriveConfig,
   getEffectiveFolderId,
@@ -377,6 +378,22 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     return fetchDrivePdfData(fileId, token);
   }, [accessToken]);
 
+  const getDocumentSource = useCallback(async (song) => {
+    const token = accessToken || getAccessToken();
+    if (!song?.documentFileId || !token) return '';
+
+    if (song.pdfFileId && song.documentFileId === song.pdfFileId) {
+      return fetchDrivePdfData(song.pdfFileId, token);
+    }
+
+    const documentData = await fetchDriveTextDocument(song.documentFileId, song.documentMimeType, token);
+    return {
+      ...(documentData || {}),
+      title: song.title,
+      fileName: song.documentName || song.fileName,
+    };
+  }, [accessToken]);
+
   const selectSong = useCallback(async (indexOrSong, autoplay = false) => {
     const requestId = selectionRequestRef.current + 1;
     selectionRequestRef.current = requestId;
@@ -405,7 +422,9 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     try {
       let nextPdfSource = song.pdfUrl || '';
 
-      if (!nextPdfSource && song.pdfFileId) {
+      if (!nextPdfSource && song.documentFileId) {
+        nextPdfSource = await getDocumentSource(song);
+      } else if (!nextPdfSource && song.pdfFileId) {
         nextPdfSource = await getPdfSource(song.pdfFileId);
       }
 
@@ -451,7 +470,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     }
 
     return song;
-  }, [clearCurrentMedia, filteredSongs, getMediaUrl, getPdfSource, onSongAudioReady, onSongPdfReady]);
+  }, [clearCurrentMedia, filteredSongs, getDocumentSource, getMediaUrl, getPdfSource, onSongAudioReady, onSongPdfReady]);
 
   const selectNext = useCallback((autoplay = false) => {
     const songs = asArray(filteredSongs);

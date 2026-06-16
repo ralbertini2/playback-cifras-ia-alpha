@@ -5,8 +5,10 @@
   padding: 16px;
   gap: 14px;
   background: linear-gradient(180deg, rgba(11,17,28,.98), rgba(5,8,13,.98));
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 
@@ -164,6 +166,11 @@
   }
 
   .open { transform: translateX(0); }
+
+  .logoWrap { width: 20px; }
+  .logo { display: none; }
+  .connectionDot { position: static; display: block; width: 12px; height: 12px; }
+
 
   .backdrop {
     display: block;
