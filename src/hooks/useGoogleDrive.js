@@ -397,7 +397,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       return fetchDrivePdfData(song.pdfFileId, token);
     }
 
-    const documentData = await fetchDriveTextDocument(song.documentFileId, song.documentMimeType, token);
+    const documentData = await fetchDriveTextDocument(song.documentFileId, song.documentMimeType, token, song.documentName || song.fileName || song.title || '');
     return {
       ...(documentData || {}),
       title: song.title,

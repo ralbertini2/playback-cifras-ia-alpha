@@ -1,10 +1,14 @@
-Playback Cifras IA — V4.0.13.1
+Playback Cifras IA — V4.0.13.2
 
 Branch:
-feature/v4-0-13-1-scroll-docx
+feature/v4-0-13-2-docx-native
 
 Commit:
-fix: scroll docx offline
+fix: render docx in study
 
 Aplicar os arquivos deste ZIP mantendo os mesmos caminhos.
 Aguardar GitHub Actions antes do merge.
+
+Observação técnica:
+- DOCX é convertido no navegador para HTML no Modo Estudo.
+- DOC legado é detectado, mas deve ser salvo como DOCX para renderização nativa.
