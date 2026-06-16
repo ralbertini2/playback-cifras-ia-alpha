@@ -1,4 +1,4 @@
-# v4.0.14 - Stage Doc Scroll
+# v4.0.13 - Stage Doc Scroll
 
 - Adiciona suporte inicial a documentos Google Docs/Word convertidos pelo Drive no Modo Palco.
 - Adiciona auto scroll com controle fino de velocidade.
