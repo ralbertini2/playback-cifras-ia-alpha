@@ -76,7 +76,7 @@ export default function Sidebar({
   return (
     <>
       <div className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`} onClick={onClose} onTouchMove={(event) => event.preventDefault()} />
-      <nav className={`${styles.sidebar} ${open ? styles.open : ''}`} aria-label="Biblioteca musical" onTouchMove={(event) => event.stopPropagation()} onWheel={(event) => event.stopPropagation()}>
+      <nav className={`${styles.sidebar} ${open ? styles.open : ''}`} aria-label="Biblioteca musical" onTouchStart={(event) => event.stopPropagation()} onTouchMove={(event) => event.stopPropagation()} onWheel={(event) => event.stopPropagation()}>
         <div className={styles.header}>
           <div className={styles.brandBlock}>
             <div className={styles.logoWrap}>

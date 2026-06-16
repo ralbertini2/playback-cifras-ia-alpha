@@ -3,6 +3,7 @@ import AppLayout from '../components/Layout/AppLayout.jsx';
 import Sidebar from '../components/Sidebar/Sidebar.jsx';
 import Toolbar from '../components/Toolbar/Toolbar.jsx';
 import PdfViewer from '../components/PdfViewer/PdfViewer.jsx';
+import DocumentViewer from '../components/DocumentViewer/DocumentViewer.jsx';
 import StageViewer from '../components/StageViewer/StageViewer.jsx';
 import PlayerBar from '../components/PlayerBar/PlayerBar.jsx';
 import VersionFooter from '../components/VersionFooter/VersionFooter.jsx';
@@ -135,7 +136,7 @@ export default function App() {
     notify(becameFavorite ? 'Música adicionada aos favoritos.' : 'Música removida dos favoritos.');
   }
 
-  const isPdfDocument = !drive.pdfUrl || drive.pdfUrl instanceof Uint8Array || drive.pdfUrl instanceof ArrayBuffer || typeof drive.pdfUrl === 'string';
+  const isTextDocument = Boolean(drive.pdfUrl && typeof drive.pdfUrl === 'object' && drive.pdfUrl.type === 'text-document');
 
   return (
     <AppLayout
@@ -178,9 +179,11 @@ export default function App() {
         />
       )}
       toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} audio={audio} viewerMode={viewerMode} onViewerModeChange={setViewerMode} />}
-      viewer={viewerMode === 'stage' || !isPdfDocument
+      viewer={viewerMode === 'stage'
         ? <StageViewer source={drive.pdfUrl} audio={audio} />
-        : <PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />
+        : isTextDocument
+          ? <DocumentViewer source={drive.pdfUrl} title={currentSong?.title || 'Documento'} />
+          : <PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />
       }
       player={(
         <PlayerBar

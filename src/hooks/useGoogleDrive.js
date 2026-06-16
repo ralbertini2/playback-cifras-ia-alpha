@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  clearDriveOfflineData,
   clearSelectedDriveFolder,
   fetchDriveBlobUrl,
   fetchDrivePdfData,
@@ -13,6 +14,7 @@ import {
   isGoogleConfigured,
   isGooglePickerConfigured,
   loadDriveLibrary,
+  preloadDriveLibraryOffline,
   ensureGooglePickerReady,
   logoutGoogle,
   openFolderPicker,
@@ -213,6 +215,11 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       notify('Carregando biblioteca do Google Drive...');
       const songs = asArray(await loadDriveLibrary({ folderId: effectiveFolderId, token }));
       setLibrary(songs);
+      window.setTimeout(() => {
+        preloadDriveLibraryOffline(songs, token).catch((offlineError) => {
+          console.warn('[Playback Cifras IA] Offline parcial indisponível.', offlineError);
+        });
+      }, 200);
       setSelectedStyle((currentStyle) => {
         if (!currentStyle) return '';
         return songs.some((song) => song?.style === currentStyle) ? currentStyle : '';
@@ -346,14 +353,18 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
 
   const disconnect = useCallback(async () => {
     await logoutGoogle();
+    await clearDriveOfflineData();
+    clearSelectedDriveFolder();
     setAccessToken('');
     setLibrary([]);
     setSelectedStyle('');
     setCurrentSong(null);
     setCurrentIndex(-1);
+    setSelectedFolder(null);
+    clearCurrentMedia();
     setStatus(isConfigured ? STATUS.READY : STATUS.NOT_CONFIGURED);
     notify(isConfigured ? 'Google desconectado.' : 'Google Drive não configurado.');
-  }, [isConfigured, notify]);
+  }, [clearCurrentMedia, isConfigured, notify]);
 
   const clearFolder = useCallback(() => {
     clearSelectedDriveFolder();

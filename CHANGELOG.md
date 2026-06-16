@@ -1,25 +1,21 @@
-# v4.0.13 - Stage Doc Scroll
+# v4.0.13.1 - Scroll, DOCX e offline
 
-- Adiciona suporte inicial a documentos Google Docs/Word convertidos pelo Drive no Modo Palco.
-- Adiciona auto scroll com controle fino de velocidade.
-- Remove logo da sidebar em tablet/iPad/iPhone/mobile.
-- Corrige scroll travado da sidebar no iPhone.
-- Isola touch/scroll da sidebar para não movimentar a área do PDF.
+## Corrigido
+- Corrige velocidade do auto scroll abaixo de 32 px/s.
+- Altera incremento/decremento de velocidade para passos de 5 px/s.
+- Mantém auto scroll fluido com requestAnimationFrame.
+- Adiciona visualizador de documento para Modo Estudo.
+- Mantém documentos Word/Google Docs integrados ao fluxo Estudo/Palco.
+- Ao alternar para Modo Palco, documentos usam o parser textual do palco.
+- Pré-carrega arquivos da biblioteca para uso offline usando IndexedDB.
+- Limpa biblioteca, mídia carregada, pasta selecionada e dados offline no logout.
+- Reforça isolamento de touch/scroll da sidebar no iPhone.
 
-# Changelog
+## Observação
+- Arquivos Google Docs são exportados como texto pelo Drive.
+- Arquivos .doc/.docx binários são detectados; para renderização direta completa sem backend, a melhor compatibilidade continua sendo converter para Google Docs no Drive.
 
-## v4.0.8 - Stage iOS Text Fallback
-
-### Corrigido
-- Reforça o carregamento do PDF do Modo Palco sem worker no iPad/iPhone.
-- Adiciona fallback por streamTextContent quando getTextContent falhar no Safari.
-- Mantém o parser posicionado quando disponível.
-- Mantém fallback textual quando a leitura posicionada não estiver disponível.
-
-### Não alterado
-- Google Drive.
-- MP3.
-- Player.
-- Sidebar.
-- package.json.
+## Não alterado
+- MP3/player.
 - GitHub Actions.
+- package.json.
