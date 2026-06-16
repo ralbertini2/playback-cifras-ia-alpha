@@ -1,4 +1,5 @@
 import { forceLoadGooglePicker } from './googlePickerService.js';
+import { clearOfflineDriveFiles, createOfflineBlobUrl, getOfflineDriveFile, saveOfflineDriveFile } from './offlineDriveStore.js';
 
 const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
 const SELECTED_FOLDER_STORAGE_KEY = 'playback-cifras:selected-google-drive-folder';
@@ -231,8 +232,11 @@ export function buildDriveDownloadUrl(fileId) {
   return `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
 }
 
-export async function getAuthorizedMediaUrl(fileId, token = accessToken) {
+export async function getAuthorizedMediaUrl(fileId, token = accessToken, mimeType = '') {
   if (!fileId || !token) return '';
+
+  const offlineUrl = await createOfflineBlobUrl(fileId, mimeType);
+  if (offlineUrl) return offlineUrl;
 
   const response = await fetch(buildDriveDownloadUrl(fileId), {
     headers: { Authorization: `Bearer ${token}` },
@@ -243,6 +247,14 @@ export async function getAuthorizedMediaUrl(fileId, token = accessToken) {
   }
 
   const blob = await response.blob();
+  try {
+    await saveOfflineDriveFile({
+      id: fileId,
+      arrayBuffer: await blob.arrayBuffer(),
+      mimeType: blob.type || mimeType,
+    });
+  } catch (_) {}
+
   return URL.createObjectURL(blob);
 }
 
@@ -265,8 +277,11 @@ function arrayBufferStartsWithPdf(arrayBuffer) {
   return false;
 }
 
-export async function fetchDriveArrayBuffer(fileId, token = accessToken) {
+export async function fetchDriveArrayBuffer(fileId, token = accessToken, mimeType = '', name = '') {
   if (!fileId || !token) return null;
+
+  const offline = await getOfflineDriveFile(fileId);
+  if (offline?.arrayBuffer) return offline.arrayBuffer.slice(0);
 
   const response = await fetch(buildDriveDownloadUrl(fileId), {
     headers: { Authorization: `Bearer ${token}` },
@@ -276,11 +291,21 @@ export async function fetchDriveArrayBuffer(fileId, token = accessToken) {
     throw new Error(`Falha ao carregar arquivo do Google Drive (${response.status})`);
   }
 
-  return response.arrayBuffer();
+  const arrayBuffer = await response.arrayBuffer();
+  try {
+    await saveOfflineDriveFile({
+      id: fileId,
+      arrayBuffer,
+      mimeType: mimeType || response.headers.get('content-type') || '',
+      name,
+    });
+  } catch (_) {}
+
+  return arrayBuffer.slice(0);
 }
 
 export async function fetchDrivePdfData(fileId, token = accessToken) {
-  const arrayBuffer = await fetchDriveArrayBuffer(fileId, token);
+  const arrayBuffer = await fetchDriveArrayBuffer(fileId, token, 'application/pdf');
 
   if (!arrayBufferStartsWithPdf(arrayBuffer)) {
     throw new Error('O arquivo retornado pelo Google Drive não parece ser um PDF válido.');
@@ -341,30 +366,38 @@ export async function fetchDriveTextDocument(fileId, mimeType = '', token = acce
 
   if (mime === 'application/vnd.google-apps.document') {
     const exportUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=${encodeURIComponent('text/plain')}`;
+    const offline = await getOfflineDriveFile(fileId);
+    if (offline?.arrayBuffer) {
+      const text = new TextDecoder('utf-8').decode(offline.arrayBuffer.slice(0));
+      return { type: 'text-document', format: 'google-doc', text, mimeType };
+    }
+
     const response = await fetch(exportUrl, { headers: { Authorization: `Bearer ${token}` } });
     if (!response.ok) throw new Error(`Falha ao exportar documento do Google Drive (${response.status})`);
     const text = await response.text();
+    try {
+      await saveOfflineDriveFile({
+        id: fileId,
+        arrayBuffer: new TextEncoder().encode(text).buffer,
+        mimeType: 'text/plain',
+      });
+    } catch (_) {}
     return { type: 'text-document', format: 'google-doc', text, mimeType };
   }
 
-  const response = await fetch(buildDriveDownloadUrl(fileId), {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Falha ao carregar documento do Google Drive (${response.status})`);
-  }
+  const arrayBuffer = await fetchDriveArrayBuffer(fileId, token, mimeType);
+  const text = arrayBuffer ? new TextDecoder('utf-8').decode(arrayBuffer.slice(0)) : '';
 
   if (mime === 'text/html' || mime.includes('html')) {
-    return { type: 'text-document', format: 'html', text: stripHtmlToText(await response.text()), mimeType };
+    return { type: 'text-document', format: 'html', text: stripHtmlToText(text), mimeType };
   }
 
   if (mime === 'application/rtf') {
-    return { type: 'text-document', format: 'rtf', text: stripRtfToText(await response.text()), mimeType };
+    return { type: 'text-document', format: 'rtf', text: stripRtfToText(text), mimeType };
   }
 
   if (mime === 'text/plain' || mime.startsWith('text/')) {
-    return { type: 'text-document', format: 'text', text: await response.text(), mimeType };
+    return { type: 'text-document', format: 'text', text, mimeType };
   }
 
   if (mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || mime === 'application/msword') {
@@ -571,6 +604,27 @@ export async function loadDriveLibrary({ folderId, token = accessToken } = {}) {
   });
 
   return groupDriveFilesAsSongs(files);
+}
+
+
+export async function preloadDriveLibraryOffline(songs = [], token = accessToken) {
+  if (!token || !Array.isArray(songs) || !songs.length) return;
+
+  for (const song of songs) {
+    try {
+      if (song.pdfFileId) await fetchDriveArrayBuffer(song.pdfFileId, token, 'application/pdf', song.pdfName || song.documentName || song.title);
+      if (song.documentFileId && song.documentFileId !== song.pdfFileId) {
+        await fetchDriveTextDocument(song.documentFileId, song.documentMimeType, token);
+      }
+      if (song.audioFileId) await fetchDriveArrayBuffer(song.audioFileId, token, 'audio/mpeg', song.audioName || song.title);
+    } catch (error) {
+      console.warn('[Playback Cifras IA] Offline parcial falhou para:', song?.title, error);
+    }
+  }
+}
+
+export async function clearDriveOfflineData() {
+  return clearOfflineDriveFiles();
 }
 
 export async function ensureGooglePickerReady() {

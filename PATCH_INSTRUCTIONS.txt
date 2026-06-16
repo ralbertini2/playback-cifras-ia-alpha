@@ -1,8 +1,10 @@
-Playback Cifras IA v4.0.14 - Stage Doc Scroll
+Playback Cifras IA — V4.0.13.1
 
-Subir os arquivos deste ZIP na branch indicada, preservando a estrutura de pastas.
+Branch:
+feature/v4-0-13-1-scroll-docx
 
-Observação sobre Word:
-- Google Docs renderiza no Modo Palco via export text/plain do Google Drive.
-- Arquivos .txt/.html/.rtf também recebem fallback textual.
-- Arquivos .doc/.docx binários são detectados, mas sem backend/biblioteca de conversão eles exibem orientação para converter para Google Docs.
+Commit:
+fix: scroll docx offline
+
+Aplicar os arquivos deste ZIP mantendo os mesmos caminhos.
+Aguardar GitHub Actions antes do merge.

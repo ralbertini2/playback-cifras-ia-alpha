@@ -4,12 +4,13 @@ import { useStageText } from '../../hooks/useStageText.js';
 import styles from './StageViewer.module.css';
 
 const DEFAULT_SCROLL_SPEED = 0;
-const SPEED_STEP = 4;
+const SPEED_STEP = 5;
 const MAX_SCROLL_SPEED = 120;
 
 function clampSpeed(value) {
   const next = Number(value) || 0;
-  return Math.max(0, Math.min(MAX_SCROLL_SPEED, next));
+  if (next <= 0) return 0;
+  return Math.max(5, Math.min(MAX_SCROLL_SPEED, Math.round(next / SPEED_STEP) * SPEED_STEP));
 }
 
 export default function StageViewer({ source }) {
@@ -64,7 +65,7 @@ export default function StageViewer({ source }) {
   }
 
   function toggleScroll() {
-    setScrollSpeed((current) => (current > 0 ? 0 : 28));
+    setScrollSpeed((current) => (current > 0 ? 0 : 20));
   }
 
   if (!source) {
@@ -74,7 +75,7 @@ export default function StageViewer({ source }) {
           <FileText size={44} />
           <h1>Modo Palco</h1>
           <p>Selecione uma música para gerar a leitura textual da cifra.</p>
-          <small>V4.0.14 — Stage Document Scroll</small>
+          <small>V4.0.13.1 — Stage Scroll Docx</small>
         </div>
       </div>
     );

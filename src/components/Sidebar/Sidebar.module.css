@@ -8,7 +8,9 @@
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
+  overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
+  contain: layout paint;
 }
 
 
@@ -134,7 +136,7 @@
 
 .songSection { min-height:0; flex:1; display:flex; flex-direction:column; gap:8px; }
 .songHeader { color:var(--muted); font-size:12px; font-weight:700; }
-.songList { min-height:0; overflow:auto; display:flex; flex-direction:column; gap:8px; padding-right:4px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
+.songList { min-height:0; overflow:auto; display:flex; flex-direction:column; gap:8px; padding-right:4px; overscroll-behavior:contain; overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
 .songItem {
   text-align:left;
   border:1px solid rgba(255,255,255,.08);
