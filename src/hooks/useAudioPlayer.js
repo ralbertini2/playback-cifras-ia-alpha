@@ -160,6 +160,11 @@ export function useAudioPlayer(initialSource = '') {
     setMuted((value) => !value);
   }, []);
 
+  const getCurrentTime = useCallback(() => {
+    const audio = audioRef.current;
+    return Number(audio?.currentTime ?? currentTime ?? 0) || 0;
+  }, [currentTime]);
+
   return {
     source,
     hasValidSource: Boolean(source),
@@ -172,6 +177,7 @@ export function useAudioPlayer(initialSource = '') {
     toggle,
     duration,
     currentTime,
+    getCurrentTime,
     seek,
     skip,
     volume,
