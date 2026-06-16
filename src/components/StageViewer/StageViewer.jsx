@@ -10,18 +10,21 @@ function getCurrentAudioTime(audio) {
 
 function StageLine({ line }) {
   const hasItems = Array.isArray(line.items) && line.items.length > 0;
-  const className = line.isChord ? styles.chordLine : styles.lyricLine;
+
+  if (!line.isChord) {
+    return <div className={styles.lyricLine}>{line.text || ' '}</div>;
+  }
 
   if (!hasItems) {
-    return <div className={className}>{line.text || ' '}</div>;
+    return <div className={styles.chordLine}>{line.text || ' '}</div>;
   }
 
   return (
-    <div className={`${styles.positionedLine} ${className}`}>
+    <div className={`${styles.positionedLine} ${styles.chordLine}`}>
       {line.items.map((item) => (
         <span
           key={item.id}
-          className={line.isChord ? styles.chordToken : styles.lyricToken}
+          className={styles.chordToken}
           style={{ left: `${item.leftPct}%` }}
         >
           {item.text}

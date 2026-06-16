@@ -1,20 +1,21 @@
 # Changelog
 
-## v4.0.11 - Stage Sync Alignment
+## v4.0.12 - Stage Visual Fix
 
 ### Corrigido
 
-- Melhora sincronização proporcional do Modo Palco com o tempo real do MP3.
-- Torna o scroll automático mais fluido usando requestAnimationFrame contínuo.
-- Melhora o alinhamento horizontal dos acordes usando coordenadas do PDF.
-- Renderiza linhas do Modo Palco com tokens posicionados, preservando melhor a posição original.
-- Reduz duplicação de acordes gerada pela extração do PDF.js.
-- Atualiza footer para Playback Cifras Beta | v4.0.11.
+- Evita sobreposição de palavras no Modo Palco.
+- Mantém letras em fluxo textual normal para melhorar legibilidade.
+- Mantém acordes posicionados por coordenadas do PDF.
+- Melhora identificação de linhas de acordes.
+- Melhora destaque visual de acordes que vinham sem cor.
+- Atualiza footer para Playback Cifras Beta | v4.0.12.
 
 ### Escopo preservado
 
+- Sincronismo MP3/letra não foi alterado nesta etapa.
 - Google Drive não alterado.
-- MP3/player não alterado, exceto leitura do tempo atual pelo Modo Palco.
+- MP3/player não alterado.
 - Sidebar não alterada.
 - package.json não alterado.
 - GitHub Actions não alterado.
