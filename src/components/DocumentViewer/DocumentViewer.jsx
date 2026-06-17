@@ -9,7 +9,6 @@ function getLines(source) {
 function getFormatLabel(source) {
   const format = String(source?.format || '').toLowerCase();
   if (format === 'docx') return 'DOCX renderizado no Modo Estudo';
-  if (format === 'doc-legacy') return 'DOC legado detectado';
   if (format === 'google-doc') return 'Google Docs renderizado no Modo Estudo';
   if (format === 'html') return 'HTML renderizado no Modo Estudo';
   if (format === 'rtf') return 'RTF renderizado no Modo Estudo';
@@ -19,7 +18,6 @@ function getFormatLabel(source) {
 function sanitizeHtml(html = '') {
   return String(html || '')
     .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, '')
     .replace(/\son\w+="[^"]*"/gi, '')
     .replace(/\son\w+='[^']*'/gi, '')
     .replace(/javascript:/gi, '');

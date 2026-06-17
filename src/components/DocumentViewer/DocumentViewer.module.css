@@ -42,6 +42,35 @@
   line-height: 1.55;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+}
+
+.documentHtml,
+.documentHtml * {
+  color: #f8fafc !important;
+  background: transparent !important;
+  border-color: rgba(148, 163, 184, .28) !important;
+}
+
+.documentHtml {
+  font-size: 22px;
+  line-height: 1.58;
+  overflow-wrap: anywhere;
+}
+
+.documentHtml p,
+.documentHtml div {
+  white-space: pre-wrap;
+}
+
+.documentHtml table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.documentHtml td,
+.documentHtml th {
+  padding: 4px 6px;
 }
 
 .documentHtml {
