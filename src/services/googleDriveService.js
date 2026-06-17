@@ -324,9 +324,7 @@ export function isSupportedDriveDocument(file) {
     || mime === 'text/html'
     || mime === 'application/rtf'
     || mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    || mime === 'application/msword'
     || name.endsWith('.docx')
-    || name.endsWith('.doc')
     || name.endsWith('.txt')
     || name.endsWith('.rtf')
     || name.endsWith('.html')
@@ -365,12 +363,6 @@ function isDocxDocument(mime = '', fileName = '') {
   const cleanName = String(fileName || '').toLowerCase();
   return cleanMime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     || cleanName.endsWith('.docx');
-}
-
-function isLegacyDocDocument(mime = '', fileName = '') {
-  const cleanMime = String(mime || '').toLowerCase();
-  const cleanName = String(fileName || '').toLowerCase();
-  return cleanMime === 'application/msword' || cleanName.endsWith('.doc');
 }
 
 let mammothLoadPromise = null;
@@ -415,7 +407,7 @@ function htmlToPlainText(html = '') {
 
 async function convertDocxToDocumentSource(arrayBuffer, mimeType = '') {
   const mammoth = await loadMammoth();
-  const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer.slice(0) }, {
+  const htmlResult = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer.slice(0) }, {
     styleMap: [
       "p[style-name='Title'] => h1:fresh",
       "p[style-name='Heading 1'] => h2:fresh",
@@ -425,16 +417,23 @@ async function convertDocxToDocumentSource(arrayBuffer, mimeType = '') {
     ],
   });
 
-  const html = String(result?.value || '').trim();
-  const text = htmlToPlainText(html);
+  let rawText = '';
+  try {
+    const rawResult = await mammoth.extractRawText({ arrayBuffer: arrayBuffer.slice(0) });
+    rawText = normalizeDocumentText(rawResult?.value || '');
+  } catch (_) {}
+
+  const rawHtml = String(htmlResult?.value || '').trim();
+  const text = rawText || htmlToPlainText(rawHtml);
 
   return {
     type: 'text-document',
     format: 'docx',
-    html,
+    html: '',
+    rawHtml,
     text,
     mimeType,
-    warnings: Array.isArray(result?.messages) ? result.messages.map((item) => item?.message).filter(Boolean) : [],
+    warnings: Array.isArray(htmlResult?.messages) ? htmlResult.messages.map((item) => item?.message).filter(Boolean) : [],
   };
 }
 
@@ -470,15 +469,6 @@ export async function fetchDriveTextDocument(fileId, mimeType = '', token = acce
 
   if (isDocxDocument(mime, name)) {
     return convertDocxToDocumentSource(arrayBuffer, mimeType);
-  }
-
-  if (isLegacyDocDocument(mime, name)) {
-    return {
-      type: 'text-document',
-      format: 'doc-legacy',
-      text: 'Formato DOC legado detectado. Para visualizar no Playback Cifras, salve este arquivo como DOCX e mantenha-o na mesma pasta da música.\n\nO suporte nativo desta versão é para PDF, Google Docs, TXT/HTML/RTF e DOCX.',
-      mimeType,
-    };
   }
 
   const text = arrayBuffer ? new TextDecoder('utf-8').decode(arrayBuffer.slice(0)) : '';

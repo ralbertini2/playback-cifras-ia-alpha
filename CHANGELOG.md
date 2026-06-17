@@ -1,14 +1,14 @@
 # Changelog
 
-## v4.0.13.2-docx-native
+## v4.0.13.3-doc-render-fix
 
 ### Corrigido
-- Adiciona renderização nativa de DOCX no Modo Estudo usando conversor no navegador.
-- Remove a mensagem que exigia converter DOCX manualmente para Google Docs.
-- Mantém DOC legado detectado com orientação para salvar como DOCX.
-- Mantém PDF e Google Docs funcionando como antes.
+- Remove arquivos .DOC da biblioteca para evitar formato legado sem suporte confiável no navegador.
+- Corrige contraste do texto de Google Docs no Modo Estudo mantendo o alinhamento original das cifras.
+- Corrige limpeza de CSS, @import, fontes Google e metadados do HTML exportado do Google Docs para o Modo Palco.
+- Normaliza acentuação em textos extraídos de Google Docs.
+- Ajusta DOCX para priorizar texto bruto no Modo Estudo e reduzir perda de alinhamento das cifras.
 
 ### Escopo
-- Visualização DOCX disponível no Modo Estudo.
-- Modo Palco continua usando texto extraído para preservar identidade e fluxo já existentes.
-- Não altera MP3, player, Sidebar, GitHub Actions ou sincronismo IA.
+- Mantém suporte oficial a PDF, DOCX, Google Docs, TXT, HTML e RTF.
+- Não altera MP3, player, Sidebar, Google Picker, GitHub Actions ou sincronismo IA.

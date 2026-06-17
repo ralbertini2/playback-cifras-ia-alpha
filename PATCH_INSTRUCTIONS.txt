@@ -1,14 +1,16 @@
-Playback Cifras IA — V4.0.13.2
+Playback Cifras IA — V4.0.13.3
 
 Branch:
-feature/v4-0-13-2-docx-native
+feature/v4-0-13-3-doc-render-fix
 
 Commit:
-fix: render docx in study
+fix: doc render stage
 
 Aplicar os arquivos deste ZIP mantendo os mesmos caminhos.
 Aguardar GitHub Actions antes do merge.
 
 Observação técnica:
-- DOCX é convertido no navegador para HTML no Modo Estudo.
-- DOC legado é detectado, mas deve ser salvo como DOCX para renderização nativa.
+- Arquivos .DOC legados deixam de ser listados.
+- Google Docs mantém HTML/alinhamento original, com contraste corrigido.
+- DOCX passa a priorizar texto bruto para preservar melhor alinhamento das cifras.
+- Texto do Modo Palco passa por limpeza de CSS/@import e normalização de acentuação.
