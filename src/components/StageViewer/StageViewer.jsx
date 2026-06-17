@@ -5,7 +5,7 @@ import styles from './StageViewer.module.css';
 
 const DEFAULT_SCROLL_SPEED = 0;
 const SPEED_STEP = 5;
-const MAX_SCROLL_SPEED = 120;
+const MAX_SCROLL_SPEED = 160;
 
 function clampSpeed(value) {
   const next = Number(value) || 0;
@@ -65,7 +65,27 @@ export default function StageViewer({ source }) {
   }
 
   function toggleScroll() {
-    setScrollSpeed((current) => (current > 0 ? 0 : 20));
+    setScrollSpeed((current) => (current > 0 ? 0 : 15));
+  }
+
+  function renderStageLine(line) {
+    if (line.isChord && Array.isArray(line.items) && line.items.length) {
+      return (
+        <div className={styles.chordMap} aria-label={line.text}>
+          {line.items.map((item, index) => (
+            <span
+              key={`${line.id}-${item.id || index}`}
+              className={styles.chordToken}
+              style={{ left: `${Math.max(0, Math.min(98, Number(item.leftPct) || 0))}%` }}
+            >
+              {item.text}
+            </span>
+          ))}
+        </div>
+      );
+    }
+
+    return line.text;
   }
 
   if (!source) {
@@ -75,7 +95,7 @@ export default function StageViewer({ source }) {
           <FileText size={44} />
           <h1>Modo Palco</h1>
           <p>Selecione uma música para gerar a leitura textual da cifra.</p>
-          <small>V4.0.13.1 — Stage Scroll Docx</small>
+          <small>V4.0.13.5 — Stage Alignment Scroll</small>
         </div>
       </div>
     );
@@ -118,7 +138,7 @@ export default function StageViewer({ source }) {
                   key={line.id}
                   className={line.isChord ? styles.chordLine : styles.lyricLine}
                 >
-                  {line.text}
+                  {renderStageLine(line)}
                 </div>
               ))}
             </div>
