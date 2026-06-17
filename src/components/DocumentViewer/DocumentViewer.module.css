@@ -133,3 +133,24 @@
   .documentPage { padding: 14px; border-radius: 14px; }
   .documentBody, .documentHtml { font-size: 18px; }
 }
+
+/* V4.0.13.4 — document polish */
+.documentPage {
+  background: linear-gradient(180deg, rgba(15, 23, 42, .94), rgba(2, 6, 23, .96));
+}
+
+.documentHtml {
+  color: #f8fafc;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .22);
+}
+
+.documentHtml * {
+  color: inherit !important;
+  font-family: inherit !important;
+}
+
+.documentHtml p,
+.documentHtml div,
+.documentHtml span {
+  line-height: 1.52;
+}
