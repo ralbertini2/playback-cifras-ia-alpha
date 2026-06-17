@@ -154,3 +154,55 @@
 .documentHtml span {
   line-height: 1.52;
 }
+
+/* V4.0.13.5 — document font controls */
+.documentHeader {
+  align-items: center;
+}
+
+.documentHeader > div:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+
+.fontControls {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .05);
+  padding: 4px;
+}
+
+.fontControls button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .07);
+  color: #f8fafc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fontControls strong {
+  min-width: 48px;
+  text-align: center;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+@media (max-width: 560px) {
+  .documentHeader {
+    flex-wrap: wrap;
+  }
+  .fontControls {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+}

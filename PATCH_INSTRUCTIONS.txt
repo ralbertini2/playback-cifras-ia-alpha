@@ -1,3 +1,9 @@
-Aplicar este patch na branch feature/v4-0-13-4-doc-stage-polish.
-Substituir os arquivos correspondentes mantendo a estrutura de pastas.
-Aguardar React Build Validation antes do merge.
+Playback Cifras IA - v4.0.13.5
+
+Suba estes arquivos na branch:
+feature/v4-0-13-5-stage-alignment-scroll
+
+Commit:
+fix: stage align scroll
+
+Aguarde a Action antes do merge.

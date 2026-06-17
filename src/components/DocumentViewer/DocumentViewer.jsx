@@ -1,4 +1,5 @@
-import { FileText } from 'lucide-react';
+import { FileText, Minus, Plus } from 'lucide-react';
+import { useState } from 'react';
 import styles from './DocumentViewer.module.css';
 
 function getLines(source) {
@@ -27,6 +28,15 @@ function sanitizeHtml(html = '') {
 }
 
 export default function DocumentViewer({ source, title = 'Documento' }) {
+  const [fontSize, setFontSize] = useState(22);
+
+  function decreaseFont() {
+    setFontSize((current) => Math.max(14, current - 2));
+  }
+
+  function increaseFont() {
+    setFontSize((current) => Math.min(42, current + 2));
+  }
   if (!source) {
     return (
       <div className={styles.emptyState}>
@@ -49,15 +59,21 @@ export default function DocumentViewer({ source, title = 'Documento' }) {
             <strong>{title || source?.title || 'Documento'}</strong>
             <span>{getFormatLabel(source)}</span>
           </div>
+          <div className={styles.fontControls} aria-label="Tamanho da fonte do documento">
+            <button type="button" onClick={decreaseFont} aria-label="Diminuir fonte"><Minus size={16} /></button>
+            <strong>{fontSize}px</strong>
+            <button type="button" onClick={increaseFont} aria-label="Aumentar fonte"><Plus size={16} /></button>
+          </div>
         </header>
 
         {hasHtml ? (
           <div
             className={styles.documentHtml}
+            style={{ fontSize: `${fontSize}px` }}
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : (
-          <div className={styles.documentBody}>
+          <div className={styles.documentBody} style={{ fontSize: `${fontSize}px` }}>
             {lines.map((line, index) => (
               <p key={`${index}-${line.slice(0, 12)}`} className={line.trim() ? styles.line : styles.blankLine}>
                 {line || '\u00a0'}

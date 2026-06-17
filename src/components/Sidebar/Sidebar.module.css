@@ -191,3 +191,36 @@
     pointer-events: auto;
   }
 }
+
+/* V4.0.13.5 — allow full sidebar scrolling */
+.sidebar {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100dvh;
+  max-height: 100dvh;
+}
+
+.songSection {
+  flex: 0 0 auto;
+  min-height: unset;
+}
+
+.songList {
+  overflow: visible;
+  max-height: none;
+  min-height: unset;
+  padding-bottom: 36px;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    overflow-y: auto;
+    max-height: 100dvh;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .songList {
+    overflow: visible;
+    max-height: none;
+  }
+}
