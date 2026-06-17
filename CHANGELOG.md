@@ -1,14 +1,15 @@
 # Changelog
 
-## v4.0.13.3-doc-render-fix
+## v4.0.13.4-doc-stage-polish
 
 ### Corrigido
-- Remove arquivos .DOC da biblioteca para evitar formato legado sem suporte confiável no navegador.
-- Corrige contraste do texto de Google Docs no Modo Estudo mantendo o alinhamento original das cifras.
-- Corrige limpeza de CSS, @import, fontes Google e metadados do HTML exportado do Google Docs para o Modo Palco.
-- Normaliza acentuação em textos extraídos de Google Docs.
-- Ajusta DOCX para priorizar texto bruto no Modo Estudo e reduzir perda de alinhamento das cifras.
+- Remove cabeçalhos CSS/@import do Google Docs no Modo Palco.
+- Corrige entidades HTML e acentuação no texto do Modo Palco.
+- Melhora limpeza de ruído vindo do HTML exportado pelo Google Docs.
+- Melhora contraste e leitura visual do Modo Estudo para documentos.
+- Reforça destaque visual de acordes no Modo Palco.
+- Mantém arquivos .DOC fora da biblioteca.
 
-### Escopo
-- Mantém suporte oficial a PDF, DOCX, Google Docs, TXT, HTML e RTF.
-- Não altera MP3, player, Sidebar, Google Picker, GitHub Actions ou sincronismo IA.
+### Melhorado
+- Ajustes visuais no Modo Palco para leitura mais profissional.
+- Organização visual mais limpa para aproximar a experiência de um produto comercial.

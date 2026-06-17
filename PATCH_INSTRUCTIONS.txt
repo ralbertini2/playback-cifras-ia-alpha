@@ -1,16 +1,3 @@
-Playback Cifras IA — V4.0.13.3
-
-Branch:
-feature/v4-0-13-3-doc-render-fix
-
-Commit:
-fix: doc render stage
-
-Aplicar os arquivos deste ZIP mantendo os mesmos caminhos.
-Aguardar GitHub Actions antes do merge.
-
-Observação técnica:
-- Arquivos .DOC legados deixam de ser listados.
-- Google Docs mantém HTML/alinhamento original, com contraste corrigido.
-- DOCX passa a priorizar texto bruto para preservar melhor alinhamento das cifras.
-- Texto do Modo Palco passa por limpeza de CSS/@import e normalização de acentuação.
+Aplicar este patch na branch feature/v4-0-13-4-doc-stage-polish.
+Substituir os arquivos correspondentes mantendo a estrutura de pastas.
+Aguardar React Build Validation antes do merge.

@@ -18,6 +18,9 @@ function getFormatLabel(source) {
 function sanitizeHtml(html = '') {
   return String(html || '')
     .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, '')
+    .replace(/<noscript[\s\S]*?>[\s\S]*?<\/noscript>/gi, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
     .replace(/\son\w+="[^"]*"/gi, '')
     .replace(/\son\w+='[^']*'/gi, '')
     .replace(/javascript:/gi, '');

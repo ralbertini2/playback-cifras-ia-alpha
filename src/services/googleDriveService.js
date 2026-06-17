@@ -331,20 +331,99 @@ export function isSupportedDriveDocument(file) {
     || name.endsWith('.htm');
 }
 
-function stripHtmlToText(html = '') {
+function decodeHtmlEntities(value = '') {
+  let text = String(value || '');
+
+  for (let pass = 0; pass < 3; pass += 1) {
+    const previous = text;
+
+    text = text
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&amp;/gi, '&')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;/gi, "'")
+      .replace(/&apos;/gi, "'")
+      .replace(/&aacute;/gi, 'á')
+      .replace(/&agrave;/gi, 'à')
+      .replace(/&acirc;/gi, 'â')
+      .replace(/&atilde;/gi, 'ã')
+      .replace(/&eacute;/gi, 'é')
+      .replace(/&ecirc;/gi, 'ê')
+      .replace(/&iacute;/gi, 'í')
+      .replace(/&oacute;/gi, 'ó')
+      .replace(/&ocirc;/gi, 'ô')
+      .replace(/&otilde;/gi, 'õ')
+      .replace(/&uacute;/gi, 'ú')
+      .replace(/&ccedil;/gi, 'ç')
+      .replace(/&#(\d+);/g, (_, code) => {
+        const charCode = Number(code);
+        return Number.isFinite(charCode) ? String.fromCharCode(charCode) : _;
+      })
+      .replace(/&#x([0-9a-f]+);/gi, (_, code) => {
+        const charCode = Number.parseInt(code, 16);
+        return Number.isFinite(charCode) ? String.fromCharCode(charCode) : _;
+      });
+
+    if (text === previous) break;
+  }
+
+  try {
+    return text.normalize('NFC');
+  } catch (_) {
+    return text;
+  }
+}
+
+function removeHtmlNoise(html = '') {
   return String(html || '')
-    .replace(/<\s*br\s*\/?\s*>/gi, '\n')
-    .replace(/<\/(p|div|h[1-6]|li|tr)>/gi, '\n')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&#39;/g, "'")
-    .replace(/&quot;/g, '"')
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<noscript[\s\S]*?>[\s\S]*?<\/noscript>/gi, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ');
+}
+
+function isNoiseTextLine(line = '') {
+  const clean = String(line || '').trim();
+  if (!clean) return false;
+
+  return /^@import\b/i.test(clean)
+    || /themes\.googleusercontent\.com/i.test(clean)
+    || /fonts\/css/i.test(clean)
+    || /^kit=/i.test(clean)
+    || /font-family\s*:/i.test(clean)
+    || /@font-face/i.test(clean)
+    || /^\s*[\w.#-]+\s*\{/.test(clean)
+    || /^\s*[};]+\s*$/.test(clean);
+}
+
+function cleanDocumentText(value = '') {
+  const decoded = decodeHtmlEntities(value)
+    .replace(/\u00a0/g, ' ')
+    .replace(/\r\n?/g, '\n');
+
+  return decoded
+    .split('\n')
+    .map((line) => line.replace(/[ \t]+$/g, ''))
+    .filter((line) => !isNoiseTextLine(line))
+    .join('\n')
     .replace(/[ \t]+\n/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
+    .replace(/\n{4,}/g, '\n\n')
     .trim();
+}
+
+function stripHtmlToText(html = '') {
+  const safeHtml = removeHtmlNoise(html);
+
+  const text = safeHtml
+    .replace(/<\s*br\s*\/?\s*>/gi, '\n')
+    .replace(/<\/(p|div|h[1-6]|li|tr|table|section|article)>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n');
+
+  return cleanDocumentText(text);
 }
 
 function stripRtfToText(rtf = '') {
@@ -420,7 +499,7 @@ async function convertDocxToDocumentSource(arrayBuffer, mimeType = '') {
   let rawText = '';
   try {
     const rawResult = await mammoth.extractRawText({ arrayBuffer: arrayBuffer.slice(0) });
-    rawText = normalizeDocumentText(rawResult?.value || '');
+    rawText = cleanDocumentText(rawResult?.value || '');
   } catch (_) {}
 
   const rawHtml = String(htmlResult?.value || '').trim();
@@ -448,7 +527,7 @@ export async function fetchDriveTextDocument(fileId, mimeType = '', token = acce
     const offline = await getOfflineDriveFile(fileId);
     if (offline?.arrayBuffer) {
       const html = new TextDecoder('utf-8').decode(offline.arrayBuffer.slice(0));
-      return { type: 'text-document', format: 'google-doc', html, text: stripHtmlToText(html), mimeType };
+      return { type: 'text-document', format: 'google-doc', html: removeHtmlNoise(html), text: stripHtmlToText(html), mimeType };
     }
 
     const response = await fetch(exportUrl, { headers: { Authorization: `Bearer ${token}` } });
@@ -462,7 +541,7 @@ export async function fetchDriveTextDocument(fileId, mimeType = '', token = acce
         name: fileName,
       });
     } catch (_) {}
-    return { type: 'text-document', format: 'google-doc', html, text: stripHtmlToText(html), mimeType };
+    return { type: 'text-document', format: 'google-doc', html: removeHtmlNoise(html), text: stripHtmlToText(html), mimeType };
   }
 
   const arrayBuffer = await fetchDriveArrayBuffer(fileId, token, mimeType, fileName);
@@ -474,7 +553,7 @@ export async function fetchDriveTextDocument(fileId, mimeType = '', token = acce
   const text = arrayBuffer ? new TextDecoder('utf-8').decode(arrayBuffer.slice(0)) : '';
 
   if (mime === 'text/html' || mime.includes('html') || name.endsWith('.html') || name.endsWith('.htm')) {
-    return { type: 'text-document', format: 'html', html: text, text: stripHtmlToText(text), mimeType };
+    return { type: 'text-document', format: 'html', html: removeHtmlNoise(text), text: stripHtmlToText(text), mimeType };
   }
 
   if (mime === 'application/rtf' || name.endsWith('.rtf')) {
