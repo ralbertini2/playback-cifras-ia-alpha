@@ -10,8 +10,6 @@
     "validate": "npm run build"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "vite": "latest",
     "react": "latest",
     "react-dom": "latest",
     "lucide-react": "latest",
@@ -25,6 +23,8 @@
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "autoprefixer": "^10.4.20",
