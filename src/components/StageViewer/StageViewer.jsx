@@ -88,6 +88,46 @@ export default function StageViewer({ source }) {
     return line.text;
   }
 
+  function renderPositionedPage(page) {
+    const hasPdfGrid = !page.sourceType && page.lines.some((line) => Number.isFinite(Number(line.topPct)));
+
+    if (!hasPdfGrid) {
+      return (
+        <div className={styles.rawText}>
+          {page.lines.map((line) => (
+            <div
+              key={line.id}
+              className={line.isChord ? styles.chordLine : styles.lyricLine}
+            >
+              {renderStageLine(line)}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={`${styles.rawText} ${styles.positionedText}`}
+        style={{ aspectRatio: `${Math.max(1, Number(page.width) || 1)} / ${Math.max(1, Number(page.height) || 1)}` }}
+      >
+        {page.lines.map((line) => (
+          <div
+            key={line.id}
+            className={`${line.isChord ? styles.chordLine : styles.lyricLine} ${styles.positionedLine}`}
+            style={{
+              top: `${Math.max(0, Math.min(100, Number(line.topPct) || 0))}%`,
+              left: line.isChord ? 0 : `${Math.max(0, Math.min(92, Number(line.leftPct) || 0))}%`,
+              fontSize: `${Math.max(0.75, Math.min(1.25, Number(line.fontScale) || 1))}em`,
+            }}
+          >
+            {renderStageLine(line)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   if (!source) {
     return (
       <div className={styles.emptyState}>
@@ -95,7 +135,7 @@ export default function StageViewer({ source }) {
           <FileText size={44} />
           <h1>Modo Palco</h1>
           <p>Selecione uma música para gerar a leitura textual da cifra.</p>
-          <small>V4.0.13.5 — Stage Alignment Scroll</small>
+          <small>V4.0.13.6 — Sidebar + Stage Grid</small>
         </div>
       </div>
     );
@@ -132,16 +172,7 @@ export default function StageViewer({ source }) {
         {!stage.error && stage.pages.map((page) => (
           <section key={page.pageNumber} className={styles.stagePage} aria-label={`Página ${page.pageNumber}`}>
             <div className={styles.pageLabel}>{page.sourceType ? 'Documento' : `Página ${page.pageNumber}`}</div>
-            <div className={styles.rawText}>
-              {page.lines.map((line) => (
-                <div
-                  key={line.id}
-                  className={line.isChord ? styles.chordLine : styles.lyricLine}
-                >
-                  {renderStageLine(line)}
-                </div>
-              ))}
-            </div>
+            {renderPositionedPage(page)}
           </section>
         ))}
 

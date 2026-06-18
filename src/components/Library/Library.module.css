@@ -113,3 +113,23 @@
   background:rgba(255,255,255,.08);
   color:var(--muted);
 }
+
+
+/* V4.0.13.6 — Library participates in the sidebar scroll */
+.library {
+  flex: none;
+  min-height: unset;
+  overflow: visible;
+}
+
+.songList {
+  overflow: visible;
+  max-height: none;
+  min-height: unset;
+  padding-bottom: 24px;
+}
+
+.filters {
+  overflow: visible;
+  flex-wrap: wrap;
+}
