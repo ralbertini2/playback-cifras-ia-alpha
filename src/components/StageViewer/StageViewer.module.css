@@ -234,3 +234,58 @@
   word-break: normal;
   max-width: 100%;
 }
+
+
+/* V4.0.13.6 — PDF spatial grid for Stage Mode */
+.positionedText {
+  position: relative;
+  width: 100%;
+  min-height: 720px;
+  white-space: normal;
+  overflow: visible;
+}
+
+.positionedLine {
+  position: absolute;
+  right: 0;
+  min-height: 1.1em;
+  line-height: 1.18;
+  white-space: pre;
+  overflow: visible;
+}
+
+.positionedLine.lyricLine {
+  right: auto;
+  max-width: 100%;
+}
+
+.positionedLine.chordLine {
+  left: 0;
+  width: 100%;
+  min-height: 1.2em;
+}
+
+.positionedText .chordMap {
+  height: 1.2em;
+  min-height: 1.2em;
+}
+
+.positionedText .chordToken {
+  transform: translateX(0);
+}
+
+@media (max-width: 900px) {
+  .positionedText {
+    min-height: 680px;
+  }
+
+  .positionedLine {
+    line-height: 1.15;
+  }
+}
+
+@media (max-width: 560px) {
+  .positionedText {
+    min-height: 620px;
+  }
+}

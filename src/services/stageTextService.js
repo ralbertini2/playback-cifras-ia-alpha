@@ -388,12 +388,9 @@ function buildRawLines(items, viewport) {
 
   if (!sorted.length) return [];
 
-  const pageLeft = Math.max(0, Math.min(...sorted.map((item) => item.left)));
-  const pageRight = Math.min(
-    Number(viewport?.width || Math.max(...sorted.map((item) => item.right))),
-    Math.max(...sorted.map((item) => item.right)),
-  );
-  const pageWidth = Math.max(1, pageRight - pageLeft);
+  const pageLeft = 0;
+  const pageWidth = Math.max(1, Number(viewport?.width) || Math.max(...sorted.map((item) => item.right)));
+  const pageHeight = Math.max(1, Number(viewport?.height) || Math.max(...sorted.map((item) => item.top + item.fontSize)));
   const groups = [];
 
   sorted.forEach((item) => {
@@ -415,11 +412,18 @@ function buildRawLines(items, viewport) {
       const cleanItems = chord ? cleanupChordItems(line.items) : removeDuplicateFragments(line.items).sort((a, b) => a.left - b.left);
       const text = chord ? cleanItems.map((item) => item.text).join(' ') : createPlainTextFromItems(cleanItems);
 
+      const top = Math.max(0, Math.min(pageHeight, Number(line.top) || 0));
+      const lineLeft = cleanItems.length ? Math.min(...cleanItems.map((item) => item.left)) : pageLeft;
+      const fontSize = cleanItems.length ? Math.max(...cleanItems.map((item) => item.fontSize || 12)) : 12;
+
       return {
         id: `line-${index}`,
         text,
         isChord: chord || isChordLike(text),
         items: chord ? attachPercentPositions(cleanItems, pageLeft, pageWidth) : [],
+        topPct: Math.max(0, Math.min(100, (top / pageHeight) * 100)),
+        leftPct: Math.max(0, Math.min(100, ((lineLeft - pageLeft) / pageWidth) * 100)),
+        fontScale: Math.max(0.72, Math.min(1.4, fontSize / 12)),
       };
     })
     .filter((line) => line.text.trim() || line.items.length);

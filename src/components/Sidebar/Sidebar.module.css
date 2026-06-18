@@ -224,3 +224,37 @@
     max-height: none;
   }
 }
+
+
+/* V4.0.13.6 — single scroll surface for the full sidebar */
+.sidebar {
+  display: block;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(42px + env(safe-area-inset-bottom));
+}
+
+.header,
+.section,
+.sidebar > :global(section) {
+  flex: none;
+}
+
+.header,
+.section {
+  margin-bottom: 14px;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
+    touch-action: pan-y;
+    padding-bottom: calc(52px + env(safe-area-inset-bottom));
+  }
+}
