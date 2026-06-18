@@ -1,0 +1,208 @@
+.viewerShell {
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 197, 94, .07), transparent 36%),
+    #05080d;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.documentPage {
+  width: min(920px, 100%);
+  min-height: 70%;
+  border: 1px solid rgba(148, 163, 184, .16);
+  border-radius: 22px;
+  background: rgba(15, 23, 42, .88);
+  color: #f8fafc;
+  box-shadow: 0 20px 72px rgba(0, 0, 0, .36);
+  padding: 26px;
+}
+
+.documentHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.documentHeader svg { color: var(--accent); }
+.documentHeader strong { display: block; font-size: 18px; }
+.documentHeader span { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+.documentBody {
+  font-size: 22px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+}
+
+.documentHtml,
+.documentHtml * {
+  color: #f8fafc !important;
+  background: transparent !important;
+  border-color: rgba(148, 163, 184, .28) !important;
+}
+
+.documentHtml {
+  font-size: 22px;
+  line-height: 1.58;
+  overflow-wrap: anywhere;
+}
+
+.documentHtml p,
+.documentHtml div {
+  white-space: pre-wrap;
+}
+
+.documentHtml table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.documentHtml td,
+.documentHtml th {
+  padding: 4px 6px;
+}
+
+.documentHtml {
+  color: #f8fafc;
+  font-size: 22px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.documentHtml :is(h1, h2, h3) {
+  color: #f8fafc;
+  line-height: 1.15;
+  margin: 1.2em 0 .55em;
+}
+
+.documentHtml h1 { font-size: 1.55em; }
+.documentHtml h2 { font-size: 1.3em; }
+.documentHtml h3 { font-size: 1.12em; }
+.documentHtml p { margin: 0 0 .65em; }
+.documentHtml ul,
+.documentHtml ol { margin: .6em 0 .9em 1.35em; }
+.documentHtml table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+.documentHtml td,
+.documentHtml th {
+  border: 1px solid rgba(148, 163, 184, .22);
+  padding: .45em .55em;
+  vertical-align: top;
+}
+.documentHtml a { color: #60a5fa; }
+
+.line,
+.blankLine {
+  margin: 0 0 .55em;
+}
+
+.blankLine {
+  min-height: .8em;
+}
+
+.emptyState {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .viewerShell { padding: 14px; }
+  .documentPage { padding: 18px; border-radius: 18px; }
+  .documentBody, .documentHtml { font-size: 20px; }
+}
+
+@media (max-width: 560px) {
+  .viewerShell { padding: 10px; }
+  .documentPage { padding: 14px; border-radius: 14px; }
+  .documentBody, .documentHtml { font-size: 18px; }
+}
+
+/* V4.0.13.4 — document polish */
+.documentPage {
+  background: linear-gradient(180deg, rgba(15, 23, 42, .94), rgba(2, 6, 23, .96));
+}
+
+.documentHtml {
+  color: #f8fafc;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .22);
+}
+
+.documentHtml * {
+  color: inherit !important;
+  font-family: inherit !important;
+}
+
+.documentHtml p,
+.documentHtml div,
+.documentHtml span {
+  line-height: 1.52;
+}
+
+/* V4.0.13.5 — document font controls */
+.documentHeader {
+  align-items: center;
+}
+
+.documentHeader > div:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+
+.fontControls {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .05);
+  padding: 4px;
+}
+
+.fontControls button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .07);
+  color: #f8fafc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fontControls strong {
+  min-width: 48px;
+  text-align: center;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+@media (max-width: 560px) {
+  .documentHeader {
+    flex-wrap: wrap;
+  }
+  .fontControls {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+}

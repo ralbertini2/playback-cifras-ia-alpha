@@ -1,15 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  clearDriveOfflineData,
   clearSelectedDriveFolder,
   fetchDriveBlobUrl,
+  fetchDrivePdfData,
+  fetchDriveTextDocument,
   getAccessToken,
   getDriveConfig,
   getEffectiveFolderId,
   getStoredDriveFolder,
+  hasStoredDriveSession,
   initGoogleAuth,
   isGoogleConfigured,
   isGooglePickerConfigured,
   loadDriveLibrary,
+  preloadDriveLibraryOffline,
+  ensureGooglePickerReady,
   logoutGoogle,
   openFolderPicker,
   requestAccessToken,
@@ -43,6 +49,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
   const [accessToken, setAccessToken] = useState(() => getAccessToken());
   const [selectedFolder, setSelectedFolder] = useState(() => getStoredDriveFolder());
   const [library, setLibrary] = useState([]);
+  const [selectedStyle, setSelectedStyle] = useState('');
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [currentSong, setCurrentSong] = useState(null);
   const [pdfUrl, setPdfUrl] = useState('');
@@ -50,13 +57,21 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
   const [loadingSong, setLoadingSong] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const selectionRequestRef = useRef(0);
+  const autoRefreshKeyRef = useRef('');
+  const autoOpenPickerAfterLoginRef = useRef(false);
 
   const config = useMemo(() => getDriveConfig(), []);
   const isConfigured = isGoogleConfigured();
   const pickerConfigured = isGooglePickerConfigured();
   const hasToken = Boolean(accessToken);
   const folderId = selectedFolder?.id || config.rootFolderId || '';
-  const filteredSongs = useMemo(() => asArray(library), [library]);
+  const styleList = useMemo(() => Array.from(new Set(asArray(library).map((song) => song?.style).filter(Boolean))).sort((a, b) => String(a).localeCompare(String(b), 'pt-BR')), [library]);
+  const filteredSongs = useMemo(() => {
+    const songs = asArray(library);
+    if (!selectedStyle) return songs;
+    return songs.filter((song) => song?.style === selectedStyle);
+  }, [library, selectedStyle]);
   const isConnected = Boolean(hasToken && folderId && status === STATUS.CONNECTED);
 
   const notify = useCallback((text) => {
@@ -68,7 +83,15 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
   const clearCurrentMedia = useCallback(() => {
     setPdfUrl('');
     setAudioUrl('');
-  }, []);
+
+    if (typeof onSongPdfReady === 'function') {
+      onSongPdfReady('', null);
+    }
+
+    if (typeof onSongAudioReady === 'function') {
+      onSongAudioReady('', null, false);
+    }
+  }, [onSongAudioReady, onSongPdfReady]);
 
   useEffect(() => {
     let cancelled = false;
@@ -98,7 +121,42 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
         notify('Google Identity Services ainda não está disponível.');
         return;
       }
-      if (!getEffectiveFolderId()) {
+
+      const token = getAccessToken();
+      const effectiveFolderId = getEffectiveFolderId();
+
+      if (token) {
+        setAccessToken(token);
+        setStatus(effectiveFolderId ? STATUS.AUTHENTICATED : STATUS.NEED_FOLDER);
+        notify(effectiveFolderId
+          ? 'Google autenticado. Carregando biblioteca...'
+          : 'Google autenticado. Escolha uma pasta do Drive.');
+        return;
+      }
+
+      if (hasStoredDriveSession()) {
+        setStatus(STATUS.AUTHENTICATING);
+        notify('Restaurando conexão com o Google Drive...');
+        requestAccessToken({
+          prompt: '',
+          onToken: (restoredToken) => {
+            if (cancelled) return;
+            setAccessToken(restoredToken || '');
+            if (restoredToken) {
+              setStatus(effectiveFolderId ? STATUS.AUTHENTICATED : STATUS.NEED_FOLDER);
+              notify(effectiveFolderId
+                ? 'Google Drive reconectado. Carregando biblioteca...'
+                : 'Google Drive reconectado. Escolha uma pasta.');
+            } else {
+              setStatus(STATUS.READY);
+              notify('Faça login no Google Drive para carregar músicas.');
+            }
+          },
+        });
+        return;
+      }
+
+      if (!effectiveFolderId) {
         setStatus(STATUS.NEED_FOLDER);
         notify('Escolha uma pasta do Google Drive para carregar as músicas.');
       } else {
@@ -122,6 +180,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       setStatus(STATUS.NOT_CONFIGURED);
       notify('Google Drive não configurado.');
       setLibrary([]);
+      setSelectedStyle('');
       setCurrentSong(null);
       setCurrentIndex(-1);
       clearCurrentMedia();
@@ -132,6 +191,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       setStatus(STATUS.READY);
       notify('Faça login no Google Drive para carregar músicas.');
       setLibrary([]);
+      setSelectedStyle('');
       setCurrentSong(null);
       setCurrentIndex(-1);
       clearCurrentMedia();
@@ -142,6 +202,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       setStatus(STATUS.NEED_FOLDER);
       notify('Escolha uma pasta do Google Drive.');
       setLibrary([]);
+      setSelectedStyle('');
       setCurrentSong(null);
       setCurrentIndex(-1);
       clearCurrentMedia();
@@ -154,9 +215,19 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       notify('Carregando biblioteca do Google Drive...');
       const songs = asArray(await loadDriveLibrary({ folderId: effectiveFolderId, token }));
       setLibrary(songs);
+      window.setTimeout(() => {
+        preloadDriveLibraryOffline(songs, token).catch((offlineError) => {
+          console.warn('[Playback Cifras IA] Offline parcial indisponível.', offlineError);
+        });
+      }, 200);
+      setSelectedStyle((currentStyle) => {
+        if (!currentStyle) return '';
+        return songs.some((song) => song?.style === currentStyle) ? currentStyle : '';
+      });
       if (!songs.length) {
         setCurrentSong(null);
         setCurrentIndex(-1);
+        clearCurrentMedia();
       } else if (currentIndex >= songs.length) {
         setCurrentIndex(0);
         setCurrentSong(songs[0]);
@@ -168,6 +239,7 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       return songs;
     } catch (err) {
       setLibrary([]);
+      setSelectedStyle('');
       setCurrentSong(null);
       setCurrentIndex(-1);
       setStatus(STATUS.ERROR);
@@ -176,19 +248,57 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     }
   }, [accessToken, clearCurrentMedia, config.rootFolderId, currentIndex, isConfigured, notify, selectedFolder?.id]);
 
+
+  useEffect(() => {
+    const token = accessToken || getAccessToken();
+    const effectiveFolderId = selectedFolder?.id || config.rootFolderId || '';
+
+    if (!token || !effectiveFolderId || status === STATUS.LOADING || status === STATUS.CONNECTED) return;
+
+    const refreshKey = `${token.slice(0, 12)}:${effectiveFolderId}`;
+    if (autoRefreshKeyRef.current === refreshKey) return;
+
+    autoRefreshKeyRef.current = refreshKey;
+    refreshLibrary({ nextFolderId: effectiveFolderId });
+  }, [accessToken, config.rootFolderId, refreshLibrary, selectedFolder?.id, status]);
+
+  const handleTokenReady = useCallback((token) => {
+    const nextToken = token || getAccessToken();
+    const effectiveFolderId = selectedFolder?.id || config.rootFolderId || '';
+
+    if (!nextToken) {
+      setStatus(STATUS.READY);
+      notify('Não foi possível autenticar no Google.');
+      return;
+    }
+
+    setAccessToken(nextToken);
+    setStatus(effectiveFolderId ? STATUS.AUTHENTICATED : STATUS.NEED_FOLDER);
+    notify(effectiveFolderId
+      ? 'Google autenticado. Carregando biblioteca...'
+      : 'Google autenticado. Escolha uma pasta do Drive.');
+
+    ensureGooglePickerReady().catch((err) => {
+      console.warn('[Playback Cifras IA] Picker ainda não disponível.', err);
+    });
+  }, [config.rootFolderId, notify, selectedFolder?.id]);
+
   const connect = useCallback(async () => {
     if (!isConfigured) {
       setStatus(STATUS.NOT_CONFIGURED);
       notify('Configure GOOGLE_CLIENT_ID em public/config.js.');
       return false;
     }
+    autoOpenPickerAfterLoginRef.current = true;
     setStatus(STATUS.AUTHENTICATING);
     notify('Aguardando login do Google...');
-    return requestAccessToken({ prompt: 'consent' });
-  }, [isConfigured, notify]);
+    return requestAccessToken({ prompt: 'consent', onToken: handleTokenReady });
+  }, [handleTokenReady, isConfigured, notify]);
 
   const chooseFolder = useCallback(async () => {
-    if (!accessToken && !getAccessToken()) {
+    const token = accessToken || getAccessToken();
+
+    if (!token) {
       setStatus(STATUS.READY);
       notify('Faça login antes de escolher uma pasta.');
       return false;
@@ -201,7 +311,9 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     }
 
     try {
+      setStatus((currentStatus) => (currentStatus === STATUS.AUTHENTICATING ? STATUS.NEED_FOLDER : currentStatus));
       notify('Abrindo seletor de pasta do Google Drive...');
+      await ensureGooglePickerReady();
 
       const opened = await openFolderPicker({
         onPicked: async (folder) => {
@@ -224,20 +336,41 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     }
   }, [accessToken, pickerConfigured, notify, refreshLibrary]);
 
+
+
+  useEffect(() => {
+    const token = accessToken || getAccessToken();
+    const effectiveFolderId = selectedFolder?.id || config.rootFolderId || '';
+
+    if (!token || effectiveFolderId || !autoOpenPickerAfterLoginRef.current) return;
+    if (status === STATUS.LOADING || status === STATUS.AUTHENTICATING) return;
+
+    autoOpenPickerAfterLoginRef.current = false;
+    window.setTimeout(() => {
+      chooseFolder();
+    }, 250);
+  }, [accessToken, chooseFolder, config.rootFolderId, selectedFolder?.id, status]);
+
   const disconnect = useCallback(async () => {
     await logoutGoogle();
+    await clearDriveOfflineData();
+    clearSelectedDriveFolder();
     setAccessToken('');
     setLibrary([]);
+    setSelectedStyle('');
     setCurrentSong(null);
     setCurrentIndex(-1);
+    setSelectedFolder(null);
+    clearCurrentMedia();
     setStatus(isConfigured ? STATUS.READY : STATUS.NOT_CONFIGURED);
     notify(isConfigured ? 'Google desconectado.' : 'Google Drive não configurado.');
-  }, [isConfigured, notify]);
+  }, [clearCurrentMedia, isConfigured, notify]);
 
   const clearFolder = useCallback(() => {
     clearSelectedDriveFolder();
     setSelectedFolder(null);
     setLibrary([]);
+    setSelectedStyle('');
     setCurrentSong(null);
     setCurrentIndex(-1);
     setStatus(hasToken ? STATUS.NEED_FOLDER : STATUS.READY);
@@ -250,7 +383,32 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     return fetchDriveBlobUrl(fileId, token);
   }, [accessToken]);
 
+  const getPdfSource = useCallback(async (fileId) => {
+    const token = accessToken || getAccessToken();
+    if (!fileId || !token) return '';
+    return fetchDrivePdfData(fileId, token);
+  }, [accessToken]);
+
+  const getDocumentSource = useCallback(async (song) => {
+    const token = accessToken || getAccessToken();
+    if (!song?.documentFileId || !token) return '';
+
+    if (song.pdfFileId && song.documentFileId === song.pdfFileId) {
+      return fetchDrivePdfData(song.pdfFileId, token);
+    }
+
+    const documentData = await fetchDriveTextDocument(song.documentFileId, song.documentMimeType, token, song.documentName || song.fileName || song.title || '');
+    return {
+      ...(documentData || {}),
+      title: song.title,
+      fileName: song.documentName || song.fileName,
+    };
+  }, [accessToken]);
+
   const selectSong = useCallback(async (indexOrSong, autoplay = false) => {
+    const requestId = selectionRequestRef.current + 1;
+    selectionRequestRef.current = requestId;
+
     const songs = asArray(filteredSongs);
     const nextIndex = typeof indexOrSong === 'object'
       ? songs.findIndex((song) => song?.id === indexOrSong?.id)
@@ -263,31 +421,37 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
       return null;
     }
 
+    const isCurrentRequest = () => selectionRequestRef.current === requestId;
     const song = songs[nextIndex];
 
     setCurrentIndex(nextIndex);
     setCurrentSong(song);
     setLoadingSong(true);
     setError('');
-    setPdfUrl('');
-    setAudioUrl('');
+    clearCurrentMedia();
 
     try {
-      let nextPdfUrl = song.pdfUrl || '';
+      let nextPdfSource = song.pdfUrl || '';
 
-      if (!nextPdfUrl && song.pdfFileId) {
-        nextPdfUrl = await getMediaUrl(song.pdfFileId);
+      if (!nextPdfSource && song.documentFileId) {
+        nextPdfSource = await getDocumentSource(song);
+      } else if (!nextPdfSource && song.pdfFileId) {
+        nextPdfSource = await getPdfSource(song.pdfFileId);
       }
 
-      if (nextPdfUrl) {
-        setPdfUrl(nextPdfUrl);
+      if (!isCurrentRequest()) return null;
+
+      if (nextPdfSource) {
+        setPdfUrl(nextPdfSource);
 
         if (typeof onSongPdfReady === 'function') {
-          onSongPdfReady(nextPdfUrl, song);
+          onSongPdfReady(nextPdfSource, song);
         }
       }
     } catch (err) {
-      setError(err?.message || 'Erro ao carregar PDF da música.');
+      if (isCurrentRequest()) {
+        setError(err?.message || 'Erro ao carregar PDF da música.');
+      }
     }
 
     try {
@@ -297,6 +461,8 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
         nextAudioUrl = await getMediaUrl(song.audioFileId);
       }
 
+      if (!isCurrentRequest()) return null;
+
       if (nextAudioUrl) {
         setAudioUrl(nextAudioUrl);
 
@@ -305,13 +471,17 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
         }
       }
     } catch (err) {
-      setError(err?.message || 'Erro ao carregar áudio da música.');
+      if (isCurrentRequest()) {
+        setError(err?.message || 'Erro ao carregar áudio da música.');
+      }
     } finally {
-      setLoadingSong(false);
+      if (isCurrentRequest()) {
+        setLoadingSong(false);
+      }
     }
 
     return song;
-  }, [clearCurrentMedia, filteredSongs, getMediaUrl, onSongAudioReady, onSongPdfReady]);
+  }, [clearCurrentMedia, filteredSongs, getDocumentSource, getMediaUrl, getPdfSource, onSongAudioReady, onSongPdfReady]);
 
   const selectNext = useCallback((autoplay = false) => {
     const songs = asArray(filteredSongs);
@@ -339,6 +509,9 @@ export function useGoogleDriveLibrary({ onSongPdfReady, onSongAudioReady, onNoti
     selectedFolder,
     folderId,
     library: filteredSongs,
+    styleList,
+    selectedStyle,
+    setSelectedStyle,
     songs: filteredSongs,
     files: filteredSongs,
     musicLibrary: filteredSongs,

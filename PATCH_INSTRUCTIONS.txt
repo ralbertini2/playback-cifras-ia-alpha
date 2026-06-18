@@ -1,18 +1,9 @@
-Branch:
-feature/v2-9-drive-library-source-fix
+Playback Cifras IA - v4.0.13.5
 
-Arquivos a revisar:
-- src/hooks/useGoogleDrive.js
-- src/services/googleDriveService.js
-- src/app/App.jsx
+Suba estes arquivos na branch:
+feature/v4-0-13-5-stage-alignment-scroll
 
-Lógica:
-1. Ler arquivos da pasta selecionada.
-2. Agrupar por nome sem extensão.
-3. Gerar:
-   {
-     title,
-     pdfFileId,
-     audioFileId
-   }
-4. Exibir apenas músicas do Drive quando conectado.
+Commit:
+fix: stage align scroll
+
+Aguarde a Action antes do merge.

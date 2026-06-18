@@ -1,4 +1,5 @@
-import { FolderOpen, LogIn, LogOut, RefreshCw, X } from 'lucide-react';
+import { FolderOpen, LogIn, LogOut, X } from 'lucide-react';
+import { useEffect } from 'react';
 import Library from '../Library/Library.jsx';
 import Setlists from '../Setlists/Setlists.jsx';
 import styles from './Sidebar.module.css';
@@ -6,9 +7,8 @@ import styles from './Sidebar.module.css';
 export default function Sidebar({
   open,
   connected,
+  isAuthenticated = false,
   status,
-  folderId,
-  setFolderId,
   styleList = [],
   selectedStyle,
   setSelectedStyle,
@@ -22,7 +22,6 @@ export default function Sidebar({
   collectionFilter,
   setCollectionFilter,
   favoriteCount = 0,
-  recentCount = 0,
   totalSongs = 0,
   clearSearch,
   isFavorite,
@@ -31,35 +30,44 @@ export default function Sidebar({
   onLogin,
   onLogout,
   onPickFolder,
-  onRefresh,
   onSelectSong,
   onCreatePlaylist,
   onAddToPlaylist,
   onDeletePlaylist,
   loading = false,
 }) {
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyTouchAction = body.style.touchAction;
+
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    body.style.touchAction = 'none';
+
+    return () => {
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+      body.style.touchAction = previousBodyTouchAction;
+    };
+  }, [open]);
+
   const normalizedStatus = String(status || '').toLowerCase();
 
-  const canPickFolder = !loading && [
-    'need-folder',
-    'authenticated',
-    'connected',
-  ].includes(normalizedStatus);
-
-  const isLoggedIn = connected || [
+  const isLoggedIn = Boolean(isAuthenticated || connected || [
     'need-folder',
     'authenticated',
     'connected',
     'loading',
-  ].includes(normalizedStatus);
+  ].includes(normalizedStatus));
 
-  const folderLabel = folderId
-    ? 'Pasta selecionada'
-    : isLoggedIn
-      ? 'Escolha a pasta raiz do repertório'
-      : 'Entre no Google para escolher a pasta';
+  const canPickFolder = Boolean(!loading && isLoggedIn);
 
-  const headerStatus = connected
+  const connectionLabel = connected
     ? 'Google Drive conectado'
     : isLoggedIn
       ? 'Google autenticado'
@@ -67,12 +75,18 @@ export default function Sidebar({
 
   return (
     <>
-      <div className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`} onClick={onClose} />
-      <nav className={`${styles.sidebar} ${open ? styles.open : ''}`} aria-label="Biblioteca musical">
+      <div className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`} onClick={onClose} onTouchMove={(event) => event.preventDefault()} />
+      <nav className={`${styles.sidebar} ${open ? styles.open : ''}`} aria-label="Biblioteca musical" onTouchStart={(event) => event.stopPropagation()} onTouchMove={(event) => event.stopPropagation()} onWheel={(event) => event.stopPropagation()}>
         <div className={styles.header}>
-          <div>
-            <strong>Playback Cifras IA</strong>
-            <span>{headerStatus}</span>
+          <div className={styles.brandBlock}>
+            <div className={styles.logoWrap}>
+              <img className={styles.logo} src={`${import.meta.env.BASE_URL}logo-playback-cifras.jpg`} alt="Playback Cifras" />
+              <span
+                className={`${styles.connectionDot} ${connected ? styles.connectionOn : ''}`}
+                aria-label={connectionLabel}
+                title={connectionLabel}
+              />
+            </div>
           </div>
 
           <button className={styles.iconButton} onClick={onClose} aria-label="Fechar menu">
@@ -80,29 +94,8 @@ export default function Sidebar({
           </button>
         </div>
 
-        <div className={styles.status}>{status}</div>
-
         <section className={styles.section}>
-          <label>Pasta Google Drive</label>
-
-          <div className={styles.folderCard}>
-            <div className={styles.folderInfo}>
-              <strong>{folderLabel}</strong>
-              <span>{folderId || 'Nenhuma pasta selecionada'}</span>
-            </div>
-
-            <button
-              type="button"
-              className={styles.folderButton}
-              onClick={onPickFolder}
-              disabled={loading || !canPickFolder}
-              aria-label="Escolher pasta do Google Drive"
-              title={!isLoggedIn ? 'Entre no Google antes de escolher a pasta' : 'Escolher pasta'}
-            >
-              <FolderOpen size={18} />
-              <span>Escolher</span>
-            </button>
-          </div>
+          <label>Google Drive</label>
 
           <div className={styles.actionsGrid}>
             <button onClick={connected ? onLogout : onLogin} disabled={loading}>
@@ -110,9 +103,15 @@ export default function Sidebar({
               {connected ? 'Sair' : 'Entrar'}
             </button>
 
-            <button onClick={onRefresh} disabled={loading}>
-              <RefreshCw size={17} />
-              Atualizar
+            <button
+              type="button"
+              onClick={onPickFolder}
+              disabled={!canPickFolder}
+              aria-label="Escolher pasta do Google Drive"
+              title={!isLoggedIn ? 'Entre no Google antes de escolher a pasta' : 'Escolher pasta'}
+            >
+              <FolderOpen size={17} />
+              Escolher
             </button>
           </div>
         </section>
@@ -143,7 +142,6 @@ export default function Sidebar({
           collectionFilter={collectionFilter}
           setCollectionFilter={setCollectionFilter}
           favoriteCount={favoriteCount}
-          recentCount={recentCount}
           totalSongs={totalSongs}
           clearSearch={clearSearch}
           isFavorite={isFavorite}
