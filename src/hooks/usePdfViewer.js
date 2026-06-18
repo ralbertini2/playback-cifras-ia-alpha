@@ -32,7 +32,7 @@ export function usePdfViewer(source) {
   const containerRef = useRef(null);
   const renderTasksRef = useRef([]);
   const documentRef = useRef(null);
-  const pinchRef = useRef({ active: false, distance: 0, scale: 1 });
+  const pinchRef = useRef({ active: false, distance: 0, scale: 1, frame: 0 });
   const [documentProxy, setDocumentProxy] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const [scale, setScale] = useState(1);
@@ -172,6 +172,7 @@ export function usePdfViewer(source) {
         active: true,
         distance: distance(event.touches),
         scale,
+        frame: 0,
       };
     };
 
@@ -180,12 +181,23 @@ export function usePdfViewer(source) {
       event.preventDefault();
       const nextDistance = distance(event.touches);
       const ratio = nextDistance / Math.max(1, pinchRef.current.distance);
-      setScale(clampScale(pinchRef.current.scale * ratio));
+      const nextScale = clampScale(pinchRef.current.scale * ratio);
+
+      if (pinchRef.current.frame) {
+        cancelAnimationFrame(pinchRef.current.frame);
+      }
+
+      pinchRef.current.frame = requestAnimationFrame(() => {
+        setScale(nextScale);
+      });
     };
 
     const onTouchEnd = () => {
+      if (pinchRef.current.frame) {
+        cancelAnimationFrame(pinchRef.current.frame);
+      }
       if (pinchRef.current.active) {
-        pinchRef.current = { active: false, distance: 0, scale };
+        pinchRef.current = { active: false, distance: 0, scale, frame: 0 };
       }
     };
 

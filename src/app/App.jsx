@@ -3,6 +3,8 @@ import AppLayout from '../components/Layout/AppLayout.jsx';
 import Sidebar from '../components/Sidebar/Sidebar.jsx';
 import Toolbar from '../components/Toolbar/Toolbar.jsx';
 import PdfViewer from '../components/PdfViewer/PdfViewer.jsx';
+import DocumentViewer from '../components/DocumentViewer/DocumentViewer.jsx';
+import StageViewer from '../components/StageViewer/StageViewer.jsx';
 import PlayerBar from '../components/PlayerBar/PlayerBar.jsx';
 import VersionFooter from '../components/VersionFooter/VersionFooter.jsx';
 import { useAudioPlayer } from '../hooks/useAudioPlayer.js';
@@ -18,6 +20,7 @@ function songKey(song) {
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [toast, setToast] = useState('');
+  const [viewerMode, setViewerMode] = useState('study');
   const [playlists, setPlaylists] = useState(() => readJson(STORAGE.playlists, {}));
   const [selectedPlaylist, setSelectedPlaylist] = useState(localStorage.getItem(STORAGE.activePlaylist) || '');
   const audio = useAudioPlayer();
@@ -133,6 +136,8 @@ export default function App() {
     notify(becameFavorite ? 'Música adicionada aos favoritos.' : 'Música removida dos favoritos.');
   }
 
+  const isTextDocument = Boolean(drive.pdfUrl && typeof drive.pdfUrl === 'object' && drive.pdfUrl.type === 'text-document');
+
   return (
     <AppLayout
       sidebar={(
@@ -173,8 +178,13 @@ export default function App() {
           onDeletePlaylist={deletePlaylist}
         />
       )}
-      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} onOpenSearch={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} favoriteActive={libraryView.isFavorite(currentSong)} onToggleFavorite={toggleCurrentFavorite} audio={audio} />}
-      viewer={<PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />}
+      toolbar={<Toolbar song={currentSong} meta={meta} onOpenMenu={() => setSidebarOpen(true)} loading={drive.loadingLibrary || drive.loadingSong} audio={audio} viewerMode={viewerMode} onViewerModeChange={setViewerMode} />}
+      viewer={viewerMode === 'stage'
+        ? <StageViewer source={drive.pdfUrl} audio={audio} />
+        : isTextDocument
+          ? <DocumentViewer source={drive.pdfUrl} title={currentSong?.title || 'Documento'} />
+          : <PdfViewer source={drive.pdfUrl} title={currentSong?.title || 'Exemplo de cifra em PDF'} />
+      }
       player={(
         <PlayerBar
           audio={audio}

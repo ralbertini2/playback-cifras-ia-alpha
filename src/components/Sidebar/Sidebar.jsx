@@ -1,4 +1,5 @@
 import { FolderOpen, LogIn, LogOut, X } from 'lucide-react';
+import { useEffect } from 'react';
 import Library from '../Library/Library.jsx';
 import Setlists from '../Setlists/Setlists.jsx';
 import styles from './Sidebar.module.css';
@@ -35,6 +36,26 @@ export default function Sidebar({
   onDeletePlaylist,
   loading = false,
 }) {
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyTouchAction = body.style.touchAction;
+
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    body.style.touchAction = 'none';
+
+    return () => {
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+      body.style.touchAction = previousBodyTouchAction;
+    };
+  }, [open]);
+
   const normalizedStatus = String(status || '').toLowerCase();
 
   const isLoggedIn = Boolean(isAuthenticated || connected || [
@@ -54,8 +75,8 @@ export default function Sidebar({
 
   return (
     <>
-      <div className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`} onClick={onClose} />
-      <nav className={`${styles.sidebar} ${open ? styles.open : ''}`} aria-label="Biblioteca musical">
+      <div className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`} onClick={onClose} onTouchMove={(event) => event.preventDefault()} />
+      <nav className={`${styles.sidebar} ${open ? styles.open : ''}`} aria-label="Biblioteca musical" onTouchStart={(event) => event.stopPropagation()} onTouchMove={(event) => event.stopPropagation()} onWheel={(event) => event.stopPropagation()}>
         <div className={styles.header}>
           <div className={styles.brandBlock}>
             <div className={styles.logoWrap}>

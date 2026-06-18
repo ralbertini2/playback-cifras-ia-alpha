@@ -1,6 +1,15 @@
 let pdfjsLibPromise = null;
 let pdfWorkerSrcPromise = null;
 
+function clonePdfData(data) {
+  if (data instanceof Uint8Array) return data.slice();
+  if (data instanceof ArrayBuffer) return new Uint8Array(data.slice(0));
+  if (ArrayBuffer.isView(data)) {
+    return new Uint8Array(data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength));
+  }
+  return data;
+}
+
 function normalizePdfSource(source) {
   if (!source) return null;
 
@@ -12,11 +21,18 @@ function normalizePdfSource(source) {
   }
 
   if (source instanceof Uint8Array) {
-    return { data: source };
+    return { data: source.slice() };
   }
 
   if (source instanceof ArrayBuffer) {
-    return { data: new Uint8Array(source) };
+    return { data: new Uint8Array(source.slice(0)) };
+  }
+
+  if (typeof source === 'object' && source.data) {
+    return {
+      ...source,
+      data: clonePdfData(source.data),
+    };
   }
 
   return source;
@@ -24,6 +40,10 @@ function normalizePdfSource(source) {
 
 function getReadablePdfError(error) {
   const message = error?.message || String(error || 'Erro desconhecido ao carregar PDF.');
+
+  if (/detached arraybuffer/i.test(message)) {
+    return 'O PDF precisa ser recarregado para esta visualização. Selecione a música novamente.';
+  }
 
   if (/worker/i.test(message)) {
     return 'Falha ao inicializar o leitor de PDF. Recarregue a página e tente novamente.';

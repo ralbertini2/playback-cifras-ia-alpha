@@ -3,7 +3,7 @@ name: Deploy React to GitHub Pages
 on:
   push:
     branches:
-      - develop-react
+      - develop-react-palco
 
 permissions:
   contents: read

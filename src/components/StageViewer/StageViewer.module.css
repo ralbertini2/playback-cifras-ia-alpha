@@ -1,0 +1,291 @@
+.stageShell {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: #05080d;
+  overflow: hidden;
+}
+
+.stageToolbar {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  background: rgba(11, 17, 28, .78);
+  backdrop-filter: blur(16px);
+}
+
+.stageToolbarLabel,
+.scrollControls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.scrollControls {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.scrollControls button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .06);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scrollControls strong {
+  min-width: 58px;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.stageViewport {
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 197, 94, .08), transparent 34%),
+    #05080d;
+}
+
+.stagePage {
+  width: min(980px, 100%);
+  flex: 0 0 auto;
+  border: 1px solid rgba(148, 163, 184, .16);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, .74), rgba(2, 6, 23, .92));
+  box-shadow: 0 20px 72px rgba(0, 0, 0, .34);
+  padding: 22px 26px;
+  box-sizing: border-box;
+}
+
+.pageLabel {
+  margin: 0 0 16px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+}
+
+.rawText {
+  margin: 0;
+  color: #f8fafc;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  font-size: 26px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  tab-size: 4;
+}
+
+.lyricLine,
+.chordLine {
+  min-height: 1.35em;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.chordLine {
+  color: #fb923c;
+  font-weight: 900;
+}
+
+.loadingPill {
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .08);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.emptyState { min-height:100%; display:grid; place-items:center; padding:24px; }
+.emptyCard { width:min(560px, 100%); border:1px solid rgba(255,255,255,.1); border-radius:28px; background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035)); padding:34px; text-align:center; box-shadow:0 28px 90px rgba(0,0,0,.3); }
+.emptyCard svg { color:var(--accent); }
+.emptyCard h1 { margin:16px 0 8px; font-size:28px; letter-spacing:-.04em; }
+.emptyCard p { margin:0 auto 14px; color:var(--muted); line-height:1.55; }
+.emptyCard small { color:rgba(255,255,255,.55); font-weight:700; }
+
+.errorCard {
+  width: min(520px, 100%);
+  margin: auto;
+  align-self: center;
+  border: 1px solid rgba(248, 113, 113, .25);
+  border-radius: 22px;
+  background: rgba(127, 29, 29, .18);
+  color: var(--text);
+  padding: 28px;
+  text-align: center;
+}
+.errorCard svg { color: #fca5a5; }
+.errorCard strong { display:block; margin: 12px 0 6px; }
+.errorCard span { color: var(--muted); font-size: 13px; }
+
+@media (max-width: 900px) {
+  .stageToolbar { padding: 8px 10px; }
+  .stageToolbarLabel span { display: none; }
+  .stageViewport { padding: 14px; gap: 14px; }
+  .stagePage { padding: 18px; }
+  .rawText { font-size: 26px; line-height: 1.58; }
+}
+
+@media (max-width: 560px) {
+  .stageToolbar { gap: 8px; }
+  .scrollControls { gap: 6px; }
+  .scrollControls button { width: 32px; height: 32px; }
+  .scrollControls strong { min-width: 48px; font-size: 11px; }
+  .stageViewport { padding: 10px; }
+  .stagePage { padding: 14px; border-radius: 14px; }
+  .rawText { font-size: 24px; line-height: 1.52; }
+  .emptyCard { padding:24px; border-radius:22px; }
+  .emptyCard h1 { font-size:23px; }
+}
+
+/* V4.0.13.4 — stage readability polish */
+.stageShell {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 197, 94, .11), transparent 34%),
+    linear-gradient(180deg, #05080d, #02040a);
+}
+
+.stagePage {
+  border-color: rgba(34, 197, 94, .14);
+  background: linear-gradient(180deg, rgba(15, 23, 42, .82), rgba(5, 8, 13, .94));
+}
+
+.rawText {
+  letter-spacing: .005em;
+}
+
+.lyricLine {
+  color: #f8fafc;
+  font-weight: 780;
+  text-shadow: 0 2px 18px rgba(15, 23, 42, .82);
+}
+
+.chordLine {
+  color: #fb923c;
+  font-weight: 950;
+  text-shadow: 0 0 14px rgba(251, 146, 60, .22);
+}
+
+/* V4.0.13.5 — positioned chord map and smoother scroll */
+.stageViewport {
+  scroll-behavior: auto;
+  will-change: scroll-position;
+}
+
+.chordLine {
+  min-height: 1.7em;
+  position: relative;
+  overflow: visible;
+}
+
+.chordMap {
+  position: relative;
+  min-height: 1.45em;
+  width: 100%;
+  overflow: visible;
+}
+
+.chordToken {
+  position: absolute;
+  top: 0;
+  transform: translateX(-2px);
+  color: #fb923c;
+  font-weight: 950;
+  white-space: nowrap;
+  text-shadow: 0 0 14px rgba(251, 146, 60, .28);
+}
+
+.lyricLine {
+  overflow-wrap: break-word;
+  word-break: normal;
+  max-width: 100%;
+}
+
+
+/* V4.0.13.6 — PDF spatial grid for Stage Mode */
+.positionedText {
+  position: relative;
+  width: 100%;
+  min-height: 720px;
+  white-space: normal;
+  overflow: visible;
+}
+
+.positionedLine {
+  position: absolute;
+  right: 0;
+  min-height: 1.1em;
+  line-height: 1.18;
+  white-space: pre;
+  overflow: visible;
+}
+
+.positionedLine.lyricLine {
+  right: auto;
+  max-width: 100%;
+}
+
+.positionedLine.chordLine {
+  left: 0;
+  width: 100%;
+  min-height: 1.2em;
+}
+
+.positionedText .chordMap {
+  height: 1.2em;
+  min-height: 1.2em;
+}
+
+.positionedText .chordToken {
+  transform: translateX(0);
+}
+
+@media (max-width: 900px) {
+  .positionedText {
+    min-height: 680px;
+  }
+
+  .positionedLine {
+    line-height: 1.15;
+  }
+}
+
+@media (max-width: 560px) {
+  .positionedText {
+    min-height: 620px;
+  }
+}
