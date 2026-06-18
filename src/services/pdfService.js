@@ -93,15 +93,6 @@ export async function getPdfJs() {
   return pdfjsLibPromise;
 }
 
-async function getPdfWorkerSrc() {
-  if (!pdfWorkerSrcPromise) {
-    pdfWorkerSrcPromise = import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')
-      .then((worker) => worker.default || worker);
-  }
-
-  return pdfWorkerSrcPromise;
-}
-
 export async function loadPdfDocument(source) {
   if (!source) return null;
 
