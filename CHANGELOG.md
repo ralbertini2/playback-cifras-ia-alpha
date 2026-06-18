@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.0.14 - Parser harmônico robusto
+
+- Cria serviço central `chordParserService.js` para reconhecimento de cifras.
+- Remove dependência de lista fixa de acordes no Modo Palco.
+- Reconhece acordes com sustenido, bemol, inversões, tensões, diminutos, meio-diminutos, aumentados, sus, add, maj, 7M, Δ, alterações entre parênteses e N.C.
+- Integra o parser ao `stageTextService.js` para reduzir acordes não destacados.
+- Mantém PDF, DOCX, Google Docs, MP3, sidebar e Modo Estudo sem recriar fluxo.
+
 ## v4.0.13.6 - Sidebar única e grade do palco
 
 - Corrige a sidebar para funcionar como uma única área rolável.

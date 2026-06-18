@@ -1,8 +1,5 @@
+import { isChordLine, isChordToken, joinChordFragments, normalizeChordToken } from './chordParserService.js';
 import { getPdfJs } from './pdfService.js';
-
-const CHORD_TOKEN_PATTERN = /^([A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*(?:\([^)]*\))?(?:\/[A-G](?:#|b)?)?|N\.?C\.?|NC|%|\||\(|\)|:|-)(?:[,;.]?)$/i;
-const CHORD_LINE_PATTERN = /^(\s*(?:[A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*(?:\([^)]*\))?(?:\/[A-G](?:#|b)?)?|N\.?C\.?|NC|%|\||\(|\)|:|-)+\s*)+$/i;
-
 
 
 function decodeHtmlEntities(value = '') {
@@ -95,7 +92,7 @@ function textDocumentToLines(source) {
     return {
       id: `doc-line-${index}`,
       text,
-      isChord: isChordLike(text),
+      isChord: isChordLine(text),
       items: [],
     };
   }).filter((line) => line.text.trim());
@@ -181,23 +178,6 @@ function safeDestroyPdf(pdf) {
   }
 }
 
-function isChordToken(token) {
-  return CHORD_TOKEN_PATTERN.test(String(token || '').trim());
-}
-
-function isChordLike(text) {
-  const clean = normalizeText(text);
-  if (!clean || clean.length > 80) return false;
-
-  const tokens = clean.split(/\s+/).filter(Boolean);
-  if (!tokens.length || tokens.length > 28) return false;
-
-  const chordTokens = tokens.filter((token) => isChordToken(token.replace(/[,:;]/g, '')));
-  if (chordTokens.length === tokens.length) return true;
-
-  return CHORD_LINE_PATTERN.test(clean) && chordTokens.length >= Math.max(1, Math.ceil(tokens.length * 0.55));
-}
-
 function horizontalOverlap(a, b) {
   return Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left));
 }
@@ -255,13 +235,7 @@ function shouldJoinChordFragments(previous, text, item) {
   if (!previous || !text) return false;
   const closeToPrevious = item.left - previous.right <= Math.max(6, item.fontSize * 0.9);
   if (!closeToPrevious) return false;
-
-  const previousText = String(previous.text || '');
-  if (/^[A-G](#|b)?$/i.test(previousText) && /^(m|maj|min|dim|aug|sus|add)\d*$/i.test(text)) return true;
-  if (/^[A-G](#|b)?m?$/i.test(previousText) && /^\d+$/i.test(text)) return true;
-  if (/^[A-G](#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*$/i.test(previousText) && /^\([^)]*\)$/i.test(text)) return true;
-
-  return false;
+  return Boolean(joinChordFragments(previous.text, text));
 }
 
 function cleanupChordItems(items) {
@@ -269,12 +243,12 @@ function cleanupChordItems(items) {
   const chordItems = [];
 
   sortedItems.forEach((item) => {
-    const text = normalizeText(item.text).replace(/[,:;]/g, '');
+    const text = normalizeChordToken(item.text);
     if (!text) return;
 
     const previous = chordItems[chordItems.length - 1];
     if (shouldJoinChordFragments(previous, text, item)) {
-      previous.text = `${previous.text}${text}`;
+      previous.text = joinChordFragments(previous.text, text);
       previous.right = Math.max(previous.right, item.right);
       previous.width = previous.right - previous.left;
       return;
@@ -362,9 +336,9 @@ function isChordLineFromItems(items, sourceText) {
   const chordItems = cleanupChordItems(items);
   if (!chordItems.length) return false;
 
-  if (isChordLike(clean)) return true;
+  if (isChordLine(clean)) return true;
 
-  const chordTokenCount = tokens.filter((token) => isChordToken(token.replace(/[,:;]/g, ''))).length;
+  const chordTokenCount = tokens.filter((token) => isChordToken(normalizeChordToken(token))).length;
   if (tokenCount <= 10 && chordTokenCount >= Math.max(1, Math.ceil(tokenCount * 0.72))) return true;
 
   return false;
@@ -419,7 +393,7 @@ function buildRawLines(items, viewport) {
       return {
         id: `line-${index}`,
         text,
-        isChord: chord || isChordLike(text),
+        isChord: chord || isChordLine(text),
         items: chord ? attachPercentPositions(cleanItems, pageLeft, pageWidth) : [],
         topPct: Math.max(0, Math.min(100, (top / pageHeight) * 100)),
         leftPct: Math.max(0, Math.min(100, ((lineLeft - pageLeft) / pageWidth) * 100)),
@@ -438,7 +412,7 @@ function extractPlainLines(textContent) {
     if (text) current.push(text);
     if (item?.hasEOL && current.length) {
       const raw = current.join(' ').trim();
-      const chord = isChordLike(raw);
+      const chord = isChordLine(raw);
       lines.push({ id: `line-${lines.length}`, text: raw, isChord: chord, items: [] });
       current = [];
     }
@@ -446,7 +420,7 @@ function extractPlainLines(textContent) {
 
   if (current.length) {
     const raw = current.join(' ').trim();
-    const chord = isChordLike(raw);
+    const chord = isChordLine(raw);
     lines.push({ id: `line-${lines.length}`, text: raw, isChord: chord, items: [] });
   }
 
