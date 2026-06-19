@@ -1,7 +1,7 @@
 {
   "name": "playback-cifras-ia",
   "private": true,
-  "version": "3.0.0",
+  "version": "4.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,14 +10,26 @@
     "validate": "npm run build"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "vite": "latest",
     "react": "latest",
     "react-dom": "latest",
     "lucide-react": "latest",
-    "pdfjs-dist": "4.10.38"
+    "pdfjs-dist": "4.10.38",
+    "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/react-dropdown-menu": "^2.1.2",
+    "@radix-ui/react-scroll-area": "^1.2.1",
+    "@radix-ui/react-slot": "^1.1.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49"
+  },
   "engines": {
     "node": ">=20"
   }
