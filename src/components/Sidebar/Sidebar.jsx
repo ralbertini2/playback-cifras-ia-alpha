@@ -1,7 +1,31 @@
-import { FolderOpen, LogIn, LogOut, X } from 'lucide-react';
+import {
+  Bell,
+  Cloud,
+  FileMusic,
+  FolderOpen,
+  HelpCircle,
+  LibraryBig,
+  ListMusic,
+  LogIn,
+  LogOut,
+  Music2,
+  Settings,
+  Sparkles,
+  User,
+  X,
+} from 'lucide-react';
 import { useEffect } from 'react';
 import Library from '../Library/Library.jsx';
 import Setlists from '../Setlists/Setlists.jsx';
+import { Button } from '../ui/button.jsx';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu.jsx';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar({
@@ -73,20 +97,26 @@ export default function Sidebar({
       ? 'Google autenticado'
       : 'Biblioteca local';
 
+  const profileInitial = connected || isLoggedIn ? 'R' : <User size={17} />;
+
   return (
     <>
       <div className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`} onClick={onClose} onTouchMove={(event) => event.preventDefault()} />
       <nav className={`${styles.sidebar} ${open ? styles.open : ''}`} aria-label="Biblioteca musical" onTouchStart={(event) => event.stopPropagation()} onTouchMove={(event) => event.stopPropagation()} onWheel={(event) => event.stopPropagation()}>
         <div className={styles.header}>
           <div className={styles.brandBlock}>
-            <div className={styles.logoWrap}>
-              <img className={styles.logo} src={`${import.meta.env.BASE_URL}logo-playback-cifras.jpg`} alt="Playback Cifras" />
-              <span
-                className={`${styles.connectionDot} ${connected ? styles.connectionOn : ''}`}
-                aria-label={connectionLabel}
-                title={connectionLabel}
-              />
+            <div className={styles.brandMark} aria-hidden="true">
+              <Music2 size={20} />
             </div>
+            <div className={styles.brandText}>
+              <strong>Playback Cifras</strong>
+              <span>Estudo e palco</span>
+            </div>
+            <span
+              className={`${styles.connectionDot} ${connected ? styles.connectionOn : ''}`}
+              aria-label={connectionLabel}
+              title={connectionLabel}
+            />
           </div>
 
           <button className={styles.iconButton} onClick={onClose} aria-label="Fechar menu">
@@ -94,26 +124,20 @@ export default function Sidebar({
           </button>
         </div>
 
-        <section className={styles.section}>
-          <label>Google Drive</label>
-
-          <div className={styles.actionsGrid}>
-            <button onClick={connected ? onLogout : onLogin} disabled={loading}>
-              {connected ? <LogOut size={17} /> : <LogIn size={17} />}
-              {connected ? 'Sair' : 'Entrar'}
-            </button>
-
-            <button
-              type="button"
-              onClick={onPickFolder}
-              disabled={!canPickFolder}
-              aria-label="Escolher pasta do Google Drive"
-              title={!isLoggedIn ? 'Entre no Google antes de escolher a pasta' : 'Escolher pasta'}
-            >
-              <FolderOpen size={17} />
-              Escolher
-            </button>
-          </div>
+        <section className={styles.navSection} aria-label="Produtos">
+          <label>Produtos</label>
+          <button className={`${styles.navItem} ${styles.navItemActive}`} type="button">
+            <LibraryBig size={17} />
+            Biblioteca
+          </button>
+          <button className={styles.navItem} type="button">
+            <FileMusic size={17} />
+            Modo Estudo
+          </button>
+          <button className={styles.navItem} type="button">
+            <Sparkles size={17} />
+            Modo Palco
+          </button>
         </section>
 
         <section className={styles.section}>
@@ -148,6 +172,54 @@ export default function Sidebar({
           onToggleFavorite={onToggleFavorite}
           onSelectSong={onSelectSong}
         />
+
+        <section className={styles.profileSection} aria-label="Perfil e conta">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className={styles.profileButton} variant="ghost">
+                <span className={styles.avatar}>{profileInitial}</span>
+                <span className={styles.profileText}>
+                  <strong>{connected ? 'raphael.albertini' : isLoggedIn ? 'Conta Google' : 'Perfil'}</strong>
+                  <small>{connectionLabel}</small>
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="top" className={styles.profileMenu}>
+              <DropdownMenuLabel>Perfil</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={(event) => { event.preventDefault(); connected ? onLogout?.() : onLogin?.(); }}>
+                {connected ? <LogOut size={16} /> : <LogIn size={16} />}
+                {connected ? 'Sair do Google' : 'Entrar com Google'}
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled={!canPickFolder} onSelect={(event) => { event.preventDefault(); onPickFolder?.(); }}>
+                <FolderOpen size={16} />
+                Selecionar pasta do Drive
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>
+                <Cloud size={16} />
+                Offline sincronizado
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem disabled>
+                <Settings size={16} />
+                Configurações da conta
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>
+                <Bell size={16} />
+                Notificações
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>
+                <HelpCircle size={16} />
+                Suporte
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className={styles.profileLinks}>
+            <span><ListMusic size={14} /> {totalSongs || songs.length} músicas</span>
+            <span>{favoriteCount} favoritas</span>
+          </div>
+        </section>
       </nav>
     </>
   );
