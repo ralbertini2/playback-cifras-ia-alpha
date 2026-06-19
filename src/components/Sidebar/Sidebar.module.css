@@ -1,12 +1,16 @@
 .sidebar {
+  --sidebar: #050505;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-accent: rgba(255, 255, 255, .10);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, .10);
+  --sidebar-ring: rgba(255, 255, 255, .28);
   height: 100dvh;
   max-height: 100dvh;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  width: 100%;
   background: #050505;
   color: var(--text);
-  overflow: hidden;
-  contain: layout paint;
+  overflow: visible;
 }
 
 .scrollContent {
@@ -16,23 +20,21 @@
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  padding: 18px 12px 20px;
+  padding: 8px 8px 20px;
 }
 
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 24px;
+  padding: 12px 10px 8px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
 .brandBlock {
   min-width: 0;
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-columns: 40px minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 10px;
+  width: 100%;
 }
 
 .brandMark {
@@ -83,10 +85,7 @@
   box-shadow: 0 0 0 1px rgba(255,255,255,.65), 0 0 18px rgba(255,255,255,.28);
 }
 
-.iconButton,
-.inputRow button,
-.miniActions button,
-.folderButton {
+.iconButton {
   border: 1px solid rgba(255,255,255,.08);
   border-radius: 12px;
   background: rgba(255,255,255,.055);
@@ -94,188 +93,165 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 38px;
-  min-height: 38px;
+  min-width: 36px;
+  min-height: 36px;
 }
 
 .iconButton:hover,
-.inputRow button:hover,
-.miniActions button:hover,
-.folderButton:hover,
-.navItem:hover {
+.sidebarMenuButton:hover,
+.sidebarSubButton:hover,
+.repertoireActions button:hover {
   background: rgba(255,255,255,.11);
 }
 
-.navSection,
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 20px;
+.sidebarMenuButton {
+  min-height: 40px;
+  border: 0;
+  border-radius: 10px;
+  color: rgba(255,255,255,.78);
+  font-weight: 650;
+  touch-action: manipulation;
 }
 
-.navSection label,
-.section label,
-.sectionHeader label {
-  color: rgba(255,255,255,.42);
+.sidebarMenuButton[data-active="true"] {
+  color: #fff;
+  background: rgba(255,255,255,.12);
+}
+
+.chevron,
+.profileChevron {
+  margin-left: auto;
+  opacity: .62;
+  transition: transform .16s ease;
+}
+
+.collapsibleGroup:has([data-state="open"]) .chevron {
+  transform: rotate(180deg);
+}
+
+.menuBadge {
+  margin-left: auto;
+  color: rgba(255,255,255,.45);
   font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .16em;
-  padding: 0 4px;
 }
 
-.navItem {
+.sidebarSubMenu {
+  margin: 2px 0 6px 18px;
+  border-left-color: rgba(255,255,255,.12);
+  gap: 2px;
+}
+
+.sidebarSubButton {
   width: 100%;
+  min-height: 32px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;
+  color: rgba(255,255,255,.62);
   background: transparent;
-  color: rgba(255,255,255,.68);
-  min-height: 40px;
-  padding: 0 12px;
   display: flex;
   align-items: center;
-  gap: 11px;
-  font-weight: 600;
-  text-align: left;
-}
-
-.navItemActive {
-  background: rgba(255,255,255,.12);
-  color: #fff;
-}
-
-.styleCombobox {
-  min-height: 42px;
-  border-color: rgba(255,255,255,.10);
-  background: rgba(255,255,255,.07);
-  color: #fff;
-  font-weight: 700;
-}
-
-.section select,
-.section input {
-  width: 100%;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.07);
-  color: var(--text);
-  border-radius: 12px;
-  min-height: 42px;
-  padding: 0 12px;
-  outline: none;
-}
-
-.section select:focus,
-.section input:focus {
-  border-color: rgba(255,255,255,.36);
-  box-shadow: 0 0 0 3px rgba(255,255,255,.06);
-}
-
-.section option { color:#111827; }
-
-.status {
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 14px;
-  padding: 10px 12px;
-  color: var(--muted);
-  font-size: 12px;
-  background: rgba(255,255,255,.04);
-}
-
-.folderCard {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  justify-content: space-between;
   gap: 8px;
-  align-items: stretch;
+  font-weight: 600;
+  touch-action: manipulation;
 }
 
-.folderInfo {
-  min-width: 0;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
-  color: var(--text);
-  border-radius: 14px;
-  min-height: 52px;
-  padding: 9px 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.folderInfo strong {
-  font-size: 13px;
-  line-height: 1.2;
-}
-
-.folderInfo span {
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: 12px;
-  white-space: nowrap;
+.sidebarSubButton span {
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.folderButton {
-  gap: 8px;
-  padding: 0 12px;
-  font-weight: 700;
+.sidebarSubButton[data-active="true"] {
+  color: #fff;
+  background: rgba(255,255,255,.10);
 }
 
-.folderButton:disabled {
-  opacity: .45;
-  cursor: not-allowed;
+.repertoireActions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin: 6px 10px 0 34px;
 }
 
-.inputRow { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; }
-.actionsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.actionsGrid button {
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 14px;
-  background: rgba(255,255,255,.06);
+.repertoireActions button {
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 10px;
+  min-height: 34px;
+  padding: 0 10px;
+  background: rgba(255,255,255,.055);
   color: var(--text);
-  min-height: 44px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.repertoireHint {
+  margin: 6px 10px 0 34px;
+  color: rgba(255,255,255,.45);
+  font-size: 11px;
+}
+
+.libraryGroup {
+  padding-bottom: 28px;
+}
+
+.libraryMeta {
+  margin: -2px 8px 8px;
+  color: rgba(255,255,255,.42);
+  font-size: 11px;
   font-weight: 700;
 }
 
-.sectionHeader { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-.miniActions { display:flex; gap:6px; }
-.miniActions button { min-width:34px; min-height:34px; border-radius:10px; }
-
-.songSection { flex: 0 0 auto; min-height: unset; display:flex; flex-direction:column; gap:8px; }
-.songHeader { color:var(--muted); font-size:12px; font-weight:700; }
-.songList { overflow: visible; max-height: none; min-height: unset; display:flex; flex-direction:column; gap:8px; padding-right:4px; padding-bottom:36px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
-.songItem {
-  text-align:left;
-  border:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.04);
-  color:var(--text);
-  border-radius:16px;
-  padding:12px;
+.songLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 6px 0;
+  color: rgba(255,255,255,.42);
+  font-size: 11px;
 }
-.songItem span { display:block; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.songItem small { display:block; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.activeSong { border-color:rgba(255,255,255,.46); background:rgba(255,255,255,.10); }
-.empty { color:var(--muted); font-size:13px; border:1px dashed rgba(255,255,255,.14); border-radius:14px; padding:12px; }
+
+.songLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.navSection,
+.section,
+.status,
+.folderCard,
+.folderInfo,
+.folderButton,
+.inputRow,
+.actionsGrid,
+.sectionHeader,
+.miniActions,
+.songSection,
+.songHeader,
+.songList,
+.songItem,
+.activeSong,
+.empty {
+  all: unset;
+}
+
 .backdrop { display:none; }
 
 .profileDock {
   display: grid;
   gap: 10px;
-  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
   border-top: 1px solid rgba(255,255,255,.10);
   background: linear-gradient(180deg, rgba(5,5,5,.92), #050505 48%);
-  z-index: 3;
+  position: relative;
+  z-index: 20;
 }
-
-.profileDock :global([data-radix-popper-content-wrapper]) {
-  z-index: 1202 !important;
-}
-
 
 .profileButton {
   width: 100%;
@@ -284,14 +260,15 @@
   justify-content: flex-start;
   gap: 11px;
   padding: 8px;
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 16px;
+  border: 0;
+  border-radius: 14px;
   color: #fff;
   background: rgba(255,255,255,.055);
   touch-action: manipulation;
 }
 
-.profileButton:hover {
+.profileButton:hover,
+.profileButton[data-state="open"] {
   background: rgba(255,255,255,.11);
 }
 
@@ -325,90 +302,35 @@
 .profileText strong { font-size: 13px; }
 .profileText small { color: rgba(255,255,255,.48); font-size: 11px; }
 
-.profileSheet {
-  left: 12px;
-  right: 12px;
-  bottom: calc(12px + env(safe-area-inset-bottom));
-  width: auto;
-  max-height: min(76dvh, 620px);
-  overflow-y: auto;
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 22px;
-  background: #0b0b0b;
+.profileMenu {
+  z-index: 4000 !important;
+  width: min(300px, calc(100vw - 24px));
+  border-color: rgba(255,255,255,.14);
+  background: #101010;
   color: #fff;
-  padding: 18px;
-  box-shadow: 0 -22px 80px rgba(0,0,0,.58);
-  z-index: 1203;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
+  box-shadow: 0 18px 60px rgba(0,0,0,.46);
 }
 
-.profileSheetHeader {
-  text-align: left;
-  padding-right: 34px;
+.profileMenu [role="menuitem"] {
+  gap: 10px;
+  min-height: 38px;
 }
 
-.profileSheetTitle {
+.menuTitle,
+.menuSubtitle {
+  display: block;
+}
+
+.menuTitle {
   color: #fff;
-  font-size: 17px;
-  letter-spacing: -.02em;
+  font-size: 13px;
 }
 
-.profileSheetDescription {
-  color: rgba(255,255,255,.5);
-}
-
-.profileSheetBody {
-  display: grid;
-  gap: 6px;
-  margin-top: 16px;
-}
-
-.profileAction {
-  width: 100%;
-  border: 0;
-  border-radius: 13px;
-  min-height: 42px;
-  padding: 0 12px;
-  background: transparent;
-  color: rgba(255,255,255,.86);
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  text-align: left;
-  font-weight: 650;
-  touch-action: manipulation;
-}
-
-.profileAction:hover,
-.profileAction:focus-visible {
-  background: rgba(255,255,255,.09);
-  color: #fff;
-  outline: none;
-}
-
-.profileAction:disabled {
-  color: rgba(255,255,255,.38);
-  cursor: not-allowed;
-}
-
-.profileDivider {
-  height: 1px;
-  margin: 8px 0;
-  background: rgba(255,255,255,.10);
-}
-
-.folderSummary {
-  margin-top: 6px;
-  border-radius: 13px;
-  border: 1px solid rgba(255,255,255,.08);
-  background: rgba(255,255,255,.045);
-  color: rgba(255,255,255,.48);
-  padding: 10px 12px;
+.menuSubtitle {
+  margin-top: 2px;
+  color: rgba(255,255,255,.46);
   font-size: 11px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-weight: 500;
 }
 
 .profileLinks {
@@ -443,7 +365,7 @@
   .open { transform: translateX(0); }
 
   .brandText { display: none; }
-  .brandBlock { grid-template-columns: 40px auto; }
+  .brandBlock { grid-template-columns: 40px auto auto; }
 
   .backdrop {
     display: block;
@@ -461,14 +383,12 @@
     opacity: 1;
     pointer-events: auto;
   }
+
+  .profileMenu {
+    max-width: calc(100vw - 24px);
+  }
 }
 
-
-/* Shadcn/Radix portal safety: profile sheet must render above the mobile sidebar. */
-:global([data-radix-dialog-overlay]) {
-  z-index: 1200 !important;
-}
-
-:global([data-radix-dialog-content]) {
-  z-index: 1201 !important;
+:global([data-radix-popper-content-wrapper]) {
+  z-index: 4000 !important;
 }
