@@ -1,5 +1,12 @@
-import { Search, Star, X } from 'lucide-react';
+import { FileText, Music, Search, Star, X } from 'lucide-react';
 import styles from './Library.module.css';
+
+function fileBadges(song) {
+  const hasText = Boolean(song?.pdfFileId || song?.documentFileId || song?.pdfUrl);
+  const hasAudio = Boolean(song?.audioFileId || song?.audioUrl);
+
+  return { hasText, hasAudio };
+}
 
 export default function Library({
   songs = [],
@@ -31,17 +38,6 @@ export default function Library({
         </div>
       </div>
 
-      <div className={styles.quickStats} aria-label="Resumo da biblioteca">
-        <button className={collectionFilter === 'all' ? styles.activeStat : ''} onClick={() => changeFilter('all')}>
-          <strong>{totalSongs || songs.length}</strong>
-          <span>Todas</span>
-        </button>
-        <button className={collectionFilter === 'favorites' ? styles.activeStat : ''} onClick={() => changeFilter('favorites')}>
-          <strong>{favoriteCount}</strong>
-          <span>Favoritas</span>
-        </button>
-      </div>
-
       <div className={styles.searchBox}>
         <Search size={16} />
         <input
@@ -60,6 +56,11 @@ export default function Library({
         <button className={collectionFilter === 'favorites' ? styles.activeFilter : ''} onClick={() => changeFilter('favorites')}><Star size={14} /> Favoritas {favoriteCount ? `(${favoriteCount})` : ''}</button>
       </div>
 
+      <div className={styles.tableHeader} aria-hidden="true">
+        <span>Título</span>
+        <span>Arquivos</span>
+      </div>
+
       <div className={styles.songList}>
         {loading ? (
           <div className={styles.empty}>Atualizando biblioteca...</div>
@@ -67,12 +68,21 @@ export default function Library({
           <div className={styles.empty}>Nenhuma música encontrada. Atualize o Drive ou ajuste os filtros.</div>
         ) : songs.map((song, index) => {
           const favorite = isFavorite?.(song);
+          const { hasText, hasAudio } = fileBadges(song);
           return (
             <div key={song.id || `${song.title}-${index}`} className={`${styles.songItem} ${song.id === currentSongId ? styles.activeSong : ''}`}>
               <button className={styles.songButton} onClick={() => onSelectSong(index)}>
                 <span>{song.title}</span>
                 <small>{song.artist || song.style || 'Sem metadados'}</small>
               </button>
+              <div className={styles.fileBadges} aria-label="Arquivos disponíveis">
+                <span className={`${styles.fileBadge} ${hasText ? styles.fileBadgeActive : ''}`} title={hasText ? 'Letra cifrada disponível' : 'Sem letra cifrada'}>
+                  <FileText size={14} />
+                </span>
+                <span className={`${styles.fileBadge} ${hasAudio ? styles.fileBadgeActive : ''}`} title={hasAudio ? 'MP3 disponível' : 'Sem MP3'}>
+                  <Music size={14} />
+                </span>
+              </div>
               <button
                 className={`${styles.favoriteButton} ${favorite ? styles.favoriteActive : ''}`}
                 onClick={() => onToggleFavorite?.(song)}

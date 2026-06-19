@@ -1,5 +1,16 @@
 # Changelog
 
+## v4.1.2.1 - Correções de Perfil e Sidebar
+
+- Remove o card de credenciamento pendente da sidebar.
+- Remove Modo Estudo e Modo Palco da navegação lateral.
+- Mantém os botões Estudo/Palco apenas na visualização da cifra.
+- Ancora o Perfil no rodapé fixo da sidebar.
+- Corrige a abertura do menu Perfil no iPad sem interferir no scroll.
+- Atualiza Estilos para usar Combobox baseado em shadcn/ui.
+- Melhora a lista da biblioteca com indicadores de letra cifrada e MP3.
+- Evolui a sidebar, biblioteca e perfil para a identidade shadcn/Moises.
+
 ## v4.1.2 - Perfil e Google Drive
 
 - Reorganiza o menu Perfil como ponto central de credenciamento, Google Drive e sincronização.
