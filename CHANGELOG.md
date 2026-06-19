@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.1.2.2 - Combobox e iPad Fix
+
+- Remove o campo de busca do seletor de estilos.
+- Mantém Estilos com Combobox shadcn/ui sem usar select HTML nativo.
+- Substitui o menu Perfil por Sheet para melhorar abertura no iPad e mobile.
+- Mantém Perfil fixo no rodapé sem interferir no scroll da sidebar.
+- Preserva PDF, MP3, Modo Estudo, Modo Palco, IndexedDB e parser de acordes.
+
 ## v4.1.2.1 - Correções de Perfil e Sidebar
 
 - Remove o card de credenciamento pendente da sidebar.

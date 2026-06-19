@@ -320,34 +320,89 @@
 .profileText strong { font-size: 13px; }
 .profileText small { color: rgba(255,255,255,.48); font-size: 11px; }
 
-.profileMenu {
-  width: 280px;
-  z-index: 1200;
-  border-color: rgba(255,255,255,.14);
-  background: #111;
+.profileSheet {
+  left: 12px;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  width: auto;
+  max-height: min(76dvh, 620px);
+  overflow-y: auto;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 22px;
+  background: #0b0b0b;
   color: #fff;
+  padding: 18px;
+  box-shadow: 0 -22px 80px rgba(0,0,0,.58);
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
-.profileMenu [role="menuitem"] {
-  gap: 10px;
-  min-height: 38px;
+.profileSheetHeader {
+  text-align: left;
+  padding-right: 34px;
 }
 
-.menuTitle,
-.menuSubtitle {
-  display: block;
-}
-
-.menuTitle {
+.profileSheetTitle {
   color: #fff;
-  font-size: 13px;
+  font-size: 17px;
+  letter-spacing: -.02em;
 }
 
-.menuSubtitle {
-  margin-top: 2px;
-  color: rgba(255,255,255,.46);
+.profileSheetDescription {
+  color: rgba(255,255,255,.5);
+}
+
+.profileSheetBody {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.profileAction {
+  width: 100%;
+  border: 0;
+  border-radius: 13px;
+  min-height: 42px;
+  padding: 0 12px;
+  background: transparent;
+  color: rgba(255,255,255,.86);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-align: left;
+  font-weight: 650;
+  touch-action: manipulation;
+}
+
+.profileAction:hover,
+.profileAction:focus-visible {
+  background: rgba(255,255,255,.09);
+  color: #fff;
+  outline: none;
+}
+
+.profileAction:disabled {
+  color: rgba(255,255,255,.38);
+  cursor: not-allowed;
+}
+
+.profileDivider {
+  height: 1px;
+  margin: 8px 0;
+  background: rgba(255,255,255,.10);
+}
+
+.folderSummary {
+  margin-top: 6px;
+  border-radius: 13px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.045);
+  color: rgba(255,255,255,.48);
+  padding: 10px 12px;
   font-size: 11px;
-  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profileLinks {
