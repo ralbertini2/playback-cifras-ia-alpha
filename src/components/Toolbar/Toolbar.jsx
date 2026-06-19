@@ -1,4 +1,4 @@
-import { Loader2, Menu, Volume2, VolumeX } from 'lucide-react';
+import { Loader2, PanelLeft, Volume2, VolumeX } from 'lucide-react';
 import styles from './Toolbar.module.css';
 
 export default function Toolbar({
@@ -12,7 +12,7 @@ export default function Toolbar({
 }) {
   return (
     <div className={styles.toolbar}>
-      <button className={styles.menuButton} onClick={onOpenMenu} aria-label="Abrir menu"><Menu size={22} /></button>
+      <button className={styles.sidebarTrigger} onClick={onOpenMenu} aria-label="Abrir navegação"><PanelLeft size={18} /></button>
       <div className={styles.songInfo}>
         <strong>{song?.title || 'Selecione uma música'}</strong>
         <span>{meta || 'Google Drive • PDFs • Playbacks'}</span>
