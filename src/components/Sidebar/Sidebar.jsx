@@ -197,8 +197,16 @@ export default function Sidebar({
                 className={styles.profileButton}
                 variant="ghost"
                 type="button"
-                onPointerDown={(event) => event.stopPropagation()}
-                onTouchStart={(event) => event.stopPropagation()}
+                onPointerDown={(event) => {
+                  event.stopPropagation();
+                }}
+                onTouchStart={(event) => {
+                  event.stopPropagation();
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setProfileOpen(true);
+                }}
               >
                 <span className={styles.avatar}>{profileInitial}</span>
                 <span className={styles.profileText}>

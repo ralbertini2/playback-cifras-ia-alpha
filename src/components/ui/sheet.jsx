@@ -10,11 +10,11 @@ const SheetClose = SheetPrimitive.Close;
 const SheetPortal = SheetPrimitive.Portal;
 
 const SheetOverlay = React.forwardRef(({ className, ...props }, ref) => (
-  <SheetPrimitive.Overlay ref={ref} className={cn('fixed inset-0 z-50 bg-black/80', className)} {...props} />
+  <SheetPrimitive.Overlay ref={ref} className={cn('fixed inset-0 z-[1200] bg-black/80', className)} {...props} />
 ));
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
-const sheetVariants = cva('fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out', {
+const sheetVariants = cva('fixed z-[1201] gap-4 bg-background p-6 shadow-lg transition ease-in-out', {
   variants: {
     side: {
       top: 'inset-x-0 top-0 border-b',

@@ -272,6 +272,11 @@
   z-index: 3;
 }
 
+.profileDock :global([data-radix-popper-content-wrapper]) {
+  z-index: 1202 !important;
+}
+
+
 .profileButton {
   width: 100%;
   height: auto;
@@ -333,6 +338,7 @@
   color: #fff;
   padding: 18px;
   box-shadow: 0 -22px 80px rgba(0,0,0,.58);
+  z-index: 1203;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }
@@ -455,4 +461,14 @@
     opacity: 1;
     pointer-events: auto;
   }
+}
+
+
+/* Shadcn/Radix portal safety: profile sheet must render above the mobile sidebar. */
+:global([data-radix-dialog-overlay]) {
+  z-index: 1200 !important;
+}
+
+:global([data-radix-dialog-content]) {
+  z-index: 1201 !important;
 }

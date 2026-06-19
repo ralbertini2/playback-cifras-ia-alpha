@@ -1,5 +1,12 @@
 # Changelog
 
+## v4.2.1.3 - Sidebar Shadcn iPad Fix
+
+- Corrige o z-index do Sheet/Portal do shadcn-ui para o menu Perfil abrir acima da sidebar no iPad retrato.
+- Garante abertura do Perfil por clique/touch sem depender de comportamento implícito do trigger.
+- Mantém a sidebar como área rolável e o Perfil fixo no rodapé.
+- Preserva Combobox de estilos, PDF, MP3, Modo Estudo, Modo Palco, IndexedDB e parser de acordes.
+
 ## v4.1.2.2 - Combobox e iPad Fix
 
 - Remove o campo de busca do seletor de estilos.
