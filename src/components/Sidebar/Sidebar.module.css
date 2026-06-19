@@ -1,15 +1,22 @@
 .sidebar {
   height: 100dvh;
   max-height: 100dvh;
-  display: block;
-  padding: 18px 12px calc(46px + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
   background: #050505;
   color: var(--text);
+  overflow: hidden;
+  contain: layout paint;
+}
+
+.scrollContent {
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
-  contain: layout paint;
+  touch-action: pan-y;
+  padding: 18px 12px 20px;
 }
 
 .header {
@@ -99,67 +106,6 @@
   background: rgba(255,255,255,.11);
 }
 
-
-.profileFlow {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding: 14px;
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
-}
-
-.flowHeader {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-
-.flowHeader span {
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-.flowHeader small {
-  color: rgba(255,255,255,.46);
-  font-size: 11px;
-  line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.flowSteps {
-  display: grid;
-  gap: 7px;
-}
-
-.flowStep {
-  min-height: 28px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  border-radius: 999px;
-  padding: 0 10px;
-  color: rgba(255,255,255,.38);
-  background: rgba(255,255,255,.035);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.flowStepActive {
-  color: rgba(255,255,255,.78);
-  background: rgba(255,255,255,.07);
-}
-
-.flowStepDone {
-  color: #050505;
-  background: #fff;
-}
-
 .navSection,
 .section {
   display: flex;
@@ -197,6 +143,14 @@
 .navItemActive {
   background: rgba(255,255,255,.12);
   color: #fff;
+}
+
+.styleCombobox {
+  min-height: 42px;
+  border-color: rgba(255,255,255,.10);
+  background: rgba(255,255,255,.07);
+  color: #fff;
+  font-weight: 700;
 }
 
 .section select,
@@ -309,24 +263,27 @@
 .empty { color:var(--muted); font-size:13px; border:1px dashed rgba(255,255,255,.14); border-radius:14px; padding:12px; }
 .backdrop { display:none; }
 
-.profileSection {
+.profileDock {
   display: grid;
   gap: 10px;
-  margin-top: 18px;
-  padding-top: 18px;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
   border-top: 1px solid rgba(255,255,255,.10);
+  background: linear-gradient(180deg, rgba(5,5,5,.92), #050505 48%);
+  z-index: 3;
 }
 
 .profileButton {
   width: 100%;
   height: auto;
-  min-height: 56px;
+  min-height: 58px;
   justify-content: flex-start;
   gap: 11px;
   padding: 8px;
+  border: 1px solid rgba(255,255,255,.18);
   border-radius: 16px;
   color: #fff;
   background: rgba(255,255,255,.055);
+  touch-action: manipulation;
 }
 
 .profileButton:hover {
@@ -365,6 +322,7 @@
 
 .profileMenu {
   width: 280px;
+  z-index: 1200;
   border-color: rgba(255,255,255,.14);
   background: #111;
   color: #fff;
@@ -419,10 +377,6 @@
     transition: transform .22s ease;
     box-shadow: 22px 0 70px rgba(0,0,0,.45);
     pointer-events: auto;
-    touch-action: pan-y;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: calc(52px + env(safe-area-inset-bottom));
   }
 
   .open { transform: translateX(0); }
