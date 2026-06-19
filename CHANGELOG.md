@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.1.1 - Sidebar estilo Moises
+
+- Atualiza a sidebar para uma navegação visual mais próxima do Moises.ai.
+- Move Login, Sair e Seleção da pasta do Google Drive para o menu Perfil.
+- Adiciona navegação lateral com Produtos, Biblioteca, Modo Estudo e Modo Palco.
+- Mantém a sidebar como uma única área rolável.
+- Preserva PDF, MP3, Google Drive, IndexedDB, Modo Estudo e Modo Palco sem recriar fluxo.
+
 ## v4.1.0 - Shadcn Foundation
 
 - Adiciona configuração inicial do Shadcn/UI.
