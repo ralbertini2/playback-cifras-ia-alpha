@@ -35,7 +35,7 @@
 
 .documentHeader svg { color: var(--accent); }
 .documentHeader strong { display: block; font-size: 18px; }
-.documentHeader span { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+.documentHeader span { display: block; color: hsl(var(--muted-foreground)); font-size: 12px; margin-top: 2px; }
 
 .documentBody {
   font-size: 22px;
@@ -118,7 +118,7 @@
   height: 100%;
   display: grid;
   place-items: center;
-  color: var(--muted);
+  color: hsl(var(--muted-foreground));
   text-align: center;
 }
 

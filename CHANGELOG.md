@@ -1,5 +1,15 @@
 # Changelog
 
+## v4.1.2.6 - Sidebar 07 e Temas
+
+- Reestrutura a sidebar seguindo o padrão shadcn/ui sidebar-07 com colapso para ícones.
+- Mantém Biblioteca, Estilos, Repertórios e Perfil com componentes reais shadcn/ui.
+- Adiciona trigger de sidebar com suporte a desktop, tablet e mobile.
+- Implementa temas Light, Dark e System com ThemeProvider para React/Vite.
+- Adiciona seleção de tema dentro do menu Perfil.
+- Preserva PDF, MP3, Google Drive, IndexedDB, Modo Estudo e Modo Palco.
+- Não inclui package-lock.json.
+
 ## v4.2.1.5 - Sidebar Trigger Cleanup
 
 - Remove bullets dos itens da sidebar.

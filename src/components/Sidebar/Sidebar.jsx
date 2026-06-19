@@ -11,24 +11,29 @@ import {
   ListMusic,
   LogIn,
   LogOut,
+  Monitor,
+  Moon,
   Music,
   Music2,
   Plus,
   RefreshCw,
   Settings,
+  Sun,
   Trash2,
   User,
   X,
 } from 'lucide-react';
 import { useEffect } from 'react';
+import { useTheme } from '../ThemeProvider.jsx';
 import Library from '../Library/Library.jsx';
-import { Button } from '../ui/button.jsx';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible.jsx';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu.jsx';
@@ -48,6 +53,7 @@ import {
   SidebarMenuSubItem,
   SidebarProvider,
   SidebarRail,
+  SidebarTrigger,
 } from '../ui/sidebar.jsx';
 import styles from './Sidebar.module.css';
 
@@ -57,6 +63,12 @@ function readableStatus(status, connected, isLoggedIn, loading) {
   if (String(status || '').toLowerCase() === 'need-folder') return 'Escolha uma pasta';
   if (isLoggedIn) return 'Google autenticado';
   return 'Credenciamento pendente';
+}
+
+function ThemeIcon({ theme }) {
+  if (theme === 'light') return <Sun size={16} />;
+  if (theme === 'dark') return <Moon size={16} />;
+  return <Monitor size={16} />;
 }
 
 export default function Sidebar({
@@ -96,6 +108,8 @@ export default function Sidebar({
   onDeletePlaylist,
   loading = false,
 }) {
+  const { theme, setTheme } = useTheme();
+
   useEffect(() => {
     if (!open) return undefined;
 
@@ -166,8 +180,9 @@ export default function Sidebar({
                     aria-label={connectionLabel}
                     title={connectionLabel}
                   />
-                  <button className={styles.iconButton} onClick={onClose} aria-label="Fechar menu">
-                    <X size={20} />
+                  <SidebarTrigger className={styles.sidebarTrigger} aria-label="Alternar sidebar" />
+                  <button className={styles.closeButton} onClick={onClose} aria-label="Fechar menu">
+                    <X size={18} />
                   </button>
                 </div>
               </SidebarMenuItem>
@@ -176,11 +191,11 @@ export default function Sidebar({
 
           <SidebarContent className={styles.scrollContent}>
             <SidebarGroup>
-              <SidebarGroupLabel>Navegação</SidebarGroupLabel>
+              <SidebarGroupLabel>Platform</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    <SidebarMenuButton type="button" isActive className={styles.sidebarMenuButton}>
+                    <SidebarMenuButton type="button" isActive className={styles.sidebarMenuButton} title="Biblioteca">
                       <LibraryBig size={17} />
                       <span>Biblioteca</span>
                     </SidebarMenuButton>
@@ -194,7 +209,7 @@ export default function Sidebar({
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuButton type="button" className={styles.sidebarMenuButton}>
+                      <SidebarMenuButton type="button" className={styles.sidebarMenuButton} title="Estilos">
                         <FileMusic size={17} />
                         <span>Estilos</span>
                         <ChevronDown className={styles.chevron} size={16} />
@@ -208,6 +223,7 @@ export default function Sidebar({
                             isActive={!selectedStyle}
                             className={styles.sidebarSubButton}
                             onClick={() => setSelectedStyle('')}
+                            title="Todos os estilos"
                           >
                             <span>Todos os estilos</span>
                             {!selectedStyle ? <Check size={14} /> : null}
@@ -220,6 +236,7 @@ export default function Sidebar({
                               isActive={selectedStyle === style}
                               className={styles.sidebarSubButton}
                               onClick={() => setSelectedStyle(style)}
+                              title={style}
                             >
                               <span>{style}</span>
                               {selectedStyle === style ? <Check size={14} /> : null}
@@ -238,7 +255,7 @@ export default function Sidebar({
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuButton type="button" className={styles.sidebarMenuButton}>
+                      <SidebarMenuButton type="button" className={styles.sidebarMenuButton} title="Repertórios">
                         <ListMusic size={17} />
                         <span>Repertórios</span>
                         <small className={styles.menuBadge}>{playlistNames.length}</small>
@@ -253,6 +270,7 @@ export default function Sidebar({
                             isActive={!selectedPlaylist}
                             className={styles.sidebarSubButton}
                             onClick={() => setSelectedPlaylist('')}
+                            title="Todos os repertórios"
                           >
                             <span>Todos os repertórios</span>
                             {!selectedPlaylist ? <Check size={14} /> : null}
@@ -265,6 +283,7 @@ export default function Sidebar({
                               isActive={selectedPlaylist === name}
                               className={styles.sidebarSubButton}
                               onClick={() => setSelectedPlaylist(name)}
+                              title={name}
                             >
                               <span>{name}</span>
                               <small>{playlists[name]?.length || 0}</small>
@@ -275,9 +294,9 @@ export default function Sidebar({
                       </SidebarMenuSub>
 
                       <div className={styles.repertoireActions}>
-                        <button onClick={onCreatePlaylist} type="button"><Plus size={15} /> Criar</button>
-                        <button onClick={onAddToPlaylist} type="button"><Music size={15} /> Adicionar</button>
-                        <button onClick={onDeletePlaylist} type="button"><Trash2 size={15} /> Excluir</button>
+                        <button onClick={onCreatePlaylist} type="button" title="Criar repertório"><Plus size={15} /> <span>Criar</span></button>
+                        <button onClick={onAddToPlaylist} type="button" title="Adicionar ao repertório"><Music size={15} /> <span>Adicionar</span></button>
+                        <button onClick={onDeletePlaylist} type="button" title="Excluir repertório"><Trash2 size={15} /> <span>Excluir</span></button>
                       </div>
                       {selectedPlaylist ? <p className={styles.repertoireHint}>{selectedPlaylistCount} música(s) neste repertório.</p> : null}
                     </CollapsibleContent>
@@ -316,7 +335,7 @@ export default function Sidebar({
               <SidebarMenuItem>
                 <DropdownMenu modal={false} dir="ltr">
                   <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton type="button" className={styles.profileButton}>
+                    <SidebarMenuButton type="button" className={styles.profileButton} title="Perfil">
                       <span className={styles.avatar}>{profileInitial}</span>
                       <span className={styles.profileText}>
                         <strong>Perfil</strong>
@@ -354,6 +373,15 @@ export default function Sidebar({
                       Remover pasta
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
+                    <DropdownMenuLabel>
+                      <span className={styles.menuTitle}>Tema</span>
+                    </DropdownMenuLabel>
+                    <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                      <DropdownMenuRadioItem value="light"><Sun size={16} /> Light</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="dark"><Moon size={16} /> Dark</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="system"><Monitor size={16} /> System</DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem disabled>
                       <Cloud size={16} />
                       Offline sincronizado
@@ -367,8 +395,8 @@ export default function Sidebar({
                       Notificações
                     </DropdownMenuItem>
                     <DropdownMenuItem disabled>
-                      <User size={16} />
-                      Perfil
+                      <ThemeIcon theme={theme} />
+                      Tema atual: {theme === 'system' ? 'System' : theme === 'dark' ? 'Dark' : 'Light'}
                     </DropdownMenuItem>
                     <DropdownMenuItem disabled>
                       <HelpCircle size={16} />
@@ -388,7 +416,7 @@ export default function Sidebar({
               <span>{favoriteCount} favoritas</span>
             </div>
           </SidebarFooter>
-          <SidebarRail />
+          <SidebarRail className={styles.rail} />
         </ShadcnSidebar>
       </SidebarProvider>
     </>

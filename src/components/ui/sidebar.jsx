@@ -31,6 +31,7 @@ function SidebarProvider({ defaultOpen = true, open: openProp, onOpenChange, cla
       <div
         data-slot="sidebar-wrapper"
         style={style}
+        data-state={open ? 'expanded' : 'collapsed'}
         className={cn('group/sidebar-wrapper flex min-h-svh w-full text-sidebar-foreground', className)}
         {...props}
       >
@@ -41,13 +42,15 @@ function SidebarProvider({ defaultOpen = true, open: openProp, onOpenChange, cla
 }
 
 function Sidebar({ className, children, side = 'left', variant = 'sidebar', collapsible = 'none', ...props }) {
+  const { state } = useSidebar();
   return (
     <div
       data-slot="sidebar"
       data-side={side}
+      data-state={state}
       data-variant={variant}
       data-collapsible={collapsible}
-      className={cn('flex h-full min-h-0 w-full flex-col bg-sidebar text-sidebar-foreground', className)}
+      className={cn('flex h-full min-h-0 flex-col bg-sidebar text-sidebar-foreground transition-[width] duration-200 ease-linear', className)}
       {...props}
     >
       {children}
@@ -147,8 +150,9 @@ const SidebarMenuSubButton = React.forwardRef(({ isActive = false, className, ..
 ));
 SidebarMenuSubButton.displayName = 'SidebarMenuSubButton';
 
-function SidebarRail({ className, ...props }) {
-  return <button data-slot="sidebar-rail" aria-label="Toggle Sidebar" tabIndex={-1} className={cn('absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all sm:flex', className)} {...props} />;
+function SidebarRail({ className, onClick, ...props }) {
+  const { toggleSidebar } = useSidebar();
+  return <button data-slot="sidebar-rail" aria-label="Toggle Sidebar" tabIndex={-1} onClick={(event) => { onClick?.(event); toggleSidebar(); }} className={cn('absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all sm:flex', className)} {...props} />;
 }
 
 export {

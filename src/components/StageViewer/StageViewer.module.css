@@ -25,7 +25,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--muted);
+  color: hsl(var(--muted-foreground));
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
@@ -134,7 +134,7 @@
 .emptyCard { width:min(560px, 100%); border:1px solid rgba(255,255,255,.1); border-radius:28px; background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035)); padding:34px; text-align:center; box-shadow:0 28px 90px rgba(0,0,0,.3); }
 .emptyCard svg { color:var(--accent); }
 .emptyCard h1 { margin:16px 0 8px; font-size:28px; letter-spacing:-.04em; }
-.emptyCard p { margin:0 auto 14px; color:var(--muted); line-height:1.55; }
+.emptyCard p { margin:0 auto 14px; color:hsl(var(--muted-foreground)); line-height:1.55; }
 .emptyCard small { color:rgba(255,255,255,.55); font-weight:700; }
 
 .errorCard {
@@ -150,7 +150,7 @@
 }
 .errorCard svg { color: #fca5a5; }
 .errorCard strong { display:block; margin: 12px 0 6px; }
-.errorCard span { color: var(--muted); font-size: 13px; }
+.errorCard span { color: hsl(var(--muted-foreground)); font-size: 13px; }
 
 @media (max-width: 900px) {
   .stageToolbar { padding: 8px 10px; }
