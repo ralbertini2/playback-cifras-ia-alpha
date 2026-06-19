@@ -1,6 +1,8 @@
 import {
   Bell,
+  CheckCircle2,
   Cloud,
+  Database,
   FileMusic,
   FolderOpen,
   HelpCircle,
@@ -9,12 +11,13 @@ import {
   LogIn,
   LogOut,
   Music2,
+  RefreshCw,
   Settings,
   Sparkles,
   User,
   X,
 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import Library from '../Library/Library.jsx';
 import Setlists from '../Setlists/Setlists.jsx';
 import { Button } from '../ui/button.jsx';
@@ -28,11 +31,30 @@ import {
 } from '../ui/dropdown-menu.jsx';
 import styles from './Sidebar.module.css';
 
+function readableStatus(status, connected, isLoggedIn, loading) {
+  if (loading) return 'Sincronizando biblioteca';
+  if (connected) return 'Biblioteca carregada';
+  if (String(status || '').toLowerCase() === 'need-folder') return 'Escolha uma pasta';
+  if (isLoggedIn) return 'Google autenticado';
+  return 'Credenciamento pendente';
+}
+
+function stepState({ isLoggedIn, connected, hasFolder }) {
+  return [
+    { label: 'Credenciamento', active: isLoggedIn, done: isLoggedIn },
+    { label: 'Pasta Google Drive', active: isLoggedIn && !connected, done: hasFolder },
+    { label: 'Biblioteca', active: connected, done: connected },
+  ];
+}
+
 export default function Sidebar({
   open,
   connected,
   isAuthenticated = false,
   status,
+  selectedFolder,
+  folderId,
+  pickerConfigured = true,
   styleList = [],
   selectedStyle,
   setSelectedStyle,
@@ -54,6 +76,8 @@ export default function Sidebar({
   onLogin,
   onLogout,
   onPickFolder,
+  onClearFolder,
+  onRefresh,
   onSelectSong,
   onCreatePlaylist,
   onAddToPlaylist,
@@ -89,15 +113,18 @@ export default function Sidebar({
     'loading',
   ].includes(normalizedStatus));
 
-  const canPickFolder = Boolean(!loading && isLoggedIn);
-
+  const hasFolder = Boolean(selectedFolder?.id || folderId);
+  const canPickFolder = Boolean(!loading && isLoggedIn && pickerConfigured);
+  const canRefresh = Boolean(!loading && isLoggedIn && hasFolder);
+  const statusLabel = readableStatus(status, connected, isLoggedIn, loading);
   const connectionLabel = connected
     ? 'Google Drive conectado'
     : isLoggedIn
       ? 'Google autenticado'
       : 'Biblioteca local';
-
+  const folderLabel = selectedFolder?.name || (folderId ? 'Pasta configurada' : 'Nenhuma pasta selecionada');
   const profileInitial = connected || isLoggedIn ? 'R' : <User size={17} />;
+  const profileSteps = useMemo(() => stepState({ isLoggedIn, connected, hasFolder }), [connected, hasFolder, isLoggedIn]);
 
   return (
     <>
@@ -123,6 +150,21 @@ export default function Sidebar({
             <X size={20} />
           </button>
         </div>
+
+        <section className={styles.profileFlow} aria-label="Fluxo de acesso">
+          <div className={styles.flowHeader}>
+            <span>{statusLabel}</span>
+            <small>{folderLabel}</small>
+          </div>
+          <div className={styles.flowSteps}>
+            {profileSteps.map((step) => (
+              <span key={step.label} className={`${styles.flowStep} ${step.active ? styles.flowStepActive : ''} ${step.done ? styles.flowStepDone : ''}`}>
+                {step.done ? <CheckCircle2 size={13} /> : null}
+                {step.label}
+              </span>
+            ))}
+          </div>
+        </section>
 
         <section className={styles.navSection} aria-label="Produtos">
           <label>Produtos</label>
@@ -180,26 +222,37 @@ export default function Sidebar({
                 <span className={styles.avatar}>{profileInitial}</span>
                 <span className={styles.profileText}>
                   <strong>{connected ? 'raphael.albertini' : isLoggedIn ? 'Conta Google' : 'Perfil'}</strong>
-                  <small>{connectionLabel}</small>
+                  <small>{statusLabel}</small>
                 </span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" side="top" className={styles.profileMenu}>
-              <DropdownMenuLabel>Perfil</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                <span className={styles.menuTitle}>Perfil</span>
+                <small className={styles.menuSubtitle}>{connectionLabel}</small>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={(event) => { event.preventDefault(); connected ? onLogout?.() : onLogin?.(); }}>
-                {connected ? <LogOut size={16} /> : <LogIn size={16} />}
-                {connected ? 'Sair do Google' : 'Entrar com Google'}
+              <DropdownMenuItem onSelect={(event) => { event.preventDefault(); connected || isLoggedIn ? onLogout?.() : onLogin?.(); }}>
+                {connected || isLoggedIn ? <LogOut size={16} /> : <LogIn size={16} />}
+                {connected || isLoggedIn ? 'Sair do Google' : 'Credenciar com Google'}
               </DropdownMenuItem>
               <DropdownMenuItem disabled={!canPickFolder} onSelect={(event) => { event.preventDefault(); onPickFolder?.(); }}>
                 <FolderOpen size={16} />
-                Selecionar pasta do Drive
+                {hasFolder ? 'Trocar pasta do Drive' : 'Selecionar pasta do Drive'}
               </DropdownMenuItem>
+              <DropdownMenuItem disabled={!canRefresh} onSelect={(event) => { event.preventDefault(); onRefresh?.(); }}>
+                <RefreshCw size={16} />
+                Atualizar biblioteca
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled={!hasFolder} onSelect={(event) => { event.preventDefault(); onClearFolder?.(); }}>
+                <Database size={16} />
+                Remover pasta deste dispositivo
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem disabled>
                 <Cloud size={16} />
                 Offline sincronizado
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem disabled>
                 <Settings size={16} />
                 Configurações da conta

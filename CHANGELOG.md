@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.1.2 - Perfil e Google Drive
+
+- Reorganiza o menu Perfil como ponto central de credenciamento, Google Drive e sincronização.
+- Adiciona indicação visual do fluxo: Credenciamento, Pasta Google Drive e Biblioteca.
+- Adiciona ações de trocar pasta, atualizar biblioteca e remover pasta deste dispositivo no menu Perfil.
+- Mantém Login, Sair e Google Drive dentro do Perfil, preservando a navegação estilo Moises.ai.
+- Preserva PDF, MP3, Modo Estudo, Modo Palco, IndexedDB e parser de acordes.
+
 ## v4.1.1 - Sidebar estilo Moises
 
 - Atualiza a sidebar para uma navegação visual mais próxima do Moises.ai.
