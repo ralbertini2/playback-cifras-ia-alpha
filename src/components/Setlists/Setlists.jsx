@@ -1,4 +1,13 @@
-import { ListMusic, Music, Plus, Trash2 } from 'lucide-react';
+import { Check, ChevronDown, ListMusic, Music, Plus, Trash2 } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible.jsx';
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from '../ui/sidebar.jsx';
 import styles from './Setlists.module.css';
 
 export default function Setlists({
@@ -14,24 +23,55 @@ export default function Setlists({
 
   return (
     <section className={styles.setlists} aria-label="Repertórios">
-      <div className={styles.header}>
-        <div>
-          <label>Repertórios</label>
-          <span>{selectedPlaylist ? `${selectedCount} música(s) no repertório` : `${names.length} repertório(s)`}</span>
-        </div>
-        <ListMusic size={18} />
-      </div>
+      <Collapsible defaultOpen>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <CollapsibleTrigger asChild>
+              <SidebarMenuButton type="button" className={styles.trigger}>
+                <ListMusic size={17} />
+                <span>Repertórios</span>
+                <small>{selectedPlaylist ? `${selectedCount}` : `${names.length}`}</small>
+                <ChevronDown size={16} className={styles.chevron} />
+              </SidebarMenuButton>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenuSub className={styles.subMenu}>
+                <SidebarMenuSubItem>
+                  <SidebarMenuSubButton
+                    type="button"
+                    isActive={!selectedPlaylist}
+                    className={styles.subButton}
+                    onClick={() => setSelectedPlaylist('')}
+                  >
+                    <span>Todos os repertórios</span>
+                    {!selectedPlaylist ? <Check size={14} /> : null}
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                {names.map((name) => (
+                  <SidebarMenuSubItem key={name}>
+                    <SidebarMenuSubButton
+                      type="button"
+                      isActive={selectedPlaylist === name}
+                      className={styles.subButton}
+                      onClick={() => setSelectedPlaylist(name)}
+                    >
+                      <span>{name}</span>
+                      <small>{playlists[name]?.length || 0}</small>
+                      {selectedPlaylist === name ? <Check size={14} /> : null}
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSub>
 
-      <select value={selectedPlaylist} onChange={(event) => setSelectedPlaylist(event.target.value)}>
-        <option value="">Sem filtro de repertório</option>
-        {names.map((name) => <option key={name} value={name}>{name}</option>)}
-      </select>
-
-      <div className={styles.actions}>
-        <button onClick={onCreatePlaylist}><Plus size={16} /> Criar</button>
-        <button onClick={onAddToPlaylist}><Music size={16} /> Adicionar</button>
-        <button onClick={onDeletePlaylist}><Trash2 size={16} /> Excluir</button>
-      </div>
+              <div className={styles.actions}>
+                <button onClick={onCreatePlaylist} type="button"><Plus size={15} /> Criar</button>
+                <button onClick={onAddToPlaylist} type="button"><Music size={15} /> Adicionar</button>
+                <button onClick={onDeletePlaylist} type="button"><Trash2 size={15} /> Excluir</button>
+              </div>
+            </CollapsibleContent>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </Collapsible>
     </section>
   );
 }

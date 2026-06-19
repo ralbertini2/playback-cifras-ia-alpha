@@ -1,5 +1,15 @@
 # Changelog
 
+## v4.2.1.4 - Sidebar RTL Collapsible
+
+- Reestrutura a sidebar com componentes reais shadcn/ui.
+- Adiciona `SidebarProvider`, `Sidebar`, `SidebarContent`, `SidebarFooter` e grupos de menu.
+- Substitui Combobox por Collapsible em Estilos.
+- Substitui select de Repertórios por Collapsible.
+- Corrige o menu Perfil para abrir como DropdownMenu lateral acima da sidebar no iPad.
+- Mantém Estudo e Palco fora da sidebar.
+- Preserva PDF, MP3, Google Drive, IndexedDB e Modo Palco.
+
 ## v4.2.1.3 - Sidebar Shadcn iPad Fix
 
 - Corrige o z-index do Sheet/Portal do shadcn-ui para o menu Perfil abrir acima da sidebar no iPad retrato.
