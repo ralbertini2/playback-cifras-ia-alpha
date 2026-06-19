@@ -18,9 +18,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: |
-          npm install
-          npm install vite @vitejs/plugin-react --save-dev
+        run: npm install
 
       - name: Build application
         run: npm run build
