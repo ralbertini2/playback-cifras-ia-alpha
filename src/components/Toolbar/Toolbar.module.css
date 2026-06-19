@@ -6,7 +6,7 @@
   gap:14px;
   padding:10px 16px;
 }
-.menuButton, .controls button {
+.sidebarTrigger, .controls button {
   border:1px solid rgba(255,255,255,.1);
   background:rgba(255,255,255,.06);
   color:var(--text);
@@ -99,7 +99,7 @@
   flex:0 0 auto;
 }
 
-@media (min-width: 901px) { .menuButton { display:none; } }
+
 @media (max-width: 700px) {
   .toolbar { grid-template-columns:auto minmax(0,1fr); }
   .controls { grid-column:1 / -1; justify-content:space-between; gap:10px; }
@@ -124,4 +124,24 @@
 @keyframes toolbarSpin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.sidebarTrigger {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 9px;
+  background: rgba(255,255,255,.92);
+  color: #050505;
+  border-color: rgba(255,255,255,.22);
+  box-shadow: 0 12px 28px rgba(0,0,0,.22);
+}
+
+.sidebarTrigger:hover {
+  background: #fff;
+}
+
+@media (min-width: 901px) {
+  .sidebarTrigger {
+    display: inline-flex;
+  }
 }

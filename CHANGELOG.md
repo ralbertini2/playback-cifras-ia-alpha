@@ -1,5 +1,14 @@
 # Changelog
 
+## v4.2.1.5 - Sidebar Trigger Cleanup
+
+- Remove bullets dos itens da sidebar.
+- Remove caixas visuais fortes dos itens Estilos e Repertórios.
+- Mantém a sidebar mais textual, alinhada à referência shadcn/radix.
+- Substitui o botão sanduíche por trigger de sidebar com ícone PanelLeft.
+- Mantém o trigger disponível em desktop, tablet e mobile.
+- Preserva Perfil, PDF, MP3, Google Drive, IndexedDB e Modo Palco.
+
 ## v4.2.1.4 - Sidebar RTL Collapsible
 
 - Reestrutura a sidebar com componentes reais shadcn/ui.
