@@ -15,19 +15,19 @@ import {
   User,
   X,
 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Library from '../Library/Library.jsx';
 import Setlists from '../Setlists/Setlists.jsx';
 import { Button } from '../ui/button.jsx';
 import { Combobox } from '../ui/combobox.jsx';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu.jsx';
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '../ui/sheet.jsx';
 import styles from './Sidebar.module.css';
 
 function readableStatus(status, connected, isLoggedIn, loading) {
@@ -75,6 +75,8 @@ export default function Sidebar({
   onDeletePlaylist,
   loading = false,
 }) {
+  const [profileOpen, setProfileOpen] = useState(false);
+
   useEffect(() => {
     if (!open) return undefined;
 
@@ -157,7 +159,6 @@ export default function Sidebar({
               value={selectedStyle || ''}
               onValueChange={(value) => setSelectedStyle(value)}
               placeholder="Todos os estilos"
-              searchPlaceholder="Buscar estilo"
               emptyText="Nenhum estilo encontrado"
               className={styles.styleCombobox}
             />
@@ -190,65 +191,109 @@ export default function Sidebar({
         </div>
 
         <section className={styles.profileDock} aria-label="Perfil e conta">
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <Button className={styles.profileButton} variant="ghost">
+          <Sheet open={profileOpen} onOpenChange={setProfileOpen}>
+            <SheetTrigger asChild>
+              <Button
+                className={styles.profileButton}
+                variant="ghost"
+                type="button"
+                onPointerDown={(event) => event.stopPropagation()}
+                onTouchStart={(event) => event.stopPropagation()}
+              >
                 <span className={styles.avatar}>{profileInitial}</span>
                 <span className={styles.profileText}>
                   <strong>Perfil</strong>
                   <small>{statusLabel}</small>
                 </span>
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="top" sideOffset={10} className={styles.profileMenu}>
-              <DropdownMenuLabel>
-                <span className={styles.menuTitle}>Perfil</span>
-                <small className={styles.menuSubtitle}>{connectionLabel}</small>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={(event) => { event.preventDefault(); connected || isLoggedIn ? onLogout?.() : onLogin?.(); }}>
-                {connected || isLoggedIn ? <LogOut size={16} /> : <LogIn size={16} />}
-                {connected || isLoggedIn ? 'Sair do Google' : 'Credenciamento do Google'}
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled={!canPickFolder} onSelect={(event) => { event.preventDefault(); onPickFolder?.(); }}>
-                <FolderOpen size={16} />
-                {hasFolder ? 'Trocar pasta do Drive' : 'Selecionar pasta do Drive'}
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled={!canRefresh} onSelect={(event) => { event.preventDefault(); onRefresh?.(); }}>
-                <RefreshCw size={16} />
-                Atualizar biblioteca
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled={!hasFolder} onSelect={(event) => { event.preventDefault(); onClearFolder?.(); }}>
-                <Database size={16} />
-                Remover pasta
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem disabled>
-                <Cloud size={16} />
-                Offline sincronizado
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <Settings size={16} />
-                Configurações da conta
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <Bell size={16} />
-                Notificações
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <User size={16} />
-                Perfil
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <HelpCircle size={16} />
-                Suporte
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel>
-                <small className={styles.menuSubtitle}>{folderLabel}</small>
-              </DropdownMenuLabel>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </SheetTrigger>
+            <SheetContent side="bottom" className={styles.profileSheet}>
+              <SheetHeader className={styles.profileSheetHeader}>
+                <SheetTitle className={styles.profileSheetTitle}>Perfil</SheetTitle>
+                <SheetDescription className={styles.profileSheetDescription}>
+                  {connectionLabel}
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className={styles.profileSheetBody}>
+                <button
+                  type="button"
+                  className={styles.profileAction}
+                  onClick={() => {
+                    setProfileOpen(false);
+                    connected || isLoggedIn ? onLogout?.() : onLogin?.();
+                  }}
+                >
+                  {connected || isLoggedIn ? <LogOut size={16} /> : <LogIn size={16} />}
+                  <span>{connected || isLoggedIn ? 'Sair do Google' : 'Credenciamento do Google'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.profileAction}
+                  disabled={!canPickFolder}
+                  onClick={() => {
+                    setProfileOpen(false);
+                    onPickFolder?.();
+                  }}
+                >
+                  <FolderOpen size={16} />
+                  <span>{hasFolder ? 'Trocar pasta do Drive' : 'Selecionar pasta do Drive'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.profileAction}
+                  disabled={!canRefresh}
+                  onClick={() => {
+                    setProfileOpen(false);
+                    onRefresh?.();
+                  }}
+                >
+                  <RefreshCw size={16} />
+                  <span>Atualizar biblioteca</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.profileAction}
+                  disabled={!hasFolder}
+                  onClick={() => {
+                    setProfileOpen(false);
+                    onClearFolder?.();
+                  }}
+                >
+                  <Database size={16} />
+                  <span>Remover pasta</span>
+                </button>
+
+                <div className={styles.profileDivider} />
+
+                <button type="button" className={styles.profileAction} disabled>
+                  <Cloud size={16} />
+                  <span>Offline sincronizado</span>
+                </button>
+                <button type="button" className={styles.profileAction} disabled>
+                  <Settings size={16} />
+                  <span>Configurações da conta</span>
+                </button>
+                <button type="button" className={styles.profileAction} disabled>
+                  <Bell size={16} />
+                  <span>Notificações</span>
+                </button>
+                <button type="button" className={styles.profileAction} disabled>
+                  <User size={16} />
+                  <span>Perfil</span>
+                </button>
+                <button type="button" className={styles.profileAction} disabled>
+                  <HelpCircle size={16} />
+                  <span>Suporte</span>
+                </button>
+
+                <div className={styles.folderSummary}>{folderLabel}</div>
+              </div>
+            </SheetContent>
+          </Sheet>
 
           <div className={styles.profileLinks}>
             <span><ListMusic size={14} /> {totalSongs || songs.length} músicas</span>
