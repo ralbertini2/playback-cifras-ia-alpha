@@ -147,6 +147,8 @@ export default function App() {
           isAuthenticated={drive.isAuthenticated}
           status={drive.loadingLibrary ? 'Atualizando biblioteca...' : drive.status}
           folderId={drive.folderId}
+          selectedFolder={drive.selectedFolder}
+          pickerConfigured={drive.pickerConfigured}
           setFolderId={drive.setFolderId}
           styleList={drive.styleList}
           selectedStyle={drive.selectedStyle}
@@ -171,6 +173,7 @@ export default function App() {
           onLogin={drive.login}
           onLogout={drive.logout}
           onPickFolder={drive.pickFolder || drive.chooseFolder || drive.openPicker || drive.openFolderPicker}
+          onClearFolder={drive.clearFolder}
           onRefresh={drive.refreshLibrary}
           onSelectSong={selectSong}
           onCreatePlaylist={createPlaylist}
